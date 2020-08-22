@@ -138,7 +138,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <wackycodes.ecom.eanshopadmin.other.MyGridView
+    <ean.ecom.eanshopadmin.other.MyGridView
         android:id="@+id/category_my_grid_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

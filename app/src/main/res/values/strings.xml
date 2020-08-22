@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">eAN ShopAdmin</string>
+    <string name="app_name">AN ShopAdmin</string>
     <string name="app_version" tools:ignore="TypographyDashes">ev-1-01</string>
     <string name="welcome_text">Welcome to <b>eAN Mart</b></string>
     <string name="thank_you_order">Thank you for order from <i><b>eAN Mart</b></i> </string>

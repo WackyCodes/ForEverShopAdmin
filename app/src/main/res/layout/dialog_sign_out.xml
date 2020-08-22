@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/back_rectangle_4dp_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/sign_out_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/logo_round" />
+
+    <TextView
+        android:id="@+id/quantity_editText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:textAlignment="center"
+        android:textSize="16dp"
+        android:padding="10dp"
+        android:text="Do You want Sign Out..?"
+        android:textColor="@color/colorSecondary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sign_out_image" />
+
+    <Button
+        android:id="@+id/sign_out_ok_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="@color/colorWhite"
+        android:text="OK"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/divider13"
+        app:layout_constraintStart_toStartOf="@+id/quantity_editText"
+        app:layout_constraintTop_toBottomOf="@+id/quantity_editText" />
+
+    <Button
+        android:id="@+id/sign_out_cancel_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:textColor="@color/colorPrimary"
+        android:backgroundTint="@color/colorWhite"
+        app:layout_constraintBottom_toBottomOf="@+id/sign_out_ok_btn"
+        app:layout_constraintEnd_toEndOf="@+id/quantity_editText"
+        app:layout_constraintStart_toEndOf="@+id/divider13" />
+
+    <View
+        android:id="@+id/divider13"
+        android:layout_width="1dp"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@+id/sign_out_ok_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider14" />
+
+    <View
+        android:id="@+id/divider14"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="@+id/quantity_editText"
+        app:layout_constraintStart_toStartOf="@+id/quantity_editText"
+        app:layout_constraintTop_toBottomOf="@+id/quantity_editText" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

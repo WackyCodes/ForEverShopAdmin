@@ -13,6 +13,8 @@
         android:layout_height="match_parent">
 
         <ScrollView
+            android:visibility="visible"
+
             android:id="@+id/sign_in_up_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
