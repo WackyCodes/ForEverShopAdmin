@@ -804,4 +804,30 @@ public class DBQuery {
         }
     }
 
+    // ---------------- Update Product Data Start ----------------------------------
+    public static void updateProductData( @Nullable final Dialog dialog, String productID, Map<String, Object> updateMap){
+        firebaseFirestore
+                .collection( "SHOPS" ).document( SHOP_ID )
+                .collection( "PRODUCTS" ).document( productID  )
+                .update( updateMap )
+                .addOnCompleteListener( new OnCompleteListener <Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task <Void> task) {
+                        if (task.isSuccessful()){
+
+                        }else{
+
+                        }
+
+                        if (dialog!=null){
+                            dialog.dismiss();
+                        }
+                    }
+                } );
+    }
+    // ---------------- Update Product Data End ----------------------------------
+
+
+
+
 }

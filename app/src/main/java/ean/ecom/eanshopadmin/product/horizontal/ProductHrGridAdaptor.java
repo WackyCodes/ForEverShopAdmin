@@ -200,6 +200,7 @@ public class ProductHrGridAdaptor extends RecyclerView.Adapter <RecyclerView.Vie
                     addProduct.putExtra( "CAT_INDEX", crrShopCatIndex );
                     addProduct.putExtra( "LAY_INDEX", layoutIndex );
                     addProduct.putExtra( "UPDATE", false );
+                    addProduct.putExtra( "PRO_INDEX", 0 );
 
                     itemView.getContext().startActivity( addProduct );
                 }

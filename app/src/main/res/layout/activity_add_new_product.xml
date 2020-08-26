@@ -110,7 +110,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="10dp"
                     android:text="Product Full Name*"
-                    android:textColor="@color/colorSecondary"
+                    android:textColor="@color/colorBlack"
                     android:textSize="18dp" />
 
                 <EditText
@@ -140,7 +140,7 @@
                         android:layout_weight="1"
                         android:paddingLeft="10dp"
                         android:text="Product Short Name*"
-                        android:textColor="@color/colorSecondary"
+                        android:textColor="@color/colorBlack"
                         android:textSize="18dp" />
 
                     <LinearLayout
@@ -190,8 +190,9 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="10dp"
                     android:text="Product Version (Weight)*"
-                    android:textColor="@color/colorSecondary"
+                    android:textColor="@color/colorBlack"
                     android:textSize="18dp" />
+                <!-- Weight ...-->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -206,16 +207,18 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:background="@drawable/back_rectangle_4dp_layout"
                         android:drawableLeft="@drawable/ic_view_carousel_black_24dp"
                         android:drawablePadding="4dp"
                         android:drawableTint="@color/colorPrimary"
                         android:hint="Weight"
-                        android:outlineProvider="none"
                         android:singleLine="true"
                         android:maxLines="1"
-                        android:inputType="number"
+                        android:inputType="number|numberDecimal"
+                        android:layout_margin="1dp"
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"
+                        android:outlineProvider="none"
                         android:textColor="@color/colorSecondary"
                         android:textSize="20dp" />
 
@@ -251,7 +254,7 @@
                             android:padding="2dp"
                             android:text="MRP Rate*"
                             android:textAlignment="center"
-                            android:textColor="@color/colorSecondary"
+                            android:textColor="@color/colorBlack"
                             android:textSize="18dp" />
 
                         <EditText
@@ -285,7 +288,7 @@
                             android:padding="2dp"
                             android:text="Selling Price*"
                             android:textAlignment="center"
-                            android:textColor="@color/colorSecondary"
+                            android:textColor="@color/colorBlack"
                             android:textSize="18dp" />
 
                         <EditText
@@ -326,7 +329,7 @@
                             android:padding="2dp"
                             android:text="Discount in %"
                             android:textAlignment="center"
-                            android:textColor="@color/colorSecondary"
+                            android:textColor="@color/colorBlack"
                             android:textSize="18dp" />
 
                         <TextView
@@ -358,7 +361,7 @@
                             android:padding="2dp"
                             android:text="Discount in Rs."
                             android:textAlignment="center"
-                            android:textColor="@color/colorSecondary"
+                            android:textColor="@color/colorBlack"
                             android:textSize="18dp" />
 
                         <TextView
@@ -404,7 +407,7 @@
                                 android:padding="2dp"
                                 android:text="Stock Available*"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorSecondary"
+                                android:textColor="@color/colorBlack"
                                 android:textSize="18dp" />
 
                             <EditText
@@ -444,7 +447,7 @@
                             android:padding="2dp"
                             android:text="COD Available*"
                             android:textAlignment="center"
-                            android:textColor="@color/colorSecondary"
+                            android:textColor="@color/colorBlack"
                             android:textSize="18dp" />
 
                         <Switch
@@ -492,7 +495,7 @@
                         android:outlineProvider="none"
                         android:text="Label/Vegan Mark :"
                         android:padding="4dp"
-                        android:textColor="@color/colorSecondary"
+                        android:textColor="@color/colorPrimary"
                         android:textSize="16sp" />
                     <Spinner
                         android:id="@+id/new_pro_veg_non_type"

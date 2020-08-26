@@ -59,6 +59,12 @@
             android:iconTint="@color/colorPrimary"/>
 
         <item
+            android:id="@+id/menu_update_weight"
+            android:orderInCategory="100"
+            android:title="Update Weight"
+            android:iconTint="@color/colorPrimary"/>
+
+        <item
             android:id="@+id/menu_remove_products"
             android:orderInCategory="100"
             android:title="Remove Products"

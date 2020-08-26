@@ -1114,6 +1114,7 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
             addProduct.putExtra( "CAT_INDEX", catIndex );
             addProduct.putExtra( "LAY_INDEX", layIndex );
             addProduct.putExtra( "UPDATE", false );
+            addProduct.putExtra( "PRO_INDEX", 0 );
 
             itemView.getContext().startActivity( addProduct );
 

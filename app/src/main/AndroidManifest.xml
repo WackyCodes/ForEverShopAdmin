@@ -18,29 +18,30 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name="ean.ecom.eanshopadmin.main.shop.AboutShopActivity" />
-        <activity android:name="ean.ecom.eanshopadmin.product.search.ProductSearchActivity" />
-        <activity android:name="ean.ecom.eanshopadmin.home.viewall.ViewAllBannerSliderActivity" />
-        <activity android:name="ean.ecom.eanshopadmin.home.viewall.ViewAllActivity" />
-        <activity android:name="ean.ecom.eanshopadmin.addnew.AddNewImageActivity" />
-        <activity android:name="ean.ecom.eanshopadmin.addnew.newproduct.AddSpecificationActivity" />
-        <activity android:name="ean.ecom.eanshopadmin.product.productview.ProductDetails" />
-        <activity android:name="ean.ecom.eanshopadmin.addnew.newproduct.AddNewProductActivity" />
-        <activity android:name="ean.ecom.eanshopadmin.addnew.AddNewLayoutActivity" />
-        <activity android:name="ean.ecom.eanshopadmin.home.HomeActivity" />
-        <activity android:name="ean.ecom.eanshopadmin.launching.WelcomeActivity">
+        <activity android:name=".product.update.UpdateProductActivity"></activity>
+        <activity android:name=".main.shop.AboutShopActivity" />
+        <activity android:name=".product.search.ProductSearchActivity" />
+        <activity android:name=".home.viewall.ViewAllBannerSliderActivity" />
+        <activity android:name=".home.viewall.ViewAllActivity" />
+        <activity android:name=".addnew.AddNewImageActivity" />
+        <activity android:name=".addnew.newproduct.AddSpecificationActivity" />
+        <activity android:name=".product.productview.ProductDetails" />
+        <activity android:name=".addnew.newproduct.AddNewProductActivity" />
+        <activity android:name=".addnew.AddNewLayoutActivity" />
+        <activity android:name=".home.HomeActivity" />
+        <activity android:name=".launching.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="ean.ecom.eanshopadmin.MainActivity" />
-        <activity android:name="ean.ecom.eanshopadmin.launching.AuthActivity" />
+        <activity android:name=".MainActivity" />
+        <activity android:name=".launching.AuthActivity" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
-        <activity android:name="ean.ecom.eanshopadmin.SetFragmentActivity" />
+        <activity android:name=".SetFragmentActivity" />
     </application>
 
 </manifest>

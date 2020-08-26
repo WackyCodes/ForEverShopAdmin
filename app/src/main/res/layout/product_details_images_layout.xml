@@ -24,12 +24,26 @@
         android:id="@+id/product_images_viewpager_indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/stock_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/product_images_viewpager"
         app:tabBackground="@drawable/dot_selector"
         app:tabIndicatorHeight="0dp"
         app:tabRippleColor="@null" />
+
+    <TextView
+        android:id="@+id/stock_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:padding="1dp"
+        android:text=" "
+        android:textColor="@color/colorPrimary"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/product_images_viewpager_indicator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/product_images_viewpager" />
 
     <ImageView
         android:id="@+id/product_veg_non_type_image"

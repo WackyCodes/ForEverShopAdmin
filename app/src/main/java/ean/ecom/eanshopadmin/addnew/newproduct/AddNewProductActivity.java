@@ -595,8 +595,8 @@ public class AddNewProductActivity extends AppCompatActivity {
 
     }
     private void setAutoText(int reqType, EditText mrpEdTxt, EditText sellingEdTxt, TextView offPerEdTxt, TextView offRsEdTxt){
-        int mrpValue = Integer.parseInt( mrpEdTxt.getText().toString().trim() );
-        int sellValue = Integer.parseInt( sellingEdTxt.getText().toString().trim() );
+        double mrpValue = Integer.parseInt( mrpEdTxt.getText().toString().trim() );
+        double sellValue = Integer.parseInt( sellingEdTxt.getText().toString().trim() );
         int offPerValue;
         int offRsValue;
 
@@ -606,22 +606,21 @@ public class AddNewProductActivity extends AppCompatActivity {
         switch (reqType){
             case SELLING_CHANGED:
                 if (isNotEmptyEditText( mrpEdTxt )){
-                    offRsValue = mrpValue - sellValue;
+                    offRsValue = (int) (mrpValue - sellValue);
                     offRsEdTxt.setText( String.valueOf( offRsValue ) );
 //                    offPerValue = (offRsValue * 100)/mrpValue;
-                    offPer = (offRsValue * 100)/mrpValue;
-                    offPerEdTxt.setText( String.valueOf( offPer ) );
+                    offPer = (double)((offRsValue/mrpValue) * 100);
+                    offPerEdTxt.setText( String.valueOf( offPer ).substring( 0, 4 ) );
                 }
                 break;
             case MRP_CHANGED:
                 if (isNotEmptyEditText( sellingEdTxt )){
-                    offRsValue = mrpValue - sellValue;
+                    offRsValue = (int) (mrpValue - sellValue);
                     tempVal2 = offRsValue;
                     offRsEdTxt.setText( String.valueOf( offRsValue ) );
 //                    offPerValue = (offRsValue * 100)/mrpValue;
-                    offPer = (offRsValue * 100)/mrpValue;
-//                    tempVal = offPerValue;
-                    offPerEdTxt.setText( String.valueOf( offPer ) );
+                    offPer = (double)((offRsValue/mrpValue) * 100);
+                    offPerEdTxt.setText( String.valueOf( offPer ).substring( 0, 4 ) );
                 }
                 break;
             default:
@@ -878,12 +877,13 @@ public class AddNewProductActivity extends AppCompatActivity {
         String newName = "";
         int sizeofList = uploadImageDataModelList.size();
         for (int i = 0; i < sizeofList; i++ ){
-            if( ! String.valueOf( i ).equals( uploadImageDataModelList.get( i ).getImgName() ) ){
-                newName = String.valueOf( i );
+            newName = productIndex + "" + i;
+            if( ! newName.equals( uploadImageDataModelList.get( i ).getImgName() ) ){
+//                newName = String.valueOf( productIndex ) + String.valueOf( i );
                 uploadImageDataModelList.get( i ).setImgName( newName );
                 break;
             }else if ( i == sizeofList - 1){
-                newName = String.valueOf( sizeofList );
+                newName = productIndex + "" + sizeofList; // String.valueOf( sizeofList );
             }
         }
 
@@ -1059,7 +1059,7 @@ public class AddNewProductActivity extends AppCompatActivity {
         updateMap.put( "p_name_"+verNo, newProdShortName.getText().toString() );
         updateMap.put( "p_selling_price_"+verNo,  newProSellingPrice.getText().toString().trim()  );
         updateMap.put( "p_mrp_price_"+verNo, newProMrpRate.getText().toString().trim() );
-        updateMap.put( "p_weight_"+verNo, newProVersionWeight.getText().toString() + qtyTypeText );
+        updateMap.put( "p_weight_"+verNo, newProVersionWeight.getText().toString() + "-" +qtyTypeText );
         updateMap.put( "p_stocks_"+verNo, newProStockAvailable.getText().toString() );
         updateMap.put( "p_offer_"+verNo, "" );
         updateMap.put( "p_off_per_"+verNo, newProPerDiscount.getText().toString() );
@@ -1073,6 +1073,9 @@ public class AddNewProductActivity extends AppCompatActivity {
         updateMap.put( "p_image_"+verNo, imageList );
         // Tags...
         updateMap.put( "tags", tagList );
+
+        // time of update...
+        updateMap.put( "p_last_update_time", StaticMethods.getCrrDate() + " " + StaticMethods.getCrrTime() );
         // Product SubList..-----------------------------------------------
 
         ProductSubModel productSubModel = new ProductSubModel(
@@ -1112,6 +1115,14 @@ public class AddNewProductActivity extends AppCompatActivity {
 
             updateMap.put( "product_details", newProDetails.getText().toString() );
             updateMap.put( "use_tab_layout", false );
+
+            updateMap.put( "p_add_date_time", StaticMethods.getCrrDate() + " " + StaticMethods.getCrrTime() );
+
+            if (qtyTypeText.toUpperCase().equals( "NONE" )){
+                updateMap.put( "p_show_weight_"+verNo,  false );
+            }else{
+                updateMap.put( "p_show_weight_"+verNo,  true );
+            }
 
             List<ProductSubModel> tempPSubList = new ArrayList <>();
             tempPSubList.add( productSubModel );

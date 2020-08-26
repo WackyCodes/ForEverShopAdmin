@@ -7,15 +7,23 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewpager.widget.ViewPager;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -28,7 +36,9 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ean.ecom.eanshopadmin.R;
 import ean.ecom.eanshopadmin.addnew.newproduct.AddNewProductActivity;
@@ -39,6 +49,7 @@ import ean.ecom.eanshopadmin.product.ProductModel;
 import ean.ecom.eanshopadmin.product.ProductSubModel;
 import ean.ecom.eanshopadmin.product.search.ProductSearchActivity;
 import ean.ecom.eanshopadmin.product.specifications.ProductDetailsSpecificationModel;
+import ean.ecom.eanshopadmin.product.update.UpdateProductActivity;
 
 import static ean.ecom.eanshopadmin.database.DBQuery.homeCatListModelList;
 import static ean.ecom.eanshopadmin.other.StaticValues.PRODUCT_LACTO_EGG;
@@ -46,6 +57,7 @@ import static ean.ecom.eanshopadmin.other.StaticValues.PRODUCT_LACTO_NON_VEG;
 import static ean.ecom.eanshopadmin.other.StaticValues.PRODUCT_LACTO_VEG;
 import static ean.ecom.eanshopadmin.other.StaticValues.PRODUCT_OTHERS;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_ID;
+import static ean.ecom.eanshopadmin.product.update.UpdateProductActivity.UPDATE_WEIGHTS;
 
 public class ProductDetails extends AppCompatActivity {
     public static AppCompatActivity productDetails;
@@ -62,6 +74,7 @@ public class ProductDetails extends AppCompatActivity {
     private TextView productPrice;
     private TextView productCutPrice;
     private TextView productCODText; // product_item_cod_text
+    private TextView productStocksText; // stock_text
 
     // create a list for testing...
     private List <String> productImageList = new ArrayList <>();
@@ -136,7 +149,7 @@ public class ProductDetails extends AppCompatActivity {
         try{
             // To test We assign a default PRODUCT_ID ...
             if (productID.isEmpty()){
-//                productID = "k2SGQbneH477j6X18l6a";
+//                productID = "";
                 dialog.dismiss();
                 Toast.makeText( this, "Product Not found.!", Toast.LENGTH_SHORT ).show();
                 finish();
@@ -152,6 +165,10 @@ public class ProductDetails extends AppCompatActivity {
         productPrice = findViewById( R.id.product_item_price );
         productCutPrice = findViewById( R.id.product_item_cut_price );
         productCODText = findViewById( R.id.product_item_cod_text );
+        // Set Default Visible...
+        productCODText.setVisibility( View.VISIBLE );
+
+        productStocksText = findViewById( R.id.stock_text );
 
         // --- Product Details Image Layout...
         productDescriptionLayout = findViewById( R.id.product_details_description_ConstLayout );
@@ -168,6 +185,7 @@ public class ProductDetails extends AppCompatActivity {
         // ---------- Product Description code----
         productDescriptionViewPager = findViewById( R.id.product_detail_viewpager );
         productDescriptionIndicator = findViewById( R.id.product_details_indicator );
+
         // Default Tab Layout Invisible
         productDescriptionLayout.setVisibility( View.GONE );
 
@@ -213,10 +231,11 @@ public class ProductDetails extends AppCompatActivity {
             setVegNonData();
         }
         if (pProductModel.getpIsCOD()){
-            productCODText.setVisibility( View.VISIBLE );
             productCODText.setText( "Cash On Delivery Available" );
+            productCODText.setTextColor( getResources().getColor( R.color.colorBlack) );
         }else{
-            productCODText.setVisibility( View.GONE );
+            productCODText.setText( "COD Not Available" );
+            productCODText.setTextColor( getResources().getColor( R.color.colorRed) );
         }
 
         // Add Weight Data in List...
@@ -261,24 +280,28 @@ public class ProductDetails extends AppCompatActivity {
             addProduct.putExtra( "CAT_INDEX", crrShopCatIndex );
             addProduct.putExtra( "LAY_INDEX", layoutIndex );
             addProduct.putExtra( "UPDATE", true );
-            addProduct.putExtra( "PRO_INDEX", productIndex );
+            addProduct.putExtra( "PRO_INDEX", productIndex + 1 );
             startActivity( addProduct );
             return true;
         }else
         if (id == R.id.menu_stock_update){
-
+            updateDataDialog( UPDATE_STOCKS, "Update Stocks", "Enter Stocks" );
+            return true;
         }else
         if (id == R.id.menu_price_update){
 
         }else
         if (id == R.id.menu_cod_update){
-
+            updateCOD();
+            return true;
         }else
         if (id == R.id.menu_edit_name){
-
+            updateDataDialog( UPDATE_NAME, "Update Name", "Enter Product Name" );
+            return true;
         }else
         if (id == R.id.menu_edit_details){
-
+            updateDataDialog( UPDATE_DETAILS, "Update Details", "Enter Products Details" );
+            return true;
         }else
         if (id == R.id.menu_update_images){
 
@@ -289,11 +312,19 @@ public class ProductDetails extends AppCompatActivity {
         if (id == R.id.menu_remove_products){
 
         }
-//        else
-//        if (id == R.id.menu_update_images){
-//
-//        }
+        else
+        if (id == R.id.menu_update_weight){
+            Intent updateActivity = new Intent( this, UpdateProductActivity.class );
 
+            updateActivity.putExtra( "PRODUCT_ID", productID );
+            updateActivity.putExtra( "HOME_CAT_INDEX", crrShopCatIndex );
+            updateActivity.putExtra( "LAYOUT_INDEX", layoutIndex );
+            updateActivity.putExtra( "PRODUCT_INDEX", productIndex );
+            updateActivity.putExtra( "VARIANT_CODE", currentVariant );
+            updateActivity.putExtra( "UPDATE_CODE", UPDATE_WEIGHTS );
+            startActivity( updateActivity );
+            return true;
+        }
 
             return super.onOptionsItemSelected( item );
     }
@@ -417,6 +448,14 @@ public class ProductDetails extends AppCompatActivity {
         productName.setText( productSubModel.getpName() );
         productPrice.setText( "Rs." + productSubModel.getpSellingPrice() + "/-" );
         productCutPrice.setText( "Rs." + productSubModel.getpMrpPrice() + "/-" );
+        if (Integer.parseInt( productSubModel.getpStocks() )>0){
+            productStocksText.setText( "In stocks ("+ productSubModel.getpStocks() + ")");
+            productStocksText.setTextColor( getResources().getColor( R.color.colorPrimary ) );
+        }else{
+            productStocksText.setText( "Out of Stocks" );
+            productStocksText.setTextColor( getResources().getColor( R.color.colorRed ) );
+        }
+
 
         if (productDetailsImagesAdapter!=null){
             productDetailsImagesAdapter.notifyDataSetChanged();
@@ -464,6 +503,167 @@ public class ProductDetails extends AppCompatActivity {
             }
         } );
     }
+
+
+    // ---------------------------------- Update Product -------------------------------------------
+
+    // Update COD : ON / OFF
+    private void updateCOD( ){
+        AlertDialog.Builder builder;
+        if (pProductModel.getpIsCOD()){
+            builder = DialogsClass.alertDialog( this, "COD Disable.?", "Do You want to Disable Cash On Delivery On this Product?" );
+        }else{
+            builder = DialogsClass.alertDialog( this, "COD Enable.?", "Do You want to Enable Cash On Delivery On this Product?" );
+        }
+//        AlertDialog.Builder builder = DialogsClass.alertDialog( this, dTitle, dBody );
+        builder.setPositiveButton( "OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Show Dialog...
+                dialog.show();
+                //Check Condition to create Map
+                Map<String, Object> updateMap = new HashMap <>();
+
+                if (pProductModel.getpIsCOD()){
+                    updateMap.put( "p_is_cod", false );
+
+                    pProductModel.setpIsCOD(false);
+                    productCODText.setText( "COD Not Available" );
+                    productCODText.setTextColor( getResources().getColor( R.color.colorRed) );
+                    // Stocks Update in local List...
+                    if (crrShopCatIndex != -1 && layoutIndex != -1 && productIndex != -1 ){
+                        homeCatListModelList.get( crrShopCatIndex ).getHomeListModelList().get( layoutIndex ).getProductModelList().get( productIndex )
+                                .setpIsCOD( false );
+                    }
+                }
+                else{
+                    updateMap.put( "p_is_cod", true );
+
+                    pProductModel.setpIsCOD(true);
+                    productCODText.setText( "Cash On Delivery Available" );
+                    productCODText.setTextColor( getResources().getColor( R.color.colorBlack) );
+                    // Stocks Update in local List...
+                    if (crrShopCatIndex != -1 && layoutIndex != -1 && productIndex != -1 ){
+                        homeCatListModelList.get( crrShopCatIndex ).getHomeListModelList().get( layoutIndex ).getProductModelList().get( productIndex )
+                                .setpIsCOD( true );
+                    }
+                }
+                // Update On Database....
+                DBQuery.updateProductData(dialog, productID, updateMap);
+                // Dismiss Alert Dialog...
+                dialogInterface.dismiss();
+            }
+        } );
+        builder.setNegativeButton( "CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        } );
+        builder.show();
+    }
+    // Update : Stocks, Name, Details...
+    private void updateDataDialog( final int updateCode, String title, String hint ){
+        final int variant = currentVariant + 1;
+        final Dialog uDialog = new Dialog( this );
+        uDialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
+        uDialog.setContentView( R.layout.dialog_single_edit_text );
+        uDialog.getWindow().setLayout( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT );
+        uDialog.setCancelable( false );
+        Button okBtn = uDialog.findViewById( R.id.dialog_ok_btn );
+        Button cancelBtn = uDialog.findViewById( R.id.dialog_cancel_btn );
+        TextView titleText = uDialog.findViewById( R.id.dialog_title );
+        final EditText getText = uDialog.findViewById( R.id.dialog_editText );
+        // Set Dialog Body...
+        okBtn.setText( "UPDATE" );
+        titleText.setText( title );
+        getText.setText( "" );
+        getText.setHint( hint );
+        if (updateCode == UPDATE_DETAILS){
+            getText.setLines( 3 );
+            getText.setMaxLines( 6 );
+            getText.setHorizontalScrollBarEnabled( true );
+        }else{
+            getText.setMaxLines( 1 );
+            getText.setSingleLine( true );
+        }
+        if (updateCode == UPDATE_STOCKS ){
+            getText.setInputType( InputType.TYPE_CLASS_NUMBER );
+        }else{
+            getText.setInputType( InputType.TYPE_CLASS_TEXT );
+        }
+        // show the Dialog..
+        uDialog.show();
+        // action Button...
+        cancelBtn.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                uDialog.dismiss();
+            }
+        } );
+
+        okBtn.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (!TextUtils.isEmpty( getText.getText().toString() )){
+                    // Show Dialog...
+                    dialog.show();
+                    //Check Condition to create Map
+                    Map<String, Object> updateMap = new HashMap <>();
+
+                    String updateData =  getText.getText().toString();
+                    switch (updateCode){
+                        case UPDATE_STOCKS:
+                            updateMap.put( "p_stocks_"+variant, updateData );
+                            productStocksText.setText( "In stocks ("+ updateData + ")");
+                            productStocksText.setTextColor( getResources().getColor( R.color.colorPrimary ) );
+                            // Stocks Update in local List...
+                            if (crrShopCatIndex != -1 && layoutIndex != -1 && productIndex != -1 ){
+                                homeCatListModelList.get( crrShopCatIndex ).getHomeListModelList().get( layoutIndex ).getProductModelList().get( productIndex )
+                                        .getProductSubModelList().get( currentVariant ).setpStocks( updateData );
+                            }
+                            break;
+                        case UPDATE_NAME:
+                            updateMap.put( "p_name_"+variant, updateData );
+                            productName.setText( updateData );
+                            // Name Update in local List...
+                            if (crrShopCatIndex != -1 && layoutIndex != -1 && productIndex != -1 ){
+                                homeCatListModelList.get( crrShopCatIndex ).getHomeListModelList().get( layoutIndex ).getProductModelList().get( productIndex )
+                                        .getProductSubModelList().get( currentVariant ).setpName( updateData );
+                            }
+                            break;
+                        case UPDATE_DETAILS:
+                            updateMap.put( "product_details", updateData );
+                            productDetailsText.setText( updateData );
+                            // Details Update in local List...
+                            if (crrShopCatIndex != -1 && layoutIndex != -1 && productIndex != -1 ){
+                                homeCatListModelList.get( crrShopCatIndex ).getHomeListModelList().get( layoutIndex ).getProductModelList().get( productIndex )
+                                        .setpDetails( updateData );
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+
+                    // Update On Database....
+                    DBQuery.updateProductData(dialog, productID, updateMap);
+                    // Dismiss the update Dialog...
+                    uDialog.dismiss();
+                }else{
+                    getText.setError( "Required!" );
+                }
+
+            }
+        } );
+
+    }
+
+    private final int UPDATE_STOCKS = 11;
+    private final int UPDATE_NAME = 12;
+    private final int UPDATE_DETAILS = 13;
+
+
 
 
 }

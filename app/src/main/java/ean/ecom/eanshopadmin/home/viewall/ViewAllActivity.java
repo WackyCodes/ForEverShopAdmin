@@ -34,7 +34,6 @@ public class ViewAllActivity extends AppCompatActivity {
     private RecyclerView recyclerProductLayout;
     private GridView gridProductLayout;
 
-
     private int crrShopCatIndex;
     private int layoutIndex;
     private int viewType;
@@ -72,7 +71,7 @@ public class ViewAllActivity extends AppCompatActivity {
         gridProductLayout = findViewById( R.id.view_all_layout_grid );
 
         //-- condition..
-        if (viewType == VIEW_RECTANGLE_LAYOUT){
+       /** if (viewType == VIEW_RECTANGLE_LAYOUT){
             gridProductLayout.setVisibility( View.GONE );
             recyclerProductLayout.setVisibility( View.VISIBLE );
             setRecyclerProductLayout();
@@ -84,8 +83,8 @@ public class ViewAllActivity extends AppCompatActivity {
                     loadGridProductData( totalProductsIdViewAll.get( i ));
                 }
             }
-        }else
-        if (viewType == VIEW_GRID_LAYOUT ){
+        }else */
+        if (viewType == VIEW_GRID_LAYOUT || viewType == VIEW_RECTANGLE_LAYOUT ){
             recyclerProductLayout.setVisibility( View.GONE );
             gridProductLayout.setVisibility( View.VISIBLE );
             setGridProductLayout();
@@ -179,14 +178,17 @@ public class ViewAllActivity extends AppCompatActivity {
                         homeCatListModelList.get( crrShopCatIndex ).getHomeListModelList().get( layoutIndex ).getProductModelList().add( productModel );
 
 //                        homeCatListModelList.get( catIndex ).getHomeListModelList().get( index ).getProductModelList().add( productModel );
+                        // Common for both...
+                        if (gridViewAllAdaptor!= null)
+                            gridViewAllAdaptor.notifyDataSetChanged();
 
-                        if (viewType == VIEW_RECTANGLE_LAYOUT ){
+                       /** if (viewType == VIEW_RECTANGLE_LAYOUT ){
                             if (horizontalViewAllAdaptor!= null)
                                 horizontalViewAllAdaptor.notifyDataSetChanged();
                         }else{
                             if (gridViewAllAdaptor!= null)
                                 gridViewAllAdaptor.notifyDataSetChanged();
-                        }
+                        } */
 
                     }
                 }
