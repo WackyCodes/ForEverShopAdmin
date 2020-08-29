@@ -38,6 +38,8 @@
             android:drawableTint="@color/colorPrimary"
             android:textColor="@color/colorPrimary"
             android:layout_margin="4dp"
+            android:singleLine="true"
+            android:maxLines="1"
             android:hint="Shop Owner Name*"/>
 
         <EditText
@@ -49,6 +51,8 @@
             android:drawableTint="@color/colorPrimary"
             android:textColor="@color/colorPrimary"
             android:layout_margin="4dp"
+            android:singleLine="true"
+            android:maxLines="1"
             android:hint="Enter Helpline Number "/>
 
         <EditText
@@ -60,6 +64,8 @@
             android:drawableTint="@color/colorPrimary"
             android:textColor="@color/colorPrimary"
             android:layout_margin="4dp"
+            android:singleLine="true"
+            android:maxLines="1"
             android:hint="Enter Email "/>
 
         <EditText
@@ -71,6 +77,8 @@
             android:drawableTint="@color/colorPrimary"
             android:textColor="@color/colorPrimary"
             android:layout_margin="4dp"
+            android:singleLine="true"
+            android:maxLines="1"
             android:hint="Enter Shop Address "/>
 
         <Button

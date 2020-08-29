@@ -6,6 +6,7 @@ package ean.ecom.eanshopadmin.main.orderlist.neworder;
  * https://linktr.ee/wackycodes
  */
 
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -24,7 +25,7 @@ import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_READY_TO_DELIV
  */
 public class NewOrderTabAdaptor extends FragmentPagerAdapter {
     // New Order Fragment...
-    private OrderViewPagerFragment newOrderFragment;
+    public OrderViewPagerFragment newOrderFragment;
     public OrderViewPagerFragment preparingFragment;
     public OrderViewPagerFragment readyToDeliverFragment;
 
@@ -48,6 +49,7 @@ public class NewOrderTabAdaptor extends FragmentPagerAdapter {
                 if (newOrderFragment.orderViewPagerListAdaptor!=null){
                     newOrderFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
                 }
+
                 return newOrderFragment;
             case 1:
                 if (preparingFragment == null){
@@ -56,6 +58,7 @@ public class NewOrderTabAdaptor extends FragmentPagerAdapter {
                 if (preparingFragment.orderViewPagerListAdaptor!=null){
                     preparingFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
                 }
+
                 return preparingFragment;
             case 2:
                 if (readyToDeliverFragment == null){
@@ -64,20 +67,9 @@ public class NewOrderTabAdaptor extends FragmentPagerAdapter {
                 if (readyToDeliverFragment.orderViewPagerListAdaptor!=null){
                     readyToDeliverFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
                 }
+
                 return readyToDeliverFragment;
-                // Case for Ready to delivery Order List... ORDER_LIST_READY_TO_DELIVER
-//                if (readyToDeliverFragment == null){
-//                    readyToDeliverFragment = new OrderViewPagerFragment();
-//                }
-//                readyToDeliverFragment.orderViewPagerListAdaptor = new OrderListAdaptor( readyToDeliveredList, ORDER_LIST_READY_TO_DELIVER );
-//                readyToDeliverFragment.orderViewPagerRecyclerView.setAdapter( readyToDeliverFragment.orderViewPagerListAdaptor );
-//                readyToDeliverFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
-//                if (readyToDeliveredList.size() == 0){
-//                    readyToDeliverFragment.noOrderText.setVisibility( View.VISIBLE );
-//                }else{
-//                    readyToDeliverFragment.noOrderText.setVisibility( View.GONE );
-//                }
-//                return readyToDeliverFragment;
+
             default:
                 return null;
         }
@@ -99,5 +91,36 @@ public class NewOrderTabAdaptor extends FragmentPagerAdapter {
      *          8. PENDING - when Payment is Pending...
      *
      */
+
+
+    public static void setNoOrderText(int FragmentType, int visibility ){
+        // Show the No Order Text.. If List size = 0;
+        if ( NewOrderFragment.newOrderTabAdaptor != null){
+            switch (FragmentType){
+                case ORDER_LIST_NEW_ORDER:
+                    NewOrderFragment.newOrderTabAdaptor.newOrderFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
+                    if (NewOrderFragment.newOrderTabAdaptor.newOrderFragment.noOrderText != null){
+                        NewOrderFragment.newOrderTabAdaptor.newOrderFragment.noOrderText.setVisibility( visibility );
+                    }
+                    break;
+                case ORDER_LIST_PREPARING:
+                    NewOrderFragment.newOrderTabAdaptor.preparingFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
+                    if (NewOrderFragment.newOrderTabAdaptor.preparingFragment.noOrderText != null){
+                        NewOrderFragment.newOrderTabAdaptor.preparingFragment.noOrderText.setVisibility( visibility );
+                    }
+                    break;
+                case ORDER_LIST_READY_TO_DELIVER:
+                    NewOrderFragment.newOrderTabAdaptor.readyToDeliverFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
+                    if (NewOrderFragment.newOrderTabAdaptor.readyToDeliverFragment.noOrderText != null){
+                        NewOrderFragment.newOrderTabAdaptor.readyToDeliverFragment.noOrderText.setVisibility( visibility );
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+    }
+
 
 }

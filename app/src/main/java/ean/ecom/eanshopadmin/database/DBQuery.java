@@ -37,6 +37,7 @@ import ean.ecom.eanshopadmin.main.orderlist.OrderListFragment;
 import ean.ecom.eanshopadmin.main.orderlist.OrderListModel;
 import ean.ecom.eanshopadmin.main.orderlist.OrderProductItemModel;
 import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderFragment;
+import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderTabAdaptor;
 import ean.ecom.eanshopadmin.model.BannerModel;
 import ean.ecom.eanshopadmin.other.DialogsClass;
 import ean.ecom.eanshopadmin.other.StaticMethods;
@@ -685,15 +686,17 @@ public class DBQuery {
                             String statusCode = updateMap.get( "delivery_status" ).toString();
                             if (statusCode.toUpperCase().equals( "ACCEPTED" )){ // Preparing...
                                 preparingOrderList.add( orderListModel );
-                                if (NewOrderFragment.newOrderTabAdaptor != null)
-                                    NewOrderFragment.newOrderTabAdaptor.preparingFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
+                                NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_PREPARING, View.GONE );
+
                             } else  if (statusCode.toUpperCase().equals( "PACKED" )){ // Ready to Delivery...
                                 readyToDeliveredList.add( orderListModel );
-                                if (NewOrderFragment.newOrderTabAdaptor != null)
-                                    NewOrderFragment.newOrderTabAdaptor.readyToDeliverFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
+                                NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_READY_TO_DELIVER, View.GONE );
+
                             } else  if (statusCode.toUpperCase().equals( "PROCESS" )){ // Out For Delivery...
 //                                readyToDeliveredList.remove( orderListModel );
                                 // By Default Done...
+                                if (readyToDeliveredList.size()==0)
+                                    NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_READY_TO_DELIVER, View.VISIBLE );
                             }
 
                         }else{

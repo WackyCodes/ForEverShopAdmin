@@ -263,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             firebaseAuth.signOut();
                             currentUser = null;
                             navigationView.getMenu().getItem( 0 ).setChecked( true );
-                            navigationView.getMenu().getItem( 5 ).setEnabled( false );
+//                            navigationView.getMenu().getItem( 5 ).setEnabled( false );
                             signOut.dismiss();
                             // GOTO : AuthActivity...!
                             startActivity( new Intent( MainActivity.this, AuthActivity.class ) );

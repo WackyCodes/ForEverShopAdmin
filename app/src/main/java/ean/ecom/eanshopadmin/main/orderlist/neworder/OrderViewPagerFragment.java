@@ -44,7 +44,6 @@ public class OrderViewPagerFragment extends Fragment {
 
     public OrderListAdaptor orderViewPagerListAdaptor;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -70,5 +69,6 @@ public class OrderViewPagerFragment extends Fragment {
 
         return view;
     }
+
 
 }

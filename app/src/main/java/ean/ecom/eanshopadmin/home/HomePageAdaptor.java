@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -732,6 +733,14 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
         private void setData(String productLayId, final String layoutTitle, final List<String> productIDList, List<ProductModel> productModelList, final int index){
             indexNo.setText( "position : "+ (1+index) );
             this.layoutTitle.setText( layoutTitle );
+            // Set Warning Text Visibility...
+            if (productIDList.size()>=3){
+                warningText.setVisibility( View.GONE );
+            }else{
+                warningText.setText( "Add Min 3 Product to Visible in the customer App!" );
+                warningText.setVisibility( View.VISIBLE );
+            }
+            // View All Btn Visibility...
             if (productIDList.size()>=1){
                 layoutViewAllBtn.setVisibility( View.VISIBLE );
             }else {
@@ -975,6 +984,7 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
                     TextView price = gridLayout.getChildAt( i ).findViewById( R.id.hr_product_price );
                     TextView cutPrice = gridLayout.getChildAt( i ).findViewById( R.id.hr_product_cut_price );
                     TextView perOffText = gridLayout.getChildAt( i ).findViewById( R.id.hr_off_percentage );
+                    TextView stocksText = gridLayout.getChildAt( i ).findViewById( R.id.stock_text );
                     // Set Data...
                     // Get SubModel....
                     ProductSubModel productSubModel = productModelList.get( i ).getProductSubModelList().get( 0 );
@@ -988,6 +998,18 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
                     price.setText("Rs." + productSubModel.getpSellingPrice() +"/-" );
                     cutPrice.setText("Rs." + productSubModel.getpMrpPrice() +"/-" );
                     perOffText.setText( productSubModel.getpOffer() + "%Off" );
+                    // Stocks Text...
+                    if(Integer.parseInt( productSubModel.getpStocks() )>0){
+                        stocksText.setText( "In stocks(" + productSubModel.getpStocks() + ")" );
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            stocksText.setBackgroundTintList( ColorStateList.valueOf( itemView.getResources().getColor( R.color.colorGreen ) ) );
+                        }
+                    }else{
+                        stocksText.setText( "Out of Stocks" );
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            stocksText.setBackgroundTintList( ColorStateList.valueOf( itemView.getResources().getColor( R.color.colorRed ) ) );
+                        }
+                    }
 
                     // ClickListener...
                     itemLayout.setOnClickListener( new View.OnClickListener() {

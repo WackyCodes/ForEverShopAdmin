@@ -30,6 +30,8 @@ import java.util.Map;
 
 import ean.ecom.eanshopadmin.R;
 import ean.ecom.eanshopadmin.database.DBQuery;
+import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderFragment;
+import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderTabAdaptor;
 import ean.ecom.eanshopadmin.other.StaticMethods;
 
 import static ean.ecom.eanshopadmin.other.StaticMethods.showToast;
@@ -292,6 +294,7 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
 
 //           Query To Find Delivery Boy... After that Update On Order Document...
             queryToDeliveryBoy(index);
+
         }
 
         private void setPackingTextBtn(int index){
@@ -317,6 +320,11 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
             DBQuery.sentNotificationToUser( orderListModelList.get( index ).getCustAuthID(), notifyMap );
 
             orderListModelList.remove( index );
+            // Show the No Order Text.. If List size = 0;
+            if (orderListModelList.size() == 0){
+                NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_PREPARING, View.VISIBLE );
+            }
+            // Notify Data Changed...
             OrderListAdaptor.this.notifyDataSetChanged();
 
         }
@@ -351,6 +359,11 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
             DBQuery.setDeliveryDocument( null, deliveryMap, orderListModelList.get( index ));
 
             orderListModelList.remove( index );
+            // Show the No Order Text.. If List size = 0;
+            if (orderListModelList.size() == 0){
+                NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_NEW_ORDER, View.VISIBLE );
+            }
+            // Notify Data Changed...
             OrderListAdaptor.this.notifyDataSetChanged();
 
         }

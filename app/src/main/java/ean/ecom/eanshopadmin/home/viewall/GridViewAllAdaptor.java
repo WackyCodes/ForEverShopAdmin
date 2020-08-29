@@ -3,6 +3,8 @@ package ean.ecom.eanshopadmin.home.viewall;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,11 +73,24 @@ public class GridViewAllAdaptor extends BaseAdapter {
         TextView price = view.findViewById( R.id.hr_product_price );
         TextView cutPrice = view.findViewById( R.id.hr_product_cut_price );
         TextView perOffText = view.findViewById( R.id.hr_off_percentage );
+        TextView stocksText = view.findViewById( R.id.stock_text );
 
         // Set Data...
         Glide.with( viewGroup.getContext() ).load( productSubModel.getpImage().get( 0 ) )
                 .apply( new RequestOptions()
                 .placeholder( R.drawable.ic_photo_black_24dp ) ).into( img );
+        // Stocks Text...
+        if(Integer.parseInt( productSubModel.getpStocks() )>0){
+            stocksText.setText( "In stocks(" + productSubModel.getpStocks() + ")" );
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                stocksText.setBackgroundTintList( ColorStateList.valueOf( viewGroup.getResources().getColor( R.color.colorGreen ) ) );
+            }
+        }else{
+            stocksText.setText( "Out of Stocks" );
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                stocksText.setBackgroundTintList( ColorStateList.valueOf( viewGroup.getResources().getColor( R.color.colorRed ) ) );
+            }
+        }
 
         name.setText( productSubModel.getpName() );
         price.setText( "Rs." + productSubModel.getpSellingPrice() + "/-" );
