@@ -47,6 +47,12 @@
             android:iconTint="@color/colorPrimary"/>
 
         <item
+            android:id="@+id/menu_edit_description"
+            android:orderInCategory="100"
+            android:title="Update Description"
+            android:iconTint="@color/colorPrimary"/>
+
+        <item
             android:id="@+id/menu_update_images"
             android:orderInCategory="100"
             android:title="Update Images"

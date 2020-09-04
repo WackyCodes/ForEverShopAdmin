@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import android.app.AlertDialog;
@@ -44,6 +45,7 @@ import java.util.Map;
 
 import ean.ecom.eanshopadmin.R;
 import ean.ecom.eanshopadmin.addnew.AddNewProductActivity;
+import ean.ecom.eanshopadmin.product.update.AddNewImageAdaptor;
 import ean.ecom.eanshopadmin.product.update.specification.AddSpecificationModel;
 import ean.ecom.eanshopadmin.database.DBQuery;
 import ean.ecom.eanshopadmin.other.CheckInternetConnection;
@@ -93,10 +95,12 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
 
     // --- Product Details Image Layout...
     private TextView productDetailsText;
-    private ConstraintLayout productDescriptionLayout;
+//    private ConstraintLayout productDescriptionLayout;
 
-    private ViewPager productDescriptionViewPager;
-    private TabLayout productDescriptionIndicator;
+//    private ViewPager productDescriptionViewPager;
+//    private TabLayout productDescriptionIndicator;
+    private LinearLayout specificationLayout;
+    private RecyclerView specificationRecycler;
 
     public static String productID;
     public static TextView badgeCartCount;
@@ -190,7 +194,7 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         productStocksText = findViewById( R.id.stock_text );
 
         // --- Product Details Image Layout...
-        productDescriptionLayout = findViewById( R.id.product_details_description_ConstLayout );
+//        productDescriptionLayout = findViewById( R.id.product_details_description_ConstLayout );
         productDetailsText = findViewById( R.id.product_details_text );
 
         pVegNonTypeImage = findViewById( R.id.product_veg_non_type_image );
@@ -203,11 +207,13 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         productImagesIndicator = findViewById( R.id.product_images_viewpager_indicator );
 
         // ---------- Product Description code----
-        productDescriptionViewPager = findViewById( R.id.product_detail_viewpager );
-        productDescriptionIndicator = findViewById( R.id.product_details_indicator );
+//        productDescriptionViewPager = findViewById( R.id.product_detail_viewpager );
+//        productDescriptionIndicator = findViewById( R.id.product_details_indicator );
+        specificationLayout = findViewById( R.id.specification_layout );
+        specificationRecycler = findViewById( R.id.specification_recycler );
 
         // Default Tab Layout Invisible
-        productDescriptionLayout.setVisibility( View.GONE );
+//        productDescriptionLayout.setVisibility( View.GONE );
 
         // set adapter with viewpager...
         productDetailsImagesAdapter = new ProductDetailsImagesAdapter( productImageList );
@@ -216,22 +222,22 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         productImagesIndicator.setupWithViewPager( productImagesViewPager, true );
 
         //----------- Product Description ---
-        productDescriptionViewPager.addOnPageChangeListener(
-                new TabLayout.TabLayoutOnPageChangeListener( productDescriptionIndicator ) );
-        productDescriptionIndicator.addOnTabSelectedListener( new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                productDescriptionViewPager.setCurrentItem( tab.getPosition() );
-            }
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        } );
+//        productDescriptionViewPager.addOnPageChangeListener(
+//                new TabLayout.TabLayoutOnPageChangeListener( productDescriptionIndicator ) );
+//        productDescriptionIndicator.addOnTabSelectedListener( new TabLayout.OnTabSelectedListener() {
+//            @Override
+//            public void onTabSelected(TabLayout.Tab tab) {
+//                productDescriptionViewPager.setCurrentItem( tab.getPosition() );
+//            }
+//            @Override
+//            public void onTabUnselected(TabLayout.Tab tab) {
+//
+//            }
+//            @Override
+//            public void onTabReselected(TabLayout.Tab tab) {
+//
+//            }
+//        } );
         // Retrieve details from database...----------------
         getProductDetails();
         // SetData...
@@ -347,6 +353,10 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         }else
         if (id == R.id.menu_edit_details){
             updateDataDialog( UPDATE_DETAILS, "Update Details", "Enter Products Details" );
+            return true;
+        }else
+        if (id == R.id.menu_edit_description){
+            updateDataDialog( UPDATE_DESCRIPTION, "Update Description", "Enter Products Description" );
             return true;
         }else
         if (id == R.id.menu_update_images){
@@ -553,7 +563,6 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         } );
     }
     // ---------------------------------- Update Product -------------------------------------------
-
     // Update COD : ON / OFF
     private void updateCOD( ){
         AlertDialog.Builder builder;
@@ -626,7 +635,7 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         titleText.setText( title );
         getText.setText( "" );
         getText.setHint( hint );
-        if (updateCode == UPDATE_DETAILS){
+        if (updateCode == UPDATE_DETAILS || updateCode == UPDATE_DESCRIPTION){
             getText.setLines( 3 );
             getText.setMaxLines( 6 );
             getText.setHorizontalScrollBarEnabled( true );
@@ -689,6 +698,10 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
                                         .setpDetails( updateData );
                             }
                             break;
+                        case UPDATE_DESCRIPTION:
+                            updateMap.put( "p_description_"+variant, updateData );
+                            // TODO : Update in local///
+                            break;
                         default:
                             break;
                     }
@@ -709,6 +722,7 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
     private final int UPDATE_STOCKS = 11;
     private final int UPDATE_NAME = 12;
     private final int UPDATE_DETAILS = 13;
+    private final int UPDATE_DESCRIPTION = 10;
 
     // update Dialog...
     private void updateDialog(int requestType){
@@ -757,8 +771,8 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
                 case UPDATE_PRICE:
                     break;
                 case UPDATE_IMAGES:
-                    ProductDetails.pProductModel.getProductSubModelList().get( currentVariant ).setpImage( UpdateImage_SpFragment.uploadImageDataModelList );
-                    UpdateImage_SpFragment.uploadImageDataModelList = null;// To Release memory..
+                    ProductDetails.pProductModel.getProductSubModelList().get( currentVariant ).setpImage( AddNewImageAdaptor.uploadImageDataModelList );
+                    AddNewImageAdaptor.uploadImageDataModelList = null;// To Release memory..
                     break;
                 case UPDATE_SPECIFICATION:
                     ProductDetails.pProductModel.getProductSubModelList().get( currentVariant ).setpSpecificationList( UpdateImage_SpFragment.specificationModelList );

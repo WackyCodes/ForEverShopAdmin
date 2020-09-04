@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import ean.ecom.eanshopadmin.R;
 import ean.ecom.eanshopadmin.other.DialogsClass;
@@ -50,6 +51,7 @@ import static ean.ecom.eanshopadmin.other.StaticValues.GALLERY_CODE;
 import static ean.ecom.eanshopadmin.other.StaticValues.READ_EXTERNAL_MEMORY_CODE;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_ID;
 import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_SPECIFICATION;
+import static ean.ecom.eanshopadmin.product.update.AddNewImageAdaptor.uploadImageDataModelList;
 
 /*
  * Copyright (c) 2020.
@@ -73,7 +75,7 @@ public class UpdateImage_SpFragment extends Fragment implements
     public static List <AddSpecificationModel> specificationModelList;
 
     //Images...
-    public static List<String> uploadImageDataModelList = new ArrayList <>();
+    private List<String> localImageList;
     private int updateImageFromIndex;
 
     public UpdateImage_SpFragment(ProductViewInterface rootActivity, int listVariant, String productID, int updateCode,
@@ -87,7 +89,7 @@ public class UpdateImage_SpFragment extends Fragment implements
         updateRequest = new UpdateDataRequest();
 
         if (uploadImageDataModelList != null){
-            UpdateImage_SpFragment.uploadImageDataModelList = uploadImageDataModelList;
+            this.localImageList = uploadImageDataModelList;
             updateImageFromIndex = uploadImageDataModelList.size();
         }
         if (specificationModelList != null){
@@ -150,7 +152,7 @@ public class UpdateImage_SpFragment extends Fragment implements
             linearLayoutManager.setOrientation( RecyclerView.HORIZONTAL );
             recyclerView.setLayoutManager( linearLayoutManager );
             // Adaptor...
-            imageAdaptor = new AddNewImageAdaptor( this, updateImageFromIndex );
+            imageAdaptor = new AddNewImageAdaptor( this, localImageList, updateImageFromIndex );
             recyclerView.setAdapter( imageAdaptor );
             imageAdaptor.notifyDataSetChanged();
         }
@@ -168,9 +170,9 @@ public class UpdateImage_SpFragment extends Fragment implements
                     }
                 }else{
                     if ( updateImageFromIndex < uploadImageDataModelList.size()){
-                        showToast( "Already Updated..!" );
-                    }else{
                         onUploadImagesButtonClick();
+                    }else{
+                        showToast( "Already Updated..!" );
                     }
                 }
             }
@@ -266,10 +268,14 @@ public class UpdateImage_SpFragment extends Fragment implements
     }
     @Override
     public void onRemoveImageRequest(int index) {
-        if (index < updateImageFromIndex){
-            updateImageFromIndex = updateImageFromIndex - 1;
-        }
         uploadImageDataModelList.remove( index );
+        if (index < updateImageFromIndex){
+            updateImageFromIndex--;
+            if (updateImageFromIndex == uploadImageDataModelList.size()){
+                uploadBtn.setVisibility( View.GONE );
+                finishButton.setVisibility( View.VISIBLE );
+            }
+        }
         imageAdaptor.notifyDataSetChanged();
     }
 
@@ -325,7 +331,6 @@ public class UpdateImage_SpFragment extends Fragment implements
                     Uri uri = data.getData();
                     startCropImageActivity(uri);
 //                    productImageLinkList.add( data.getData().toString() );
-
 //                    uploadImageDataModelList.add( new UploadImageDataModel( data.getData().toString(), "") );
 //                    isUploadImages = false;
 //                    imgAdaptor.notifyDataSetChanged();
@@ -346,10 +351,13 @@ public class UpdateImage_SpFragment extends Fragment implements
                     startCompressImage(bitmap);
                 } catch (IOException e) {
                     e.printStackTrace();
+                    showToast( "error : " + e.getMessage() );
                 }
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
                 showToast( error.getMessage() );
+            }else{
+                showToast( "something went Wrong..!" );
             }
         }
 
@@ -359,8 +367,9 @@ public class UpdateImage_SpFragment extends Fragment implements
                 .setGuidelines( CropImageView.Guidelines.ON)
 //                .setAspectRatio( 1,1 )
                 .setMultiTouchEnabled(true)
-                .start(getActivity());
+                .start( getContext(), this );
     }
+
     public Uri getImageUri( Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
@@ -410,7 +419,6 @@ public class UpdateImage_SpFragment extends Fragment implements
             imageAdaptor.notifyDataSetChanged();
             // Update Index...
             updateImageFromIndex = updateImageFromIndex + 1;
-            notifyAll();
             if (uriIndex == uploadImageDataModelList.size() - 1){
                 dismissDialog();
                 // Set Button Visibility

@@ -68,6 +68,7 @@ import ean.ecom.eanshopadmin.other.DialogsClass;
 import ean.ecom.eanshopadmin.other.StaticMethods;
 import ean.ecom.eanshopadmin.product.ProductModel;
 import ean.ecom.eanshopadmin.product.ProductSubModel;
+import ean.ecom.eanshopadmin.product.update.specification.AddSpecificationModel;
 
 import static ean.ecom.eanshopadmin.database.DBQuery.homeCatListModelList;
 import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
@@ -145,6 +146,8 @@ public class AddNewProductActivity extends AppCompatActivity {
     //           <!-- Section 4: Add Searching Tags...-->
     private LinearLayout secProDetailAndTagLayout; // sec_4_pro_details_and_tags_layout
     private EditText newProDetails; // new_pro_details
+
+    private EditText newProDescription; // new_pro_description
     // Search Tags...
     private TextView searchTagsText;
     private ImageView searchTagVisibleBtn;
@@ -171,6 +174,8 @@ public class AddNewProductActivity extends AppCompatActivity {
     private String tagString;
     private int verCode = 1;
 
+    private Switch offerSwitch;
+    private EditText offerText;
     //    private DocumentSnapshot documentSnapshot;
     private boolean isUpdateRequest = false;
 
@@ -211,6 +216,9 @@ public class AddNewProductActivity extends AppCompatActivity {
         newProQtyTypeText = findViewById( R.id.new_pro_qty_type );
         newProCodSwitch = findViewById( R.id.new_pro_cod_switch );
         newProVeganMark = findViewById( R.id.new_pro_veg_non_type );
+        // Offer Switch...
+        offerSwitch = findViewById(R.id.new_pro_offer_switch);
+        offerText = findViewById(R.id.new_pro_offer_edit_text);
 //            <!-- Section 3: Add Descriptions and Specifications...-->
 //        secAddDesSpecifyLayout = findViewById( R.id.sec_3_add_des_specific_layout );
 //        useTabLayoutSwitch = findViewById( R.id.new_pro_tab_layout_switch_sec_3 );
@@ -219,6 +227,8 @@ public class AddNewProductActivity extends AppCompatActivity {
 //           <!-- Section 4: Add Searching Tags...-->
         secProDetailAndTagLayout = findViewById( R.id.sec_4_pro_details_and_tags_layout );
         newProDetails = findViewById( R.id.new_pro_details );
+        newProDescription = findViewById( R.id.new_pro_description );
+
         searchTagEditText = findViewById( R.id.new_pro_searching_tags );
         searchTagAdd_Btn = findViewById( R.id.search_tag_add_text_button );
         searchTagRemove_Btn = findViewById( R.id.search_tag_remove_text_button );
@@ -380,6 +390,20 @@ public class AddNewProductActivity extends AppCompatActivity {
             }
         } );
 
+        // offer Switch
+        offerSwitch.setOnCheckedChangeListener( new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    offerText.setVisibility( View.VISIBLE );
+                    offerText.setText( "" );
+                }else{
+                    offerText.setVisibility( View.INVISIBLE );
+                    offerText.setText( "" );
+                }
+            }
+        } );
+
     }
 
     // ----------------*** OnCreate Method ***------------------------------------------------------
@@ -438,10 +462,16 @@ public class AddNewProductActivity extends AppCompatActivity {
                     DialogsClass.alertDialog( this, null, "Select Product Label..!" ).show();
                     return false;
                 }
-                if (!isNotEmptyEditText( newProDetails )){
-                    showToast( "Enter Missing Fields!" );
-                    return false;
-                }
+//                if (!isNotEmptyEditText( newProDetails )){
+//                    showToast( "Enter Missing Fields!" );
+//                    return false;
+//                }
+
+//                if (!isNotEmptyEditText( newProDescription )){
+//                    showToast( "Enter Missing Fields!" );
+//                    return false;
+//                }
+
             }
 
             if (qtyTypeText == null){
@@ -1075,14 +1105,14 @@ public class AddNewProductActivity extends AppCompatActivity {
         updateMap.put( "p_mrp_price_"+verNo, newProMrpRate.getText().toString().trim() );
         updateMap.put( "p_weight_"+verNo, newProVersionWeight.getText().toString() + "-" +qtyTypeText );
         updateMap.put( "p_stocks_"+verNo, newProStockAvailable.getText().toString() );
-        updateMap.put( "p_offer_"+verNo, "" );
+        updateMap.put( "p_offer_"+verNo, offerText.getText().toString() );
         updateMap.put( "p_off_per_"+verNo, newProPerDiscount.getText().toString() );
         updateMap.put( "p_off_rupee_"+verNo, newProRsDiscount.getText().toString() );
         updateMap.put( "p_extra_amount_"+verNo, "" );
 
         // Description and Specifications...
-        updateMap.put( "p_description_"+verNo, "" );
-        updateMap.put( "p_specification_"+verNo, "" );
+        updateMap.put( "p_description_"+verNo, newProDescription.getText().toString() );
+        updateMap.put( "p_specification_"+verNo, new ArrayList<AddSpecificationModel>()  );
         // Images...
         updateMap.put( "p_image_"+verNo, imageList );
         // Tags...
@@ -1112,7 +1142,6 @@ public class AddNewProductActivity extends AppCompatActivity {
         if (isUpdateRequest){
             // Ad Another Version...
             updateProductAnotherVersion(productID,  updateMap, productSubModel );
-
         }
         else{
             // To add in Local List... New Product...

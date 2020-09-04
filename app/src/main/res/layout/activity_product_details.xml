@@ -40,6 +40,7 @@
         android:layout_margin="2dp"
         android:elevation="4dp"
         android:translationZ="4dp"
+        android:background="@drawable/back_rectangle_4dp_layout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -75,9 +76,36 @@
 
                 <include layout="@layout/product_details_images_layout" />
 
-                <include layout="@layout/product_details_description_layout" />
+<!--                <include layout="@layout/product_details_description_layout" />-->
 
                 <include layout="@layout/product_details_only_layout" />
+
+                <LinearLayout
+                    android:id="@+id/specification_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:textSize="16sp"
+                        android:text="Specification"
+                        android:textAlignment="viewStart"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimary"
+                        android:background="@color/colorRecyclerBack"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:gravity="start" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/specification_recycler"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
 
 
             </LinearLayout>

@@ -6,7 +6,6 @@ package ean.ecom.eanshopadmin.product.update;
  * https://linktr.ee/wackycodes
  */
 
-import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,8 +24,8 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.List;
 
 import ean.ecom.eanshopadmin.R;
+import ean.ecom.eanshopadmin.product.update.specification.AddSpecificationModel;
 
-import static ean.ecom.eanshopadmin.product.update.specification.UpdateImage_SpFragment.uploadImageDataModelList;
 
 /**
  * Created by Shailendra (WackyCodes) on 04/09/2020 05:11
@@ -37,14 +36,12 @@ public class AddNewImageAdaptor  extends RecyclerView.Adapter<AddNewImageAdaptor
     private UpdateData.ImageListUpdateRequest updateImageRequest;
     private int updateImageFromIndex;
 
+    public static  List<String> uploadImageDataModelList;
+
     public AddNewImageAdaptor(UpdateData.ImageListUpdateRequest updateImageRequest, List <String> uploadImageDataModelList, int updateImageFromIndex) {
         this.updateImageRequest = updateImageRequest;
         this.updateImageFromIndex = updateImageFromIndex;
-    }
-
-    public AddNewImageAdaptor(UpdateData.ImageListUpdateRequest updateImageRequest, int updateImageFromIndex) {
-        this.updateImageRequest = updateImageRequest;
-        this.updateImageFromIndex = updateImageFromIndex;
+        AddNewImageAdaptor.uploadImageDataModelList = uploadImageDataModelList;
     }
 
     @NonNull
@@ -73,7 +70,6 @@ public class AddNewImageAdaptor  extends RecyclerView.Adapter<AddNewImageAdaptor
         }
     }
 
-
     public class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView itemImage;
         private TextView itemImageNo;
@@ -100,7 +96,7 @@ public class AddNewImageAdaptor  extends RecyclerView.Adapter<AddNewImageAdaptor
 
             if ( position < updateImageFromIndex){
                 // Use Link...
-                Glide.with( itemView.getContext() ).load( imgLink ).apply( new RequestOptions().placeholder( R.drawable.ic_phone_black_24dp ) ).into( itemImage );
+                Glide.with( itemView.getContext() ).load( imgLink ).apply( new RequestOptions().placeholder( R.drawable.ic_photo_black_24dp ) ).into( itemImage );
             }else {
                 // Use Uri...
                 Glide.with( itemView.getContext() ).load( Uri.parse( imgLink ) ).into( itemImage );
@@ -110,7 +106,11 @@ public class AddNewImageAdaptor  extends RecyclerView.Adapter<AddNewImageAdaptor
                 @Override
                 public void onClick(View v) {
                     // Remove Image...
+                    if (position < updateImageFromIndex){
+                        updateImageFromIndex--;
+                    }
                     updateImageRequest.onRemoveImageRequest( position );
+
                 }
             } );
         }
@@ -129,4 +129,5 @@ public class AddNewImageAdaptor  extends RecyclerView.Adapter<AddNewImageAdaptor
         }
 
     }
+
 }
