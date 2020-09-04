@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2020.
+  ~ WackyCodes : Tech Services.
+  ~ https://linktr.ee/wackycodes
+  -->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".product.update.UpdateProductFragment">
+
+    <LinearLayout
+        android:id="@+id/update_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:elevation="6dp"
+            android:orientation="horizontal"
+            android:background="@color/colorPrimary">
+
+            <ImageView
+                android:id="@+id/home_back_imageview"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="6dp"
+                android:layout_marginLeft="4dp"
+                app:srcCompat="@drawable/ic_arrow_back_black_24dp"
+                />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="4dp"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/update_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Update "
+                    android:textAlignment="center"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/pro_id_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Product ID : "
+                    android:textColor="@color/colorWhite"
+                    />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/pro_ver_no_text"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:layout_weight="1"
+                android:text="Ver : 1"
+                android:textColor="@color/colorWhite"
+                />
+
+        </LinearLayout>
+
+        <!--        Update Weight-->
+        <LinearLayout
+            android:id="@+id/update_weight_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <include layout="@layout/dialog_update_weight" />
+        </LinearLayout>
+        <!--        Updates Prices -->
+        <LinearLayout
+            android:id="@+id/update_price_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <include layout="@layout/dialog_update_price"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/update_button"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_margin="12dp"
+            android:background="@drawable/back_rectangle_4dp_layout"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="UPDATE"
+            android:textColor="@color/colorWhite"
+            android:textSize="14dp" />
+    </LinearLayout>
+
+</FrameLayout>

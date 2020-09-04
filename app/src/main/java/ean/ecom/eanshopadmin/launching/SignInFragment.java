@@ -38,6 +38,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import ean.ecom.eanshopadmin.MainActivity;
 import ean.ecom.eanshopadmin.R;
@@ -513,7 +514,7 @@ public class SignInFragment extends Fragment {
                                 dialog.dismiss();
                                 Intent intent = new Intent( context, MainActivity.class );
                                 context.startActivity( intent );
-                                getActivity().finish();
+                                authActivity.finish();
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                                     if (!authActivity.isDestroyed())
                                         authActivity.finish();
@@ -537,5 +538,7 @@ public class SignInFragment extends Fragment {
         fragmentTransaction.replace( parentFrameLayout.getId(),showFragment );
         fragmentTransaction.commit();
     }
+
+
 
 }

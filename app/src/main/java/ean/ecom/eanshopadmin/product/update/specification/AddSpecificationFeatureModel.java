@@ -1,4 +1,10 @@
-package ean.ecom.eanshopadmin.addnew.newproduct;
+package ean.ecom.eanshopadmin.product.update.specification;
+
+/*
+ * Copyright (c) 2020.
+ * WackyCodes : Tech Services.
+ * https://linktr.ee/wackycodes
+ */
 
 public class AddSpecificationFeatureModel {
     private String featureName;

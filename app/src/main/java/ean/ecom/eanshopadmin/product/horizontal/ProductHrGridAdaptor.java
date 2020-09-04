@@ -20,7 +20,7 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.List;
 
 import ean.ecom.eanshopadmin.R;
-import ean.ecom.eanshopadmin.addnew.newproduct.AddNewProductActivity;
+import ean.ecom.eanshopadmin.addnew.AddNewProductActivity;
 import ean.ecom.eanshopadmin.product.ProductModel;
 import ean.ecom.eanshopadmin.product.productview.ProductDetails;
 

@@ -1,4 +1,4 @@
-package ean.ecom.eanshopadmin.addnew.newproduct;
+package ean.ecom.eanshopadmin.product.update.specification;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import ean.ecom.eanshopadmin.R;
+
+/*
+ * Copyright (c) 2020.
+ * WackyCodes : Tech Services.
+ * https://linktr.ee/wackycodes
+ */
 
 public class AddSpecificationFeatureAdaptor  extends  RecyclerView.Adapter<AddSpecificationFeatureAdaptor.ViewHolder> {
 
@@ -71,7 +77,7 @@ public class AddSpecificationFeatureAdaptor  extends  RecyclerView.Adapter<AddSp
                 @Override
                 public void onClick(View v) {
                     specificationFeatureModelList.remove( pos );
-                    AddSpecificationActivity.specificationAdaptor.notifyDataSetChanged();
+                    UpdateImage_SpFragment.specificationAdaptor.notifyDataSetChanged();
                     // :  addSpecificationFeatureAdaptor.notifyDataSetChanged();
                 }
             } );

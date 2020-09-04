@@ -2,7 +2,7 @@ package ean.ecom.eanshopadmin.product;
 
 import java.util.List;
 
-import ean.ecom.eanshopadmin.addnew.newproduct.AddSpecificationModel;
+import ean.ecom.eanshopadmin.product.update.specification.AddSpecificationModel;
 
 public class ProductSubModel {
 

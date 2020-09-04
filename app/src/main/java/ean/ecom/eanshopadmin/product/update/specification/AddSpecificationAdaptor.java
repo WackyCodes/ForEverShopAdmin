@@ -1,4 +1,4 @@
-package ean.ecom.eanshopadmin.addnew.newproduct;
+package ean.ecom.eanshopadmin.product.update.specification;
 
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -19,13 +19,25 @@ import java.util.List;
 
 import ean.ecom.eanshopadmin.R;
 
+import static ean.ecom.eanshopadmin.product.update.specification.UpdateImage_SpFragment.specificationModelList;
+
+/*
+ * Copyright (c) 2020.
+ * WackyCodes : Tech Services.
+ * https://linktr.ee/wackycodes
+ */
+
 public class AddSpecificationAdaptor extends RecyclerView.Adapter<AddSpecificationAdaptor.ViewHolder>  {
 
-    private List <AddSpecificationModel> specificationModelList;
 //    specificationModelList
 
+    //...not used
     public AddSpecificationAdaptor(List <AddSpecificationModel> specificationModelList ) {
-        this.specificationModelList = specificationModelList;
+
+    }
+
+    // Call From Fragment...
+    public AddSpecificationAdaptor(){
     }
 
     @NonNull
@@ -180,7 +192,7 @@ public class AddSpecificationAdaptor extends RecyclerView.Adapter<AddSpecificati
                 @Override
                 public void onClick(View v) {
                     specificationModelList.add( new AddSpecificationModel( "", new ArrayList <AddSpecificationFeatureModel>()) );
-                    AddSpecificationActivity.specificationAdaptor.notifyDataSetChanged();
+                    UpdateImage_SpFragment.specificationAdaptor.notifyDataSetChanged();
                     sp_layout_top.setVisibility( View.VISIBLE );
                     sp_add_new_layout.setVisibility( View.GONE );
                 }
@@ -207,7 +219,7 @@ public class AddSpecificationAdaptor extends RecyclerView.Adapter<AddSpecificati
                     // Delete Layout...
                     if (specificationModelList.size() != 0){
                         specificationModelList.remove( position );
-                        AddSpecificationActivity.specificationAdaptor.notifyDataSetChanged();
+                        UpdateImage_SpFragment.specificationAdaptor.notifyDataSetChanged();
                     }else {
                         showToast( "Data not found..!" );
                     }

@@ -91,6 +91,7 @@
             app:layout_constraintStart_toStartOf="@+id/hr_product_cut_price"
             app:layout_constraintTop_toTopOf="@+id/hr_product_cut_price" />
         <TextView
+            android:visibility="gone"
             android:id="@+id/hr_off_percentage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

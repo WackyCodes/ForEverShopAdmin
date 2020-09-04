@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import android.app.AlertDialog;
@@ -24,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -41,15 +43,19 @@ import java.util.List;
 import java.util.Map;
 
 import ean.ecom.eanshopadmin.R;
-import ean.ecom.eanshopadmin.addnew.newproduct.AddNewProductActivity;
+import ean.ecom.eanshopadmin.addnew.AddNewProductActivity;
+import ean.ecom.eanshopadmin.product.update.specification.AddSpecificationModel;
 import ean.ecom.eanshopadmin.database.DBQuery;
 import ean.ecom.eanshopadmin.other.CheckInternetConnection;
 import ean.ecom.eanshopadmin.other.DialogsClass;
 import ean.ecom.eanshopadmin.product.ProductModel;
 import ean.ecom.eanshopadmin.product.ProductSubModel;
+import ean.ecom.eanshopadmin.product.ProductViewInterface;
 import ean.ecom.eanshopadmin.product.search.ProductSearchActivity;
 import ean.ecom.eanshopadmin.product.specifications.ProductDetailsSpecificationModel;
-import ean.ecom.eanshopadmin.product.update.UpdateProductActivity;
+import ean.ecom.eanshopadmin.product.update.UpdateDataRequest;
+import ean.ecom.eanshopadmin.product.update.UpdateProductFragment;
+import ean.ecom.eanshopadmin.product.update.specification.UpdateImage_SpFragment;
 
 import static ean.ecom.eanshopadmin.database.DBQuery.homeCatListModelList;
 import static ean.ecom.eanshopadmin.other.StaticValues.PRODUCT_LACTO_EGG;
@@ -57,19 +63,22 @@ import static ean.ecom.eanshopadmin.other.StaticValues.PRODUCT_LACTO_NON_VEG;
 import static ean.ecom.eanshopadmin.other.StaticValues.PRODUCT_LACTO_VEG;
 import static ean.ecom.eanshopadmin.other.StaticValues.PRODUCT_OTHERS;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_ID;
-import static ean.ecom.eanshopadmin.product.update.UpdateProductActivity.UPDATE_WEIGHTS;
+import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_IMAGES;
+import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_PRICE;
+import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_SPECIFICATION;
+import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_WEIGHT;
 
-public class ProductDetails extends AppCompatActivity {
+public class ProductDetails extends AppCompatActivity implements ProductViewInterface {
     public static AppCompatActivity productDetails;
 
     private ImageView pVegNonTypeImage; // product_veg_non_type_image
     private LinearLayout weightSpinnerLayout;// weight_spinner_layout
     private Spinner weightSpinner; //weight_spinner
+    private TextView weightText; // weight_text
 
     // --- Product Details Image Layout...
     private ViewPager productImagesViewPager;
     private TabLayout productImagesIndicator;
-    private ConstraintLayout productDescriptionLayout;
     private TextView productName;
     private TextView productPrice;
     private TextView productCutPrice;
@@ -84,6 +93,7 @@ public class ProductDetails extends AppCompatActivity {
 
     // --- Product Details Image Layout...
     private TextView productDetailsText;
+    private ConstraintLayout productDescriptionLayout;
 
     private ViewPager productDescriptionViewPager;
     private TabLayout productDescriptionIndicator;
@@ -93,6 +103,7 @@ public class ProductDetails extends AppCompatActivity {
 
     // Dialogs...
     private Dialog dialog;
+    private boolean isAllowBack = true;
 
     // Product Specification ...
     private List <ProductDetailsSpecificationModel> productDetailsSpecificationModelList = new ArrayList <>();
@@ -106,6 +117,11 @@ public class ProductDetails extends AppCompatActivity {
 
     public static ProductModel pProductModel = null;
     private Boolean isUpdateAllowed = true;
+
+    private FrameLayout updateFrameLayout;
+    private LinearLayout updateProductLayout;
+
+    private FragmentTransaction fragmentTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,6 +176,9 @@ public class ProductDetails extends AppCompatActivity {
         }catch (NullPointerException e){
         }
 
+        // Update Product..
+        updateProductLayout = findViewById( R.id.update_product_layout );
+        updateFrameLayout = findViewById( R.id.update_product_frame );
         // --- Product Details Image Layout...
         productName = findViewById( R.id.product_item_name );
         productPrice = findViewById( R.id.product_item_price );
@@ -177,6 +196,7 @@ public class ProductDetails extends AppCompatActivity {
         pVegNonTypeImage = findViewById( R.id.product_veg_non_type_image );
         weightSpinnerLayout = findViewById( R.id.weight_spinner_layout );
         weightSpinner = findViewById( R.id.weight_spinner );
+        weightText = findViewById( R.id.weight_text );
 
         //----------- Product Images ---
         productImagesViewPager = findViewById( R.id.product_images_viewpager );
@@ -225,6 +245,24 @@ public class ProductDetails extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        if (isAllowBack){
+            super.onBackPressed();
+        }else{
+
+        }
+
+    }
+
+    private void backPressedUpdate(boolean isEnable){
+        // Disable/Enable Back Pressed...
+        getSupportActionBar( ).setDisplayHomeAsUpEnabled( isEnable );
+        isAllowBack = isEnable;
+        isUpdateAllowed = isEnable;
+        invalidateOptionsMenu();
+    }
+
     private void setOtherDetails(){
         // set Product VegNon Veg...
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -248,8 +286,15 @@ public class ProductDetails extends AppCompatActivity {
             weightSpinnerLayout.setVisibility( View.GONE );
         }
         //  Set Weight Spinner...
-        if(productVariantList.size() > 0){
+        if(productVariantList.size() > 1){
             setWeightSpinner();
+            weightText.setVisibility( View.GONE );
+        }else{
+            weightText.setVisibility( View.VISIBLE );
+            weightSpinner.setVisibility( View.GONE );
+            if (productVariantList.size()>0){
+                weightText.setText( productVariantList.get( 0 ) );
+            }
         }
     }
 
@@ -289,7 +334,8 @@ public class ProductDetails extends AppCompatActivity {
             return true;
         }else
         if (id == R.id.menu_price_update){
-
+            updateDialog( UPDATE_PRICE );
+            return true;
         }else
         if (id == R.id.menu_cod_update){
             updateCOD();
@@ -304,25 +350,30 @@ public class ProductDetails extends AppCompatActivity {
             return true;
         }else
         if (id == R.id.menu_update_images){
-
+            updateDialog(UPDATE_IMAGES);
+            return true;
         }else
         if (id == R.id.menu_update_specifications){
-
+            updateDialog(UPDATE_SPECIFICATION);
+            return true;
         }else
         if (id == R.id.menu_remove_products){
-
+            return true;
         }
         else
         if (id == R.id.menu_update_weight){
-            Intent updateActivity = new Intent( this, UpdateProductActivity.class );
+            updateDialog( UPDATE_WEIGHT );
 
-            updateActivity.putExtra( "PRODUCT_ID", productID );
-            updateActivity.putExtra( "HOME_CAT_INDEX", crrShopCatIndex );
-            updateActivity.putExtra( "LAYOUT_INDEX", layoutIndex );
-            updateActivity.putExtra( "PRODUCT_INDEX", productIndex );
-            updateActivity.putExtra( "VARIANT_CODE", currentVariant );
-            updateActivity.putExtra( "UPDATE_CODE", UPDATE_WEIGHTS );
-            startActivity( updateActivity );
+//            Intent updateActivity = new Intent( this, UpdateProductActivity.class );
+//            updateActivity.putExtra( "PRODUCT_ID", productID );
+//            updateActivity.putExtra( "HOME_CAT_INDEX", crrShopCatIndex );
+//            updateActivity.putExtra( "LAYOUT_INDEX", layoutIndex );
+//            updateActivity.putExtra( "PRODUCT_INDEX", productIndex );
+//            updateActivity.putExtra( "VARIANT_CODE", currentVariant );
+//            updateActivity.putExtra( "UPDATE_CODE", UPDATE_WEIGHTS );
+
+//            startActivity( updateActivity );
+
             return true;
         }
 
@@ -456,7 +507,6 @@ public class ProductDetails extends AppCompatActivity {
             productStocksText.setTextColor( getResources().getColor( R.color.colorRed ) );
         }
 
-
         if (productDetailsImagesAdapter!=null){
             productDetailsImagesAdapter.notifyDataSetChanged();
         }else{
@@ -493,7 +543,6 @@ public class ProductDetails extends AppCompatActivity {
             public void onItemSelected(AdapterView <?> parent, View view, int position, long id) {
                 currentVariant = position;
                 setProductData( currentVariant );
-
             }
 
             @Override
@@ -503,8 +552,6 @@ public class ProductDetails extends AppCompatActivity {
             }
         } );
     }
-
-
     // ---------------------------------- Update Product -------------------------------------------
 
     // Update COD : ON / OFF
@@ -615,7 +662,7 @@ public class ProductDetails extends AppCompatActivity {
                     String updateData =  getText.getText().toString();
                     switch (updateCode){
                         case UPDATE_STOCKS:
-                            updateMap.put( "p_stocks_"+variant, updateData );
+                            updateMap.put( "p_stocks_"+variant, String.valueOf( updateData ) );
                             productStocksText.setText( "In stocks ("+ updateData + ")");
                             productStocksText.setTextColor( getResources().getColor( R.color.colorPrimary ) );
                             // Stocks Update in local List...
@@ -663,7 +710,79 @@ public class ProductDetails extends AppCompatActivity {
     private final int UPDATE_NAME = 12;
     private final int UPDATE_DETAILS = 13;
 
+    // update Dialog...
+    private void updateDialog(int requestType){
+        updateProductLayout.setVisibility( View.VISIBLE );
+        // Disable Back Pressed...
+        backPressedUpdate(false);
+        fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        if (requestType == UPDATE_IMAGES){
+            updateFrameLayout.removeAllViews();
+            fragmentTransaction.replace( updateFrameLayout.getId(),
+                    new UpdateImage_SpFragment( this, currentVariant, productID, UPDATE_IMAGES,
+                            pProductModel.getProductSubModelList().get( currentVariant ).getpImage(), null) );
 
+        }else if(requestType == UPDATE_SPECIFICATION){
+            updateFrameLayout.removeAllViews();
+            if (pProductModel.getProductSubModelList().get( currentVariant ).getpSpecificationList() == null){
+                pProductModel.getProductSubModelList().get( currentVariant ).setpSpecificationList( new ArrayList <AddSpecificationModel>() );
+            }
+            fragmentTransaction.replace( updateFrameLayout.getId(),
+                    new UpdateImage_SpFragment( this, currentVariant, productID, UPDATE_SPECIFICATION,
+                            null,
+                            pProductModel.getProductSubModelList().get( currentVariant ).getpSpecificationList() ) );
+        }else{
+            updateFrameLayout.removeAllViews();
+            fragmentTransaction.replace( updateFrameLayout.getId(),
+                    new UpdateProductFragment( this, new UpdateDataRequest(), requestType, currentVariant, productID ) );
+        }
 
+//        fragmentTransaction.notify();
+        fragmentTransaction.commit(); //TODO : Fix this Error
+
+    }
+
+    private void closeUpdateProductDialog(){
+        updateProductLayout.setVisibility( View.GONE );
+        backPressedUpdate(true);
+    }
+
+    @Override
+    public void onUpdateCompleted(int requestType, boolean isSuccess) {
+
+        if (isSuccess){
+            switch (requestType){
+                // TODO : In Local List...
+                case UPDATE_WEIGHT:
+                case UPDATE_PRICE:
+                    break;
+                case UPDATE_IMAGES:
+                    ProductDetails.pProductModel.getProductSubModelList().get( currentVariant ).setpImage( UpdateImage_SpFragment.uploadImageDataModelList );
+                    UpdateImage_SpFragment.uploadImageDataModelList = null;// To Release memory..
+                    break;
+                case UPDATE_SPECIFICATION:
+                    ProductDetails.pProductModel.getProductSubModelList().get( currentVariant ).setpSpecificationList( UpdateImage_SpFragment.specificationModelList );
+                    UpdateImage_SpFragment.specificationModelList = null; // To Release memory..
+                    break;
+                default:
+                    break;
+            }
+            // Reset Data...
+            setProductData(currentVariant);
+
+            // update Weight...
+            if (requestType == UPDATE_IMAGES){
+                setOtherDetails();
+            }
+
+        }
+        // Update in local...
+        closeUpdateProductDialog();
+    }
+
+    @Override
+    public void showToastMessage(String msg) {
+        showToast( msg );
+    }
 
 }

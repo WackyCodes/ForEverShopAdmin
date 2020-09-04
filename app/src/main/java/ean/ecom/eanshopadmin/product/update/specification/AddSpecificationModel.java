@@ -1,6 +1,12 @@
-package ean.ecom.eanshopadmin.addnew.newproduct;
+package ean.ecom.eanshopadmin.product.update.specification;
 
 import java.util.List;
+
+/*
+ * Copyright (c) 2020.
+ * WackyCodes : Tech Services.
+ * https://linktr.ee/wackycodes
+ */
 
 public class AddSpecificationModel {
     private String spHeading;

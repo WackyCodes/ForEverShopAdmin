@@ -1,4 +1,4 @@
-package ean.ecom.eanshopadmin.addnew.newproduct;
+package ean.ecom.eanshopadmin.addnew;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -78,6 +78,12 @@ import static ean.ecom.eanshopadmin.other.StaticValues.PRODUCT_LACTO_VEG;
 import static ean.ecom.eanshopadmin.other.StaticValues.PRODUCT_OTHERS;
 import static ean.ecom.eanshopadmin.other.StaticValues.READ_EXTERNAL_MEMORY_CODE;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_ID;
+
+/*
+ * Copyright (c) 2020.
+ * WackyCodes : Tech Services.
+ * https://linktr.ee/wackycodes
+ */
 
 public class AddNewProductActivity extends AppCompatActivity {
 
@@ -175,7 +181,7 @@ public class AddNewProductActivity extends AppCompatActivity {
         setContentView( R.layout.activity_add_new_product );
 
         dialog = DialogsClass.getDialog( this );
-
+//        productDetails.onSpecificationUpdate();
 
 //        uploadProductID = getIntent().getStringExtra( "PRODUCT_ID" );
 //        productCat = getIntent().getStringExtra( "PRODUCT_CAT" );
@@ -610,7 +616,11 @@ public class AddNewProductActivity extends AppCompatActivity {
                     offRsEdTxt.setText( String.valueOf( offRsValue ) );
 //                    offPerValue = (offRsValue * 100)/mrpValue;
                     offPer = (double)((offRsValue/mrpValue) * 100);
-                    offPerEdTxt.setText( String.valueOf( offPer ).substring( 0, 4 ) );
+                    if (String.valueOf( offPer ).length()>=4){
+                        offPerEdTxt.setText( String.valueOf( offPer ).substring( 0, 4 ) );
+                    }else{
+                        offPerEdTxt.setText( String.valueOf( offPer ) );
+                    }
                 }
                 break;
             case MRP_CHANGED:
@@ -620,7 +630,11 @@ public class AddNewProductActivity extends AppCompatActivity {
                     offRsEdTxt.setText( String.valueOf( offRsValue ) );
 //                    offPerValue = (offRsValue * 100)/mrpValue;
                     offPer = (double)((offRsValue/mrpValue) * 100);
-                    offPerEdTxt.setText( String.valueOf( offPer ).substring( 0, 4 ) );
+                    if (String.valueOf( offPer ).length()>=4){
+                        offPerEdTxt.setText( String.valueOf( offPer ).substring( 0, 4 ) );
+                    }else{
+                        offPerEdTxt.setText( String.valueOf( offPer ) );
+                    }
                 }
                 break;
             default:

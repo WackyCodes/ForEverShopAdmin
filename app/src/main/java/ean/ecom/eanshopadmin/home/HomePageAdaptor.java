@@ -47,7 +47,7 @@ import java.util.Map;
 
 import ean.ecom.eanshopadmin.R;
 import ean.ecom.eanshopadmin.addnew.AddNewImageActivity;
-import ean.ecom.eanshopadmin.addnew.newproduct.AddNewProductActivity;
+import ean.ecom.eanshopadmin.addnew.AddNewProductActivity;
 import ean.ecom.eanshopadmin.database.DBQuery;
 import ean.ecom.eanshopadmin.home.bannerslider.BannerSliderAdaptor;
 import ean.ecom.eanshopadmin.home.viewall.ViewAllActivity;
@@ -945,7 +945,7 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
             visibleBtn.setVisibility( View.INVISIBLE );
         }
 
-        private void setData(String productLayId, final String layoutTitle, final List<String> productIDList, List<ProductModel> productModelList, final int index){
+        private void setData(String productLayId, final String layoutTitle, final List<String> productIDList, final List<ProductModel> productModelList, final int index){
             this.layoutTitle.setText( layoutTitle );
             indexNo.setText( "position : "+ (1+index) );
             // -------------------------------------------------------------------------------------
@@ -965,8 +965,8 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
             }
 
             // Load Product...
-            if (productModelList.size() == 0){
-                for (int i = 0; i < gridRange; i++ ){
+            if (productModelList.size() < gridRange){
+                for (int i = productModelList.size(); i < gridRange; i++ ){
 //                    setProductData(i, index, productIDList.get( i ) );
                     loadGridProductData( index,  productIDList.get( i ) );
                 }
@@ -1016,13 +1016,25 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
                         @Override
                         public void onClick(View v) {
                             if ( v == gridLayout.getChildAt( 0 ).findViewById( R.id.product_view_const_layout )){
-                            addOnProductClick(  productIDList.get( 0 ), index, 0 );
+                                if (productModelList.size()>0){
+                                    addOnProductClick(  productModelList.get( 0 ).getpProductID(), index, 0 );
+                                }else{
+                                    addOnProductClick(  productIDList.get( 0 ), index, 0 );
+                                }
                             } else
                             if ( v == gridLayout.getChildAt( 1 ).findViewById( R.id.product_view_const_layout )){
-                                addOnProductClick(  productIDList.get( 1 ), index, 1 );
+                                if (productModelList.size()>1){
+                                    addOnProductClick(  productModelList.get( 1 ).getpProductID(), index, 1 );
+                                }else{
+                                    addOnProductClick(  productIDList.get( 1 ), index, 1 );
+                                }
                             } else
                             if ( v == gridLayout.getChildAt( 2 ).findViewById( R.id.product_view_const_layout )){
-                                addOnProductClick(  productIDList.get( 2 ), index, 2 );
+                                if (productModelList.size()>2){
+                                    addOnProductClick(  productModelList.get( 2 ).getpProductID(), index, 2 );
+                                }else{
+                                    addOnProductClick(  productIDList.get( 2 ), index, 2 );
+                                }
                             }
                         }
                     } );
@@ -1077,7 +1089,6 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
                     }else{
                         showToast( "You have more than 1 banner in this layout!", itemView.getContext() );
                     }
-
                 }
             } );
 
@@ -1202,17 +1213,10 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
                                 productSubModelList
                         );
 
-                        homeCatListModelList.get( catIndex ).getHomeListModelList().get( index ).getProductModelList().add( productModel );
+                        if ( homeCatListModelList.get( catIndex ).getHomeListModelList().size()>0)
+                            homeCatListModelList.get( catIndex ).getHomeListModelList().get( index ).getProductModelList().add( productModel );
 
-                        if (homePageList.get( index ).getLayoutType() == HORIZONTAL_PRODUCTS_LAYOUT_CONTAINER){
-                            // Horizontal Adaptor...
-
-                        }else if(homePageList.get( index ).getLayoutType() == GRID_PRODUCTS_LAYOUT_CONTAINER){
-                            // Grid Adaptor...
-                            HomeFragment.homePageAdaptor.notifyDataSetChanged();
-
-                        }
-
+                        HomeFragment.homePageAdaptor.notifyDataSetChanged();
 
                     }
                 }

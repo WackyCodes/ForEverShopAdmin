@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import ean.ecom.eanshopadmin.R;
-import ean.ecom.eanshopadmin.addnew.newproduct.AddSpecificationFeatureModel;
-import ean.ecom.eanshopadmin.addnew.newproduct.AddSpecificationModel;
+import ean.ecom.eanshopadmin.product.update.specification.AddSpecificationFeatureModel;
+import ean.ecom.eanshopadmin.product.update.specification.AddSpecificationModel;
 
 public class ProductSpecificationAdaptor extends RecyclerView.Adapter<ProductSpecificationAdaptor.ViewHolder>   {
 
