@@ -967,8 +967,9 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
             // Load Product...
             if (productModelList.size() < gridRange){
                 for (int i = productModelList.size(); i < gridRange; i++ ){
-//                    setProductData(i, index, productIDList.get( i ) );
-                    loadGridProductData( index,  productIDList.get( i ) );
+//                    loadGridProductData( index,  productIDList.get( i ) );
+                    Thread newThread = new Thread(new LoadProductData( index, i, productIDList.get( i ) ));
+                    newThread.start();
                 }
             }
 
@@ -1018,22 +1019,16 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
                             if ( v == gridLayout.getChildAt( 0 ).findViewById( R.id.product_view_const_layout )){
                                 if (productModelList.size()>0){
                                     addOnProductClick(  productModelList.get( 0 ).getpProductID(), index, 0 );
-                                }else{
-                                    addOnProductClick(  productIDList.get( 0 ), index, 0 );
                                 }
                             } else
                             if ( v == gridLayout.getChildAt( 1 ).findViewById( R.id.product_view_const_layout )){
                                 if (productModelList.size()>1){
                                     addOnProductClick(  productModelList.get( 1 ).getpProductID(), index, 1 );
-                                }else{
-                                    addOnProductClick(  productIDList.get( 1 ), index, 1 );
                                 }
                             } else
                             if ( v == gridLayout.getChildAt( 2 ).findViewById( R.id.product_view_const_layout )){
                                 if (productModelList.size()>2){
                                     addOnProductClick(  productModelList.get( 2 ).getpProductID(), index, 2 );
-                                }else{
-                                    addOnProductClick(  productIDList.get( 2 ), index, 2 );
                                 }
                             }
                         }
@@ -1058,18 +1053,6 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
                     @Override
                     public void onClick(View v) {
                         addNewItem( index );
-                      /**  if ( v == gridLayout.getChildAt( 0 ).findViewById( R.id.add_new_item_Linearlayout )){
-                            addNewItem( index );
-                        } else
-                        if ( v == gridLayout.getChildAt( 1 ).findViewById( R.id.add_new_item_Linearlayout )){
-                            addNewItem( index );
-                        } else
-                        if ( v == gridLayout.getChildAt( 2 ).findViewById( R.id.add_new_item_Linearlayout )){
-                            addNewItem( index );
-                        } else
-                        if ( v == gridLayout.getChildAt( 3 ).findViewById( R.id.add_new_item_Linearlayout )){
-                            addNewItem( index );
-                        } */
                     }
                 } );
 
@@ -1157,78 +1140,90 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
             Intent productDetailIntent = new Intent( itemView.getContext(), ProductDetails.class );
             productDetailIntent.putExtra( "PRODUCT_ID", productId );
             productDetailIntent.putExtra( "HOME_CAT_INDEX", catIndex );
-            productDetailIntent.putExtra( "LAYOUT_INDEX", layoutIndex );
+            productDetailIntent.putExtra( "LAYOUT_INDEX", layoutIndex ); // homePageList.get( position )
             productDetailIntent.putExtra( "PRODUCT_INDEX", proIndex );
             itemView.getContext().startActivity( productDetailIntent );
         }
 
     }
     //============  Product Grid View Holder ============
-
     // Load Product Data...
-    private void loadGridProductData(final int index, final String productId ){
-        DBQuery.firebaseFirestore.collection( "SHOPS" ).document( SHOP_ID )
-                .collection( "PRODUCTS" ).document( productId )
-                .get().addOnCompleteListener( new OnCompleteListener <DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task <DocumentSnapshot> task) {
-                if (task.isSuccessful()){
-                    // access the banners from database...
-                    DocumentSnapshot documentSnapshot = task.getResult();
+    private class LoadProductData implements Runnable{
+        private int index, childIndex;
+        private String productId;
 
-                    if ( documentSnapshot.get( "p_no_of_variants" ) !=null ){
+        public LoadProductData(int index, int childIndex, String productId) {
+            this.index = index;
+            this.childIndex = childIndex;
+            this.productId = productId;
+        }
+
+        @Override
+        public void run() {
+            DBQuery.firebaseFirestore.collection( "SHOPS" ).document( SHOP_ID )
+                    .collection( "PRODUCTS" ).document( productId )
+                    .get().addOnCompleteListener( new OnCompleteListener <DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task <DocumentSnapshot> task) {
+                    if (task.isSuccessful()){
+                        // access the banners from database...
+                        DocumentSnapshot documentSnapshot = task.getResult();
+
+                        if ( documentSnapshot.get( "p_no_of_variants" ) !=null ){
 //                            String[] pImage;
-                        int p_no_of_variants = Integer.valueOf( String.valueOf( (long) documentSnapshot.get( "p_no_of_variants" ) ) );
-                        List<ProductSubModel> productSubModelList = new ArrayList <>();
-                        for (int tempI = 1; tempI <= p_no_of_variants; tempI++){
+                            int p_no_of_variants = Integer.valueOf( String.valueOf( (long) documentSnapshot.get( "p_no_of_variants" ) ) );
+                            List<ProductSubModel> productSubModelList = new ArrayList <>();
+                            for (int tempI = 1; tempI <= p_no_of_variants; tempI++){
 
-                            // We can use Array...
-                            ArrayList<String> Images = (ArrayList <String>) documentSnapshot.get( "p_image_" + tempI );
-                            // add Data...
-                            productSubModelList.add( new ProductSubModel(
-                                    task.getResult().get( "p_name_"+tempI).toString(),
-                                    Images,
-                                    task.getResult().get( "p_selling_price_"+tempI).toString(),
-                                    task.getResult().get( "p_mrp_price_"+tempI).toString(),
-                                    task.getResult().get( "p_weight_"+tempI).toString(),
-                                    task.getResult().get( "p_stocks_"+tempI).toString(),
-                                    task.getResult().get( "p_offer_"+tempI).toString()
-                            ) );
-                        }
-                        String p_id = task.getResult().get( "p_id").toString();
-                        String p_main_name = task.getResult().get( "p_main_name" ).toString();
+                                // We can use Array...
+                                ArrayList<String> Images = (ArrayList <String>) documentSnapshot.get( "p_image_" + tempI );
+                                // add Data...
+                                productSubModelList.add( new ProductSubModel(
+                                        task.getResult().get( "p_name_"+tempI).toString(),
+                                        Images,
+                                        task.getResult().get( "p_selling_price_"+tempI).toString(),
+                                        task.getResult().get( "p_mrp_price_"+tempI).toString(),
+                                        task.getResult().get( "p_weight_"+tempI).toString(),
+                                        task.getResult().get( "p_stocks_"+tempI).toString(),
+                                        task.getResult().get( "p_offer_"+tempI).toString()
+                                ) );
+                            }
+                            String p_id = task.getResult().get( "p_id").toString();
+                            String p_main_name = task.getResult().get( "p_main_name" ).toString();
 //                        String p_main_image = task.getResult().get( "p_main_image" ).toString();
-                        String p_weight_type = task.getResult().get( "p_weight_type" ).toString();
-                        int p_veg_non_type = Integer.valueOf( task.getResult().get( "p_veg_non_type" ).toString() );
-                        Boolean p_is_cod = (Boolean) task.getResult().get( "p_is_cod" );
+                            String p_weight_type = task.getResult().get( "p_weight_type" ).toString();
+                            int p_veg_non_type = Integer.valueOf( task.getResult().get( "p_veg_non_type" ).toString() );
+                            Boolean p_is_cod = (Boolean) task.getResult().get( "p_is_cod" );
 
-                        ProductModel productModel =  new ProductModel(
-                                p_id,
-                                p_main_name,
-                                " ",
-                                p_is_cod,
-                                String.valueOf(p_no_of_variants),
-                                p_weight_type,
-                                p_veg_non_type,
-                                productSubModelList
-                        );
+                            ProductModel productModel =  new ProductModel(
+                                    p_id,
+                                    p_main_name,
+                                    " ",
+                                    p_is_cod,
+                                    String.valueOf(p_no_of_variants),
+                                    p_weight_type,
+                                    p_veg_non_type,
+                                    productSubModelList
+                            );
 
-                        if ( homeCatListModelList.get( catIndex ).getHomeListModelList().size()>0)
-                            homeCatListModelList.get( catIndex ).getHomeListModelList().get( index ).getProductModelList().add( productModel );
+                            if ( homeCatListModelList.get( catIndex ).getHomeListModelList().size()>0)
+                                homeCatListModelList.get( catIndex ).getHomeListModelList().get( index ).getProductModelList().add( productModel );
 
-                        HomeFragment.homePageAdaptor.notifyDataSetChanged();
+                            HomeFragment.homePageAdaptor.notifyDataSetChanged();
 
+                        }
                     }
-                }
-                else{
-                    String error = task.getException().getMessage();
+                    else{
+                        String error = task.getException().getMessage();
 //                                    showToast(error);
 //                                    dialog.dismiss();
+                    }
                 }
-            }
-        } );
+            } );
 
+        }
     }
+
 
     private void setIndexUpDownVisibility( int index, ImageView indexUpBtn,  ImageView indexDownBtn){
         if (homePageList.size()>1){
@@ -1341,6 +1336,5 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
     }
 
     // Add Category...
-
 
 }

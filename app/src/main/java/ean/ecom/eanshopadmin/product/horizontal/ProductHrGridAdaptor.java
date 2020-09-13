@@ -280,7 +280,6 @@ public class ProductHrGridAdaptor extends RecyclerView.Adapter <RecyclerView.Vie
             itemView.setOnClickListener( new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
                     Intent productDetailIntent = new Intent( itemView.getContext(), ProductDetails.class );
                     productDetailIntent.putExtra( "PRODUCT_ID", productID );
                     productDetailIntent.putExtra( "PRODUCT_INDEX", index );

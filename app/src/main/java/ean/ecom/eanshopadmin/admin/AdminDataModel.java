@@ -1,5 +1,7 @@
 package ean.ecom.eanshopadmin.admin;
 
+import java.util.List;
+
 public class AdminDataModel {
 
     private int adminCode;
@@ -35,7 +37,7 @@ public class AdminDataModel {
     private String shopCityCode;
     private String shopLandMark;
 
-    private String[] shopDaysSchedule;
+    private List<Boolean> shopDaysSchedule;
 
     // Contacts...
     private String shopOwnerName;
@@ -276,11 +278,11 @@ public class AdminDataModel {
         this.shopLandMark = shopLandMark;
     }
 
-    public String[] getShopDaysSchedule() {
+    public List <Boolean> getShopDaysSchedule() {
         return shopDaysSchedule;
     }
 
-    public void setShopDaysSchedule(String[] shopDaysSchedule) {
+    public void setShopDaysSchedule(List <Boolean>  shopDaysSchedule) {
         this.shopDaysSchedule = shopDaysSchedule;
     }
 

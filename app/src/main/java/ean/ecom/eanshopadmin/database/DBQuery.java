@@ -49,6 +49,7 @@ import static ean.ecom.eanshopadmin.other.StaticMethods.showToast;
 import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.GRID_PRODUCTS_LAYOUT_CONTAINER;
 import static ean.ecom.eanshopadmin.other.StaticValues.HORIZONTAL_PRODUCTS_LAYOUT_CONTAINER;
+import static ean.ecom.eanshopadmin.other.StaticValues.NOT_VERIFIED;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_PREPARING;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_READY_TO_DELIVER;
 import static ean.ecom.eanshopadmin.other.StaticValues.REQUEST_TO_NOTIFY_NEW_ORDER;
@@ -151,6 +152,7 @@ public class DBQuery {
                     Boolean is_open = documentSnapshot.getBoolean( "is_open" );
                     String shop_address = documentSnapshot.get( "shop_address" ).toString();
                     String shop_area_code = documentSnapshot.get( "shop_area_code" ).toString();
+                    int verify_type = NOT_VERIFIED;
 //                    String shop_area_name = documentSnapshot.get( "shop_area_name" ).toString();
 //                    String shop_cat_main = documentSnapshot.get( "shop_cat_main" ).toString();
                     String shop_category_name = documentSnapshot.get( "shop_category_name" ).toString();
@@ -164,6 +166,16 @@ public class DBQuery {
                     String shop_landmark = documentSnapshot.get( "shop_landmark" ).toString();
                     String shop_logo = documentSnapshot.get( "shop_logo" ).toString();
                     String shop_name = documentSnapshot.get( "shop_name" ).toString();
+                    String shop_tag_line = "";
+                    if (documentSnapshot.get( "shop_tag_line" )!=null){
+                        shop_tag_line = documentSnapshot.get( "shop_tag_line" ).toString(); //shop_tag_line
+                    }
+                    String shop_help_line;
+                    if (documentSnapshot.get( "shop_help_line" )!=null){
+                        shop_help_line = documentSnapshot.get( "shop_help_line" ).toString(); //
+                    }else{
+                        shop_help_line = documentSnapshot.get( "shop_owner_mobile" ).toString();
+                    }
 
                     String shop_owner_address = documentSnapshot.get( "shop_owner_address" ).toString();
                     String shop_owner_name = documentSnapshot.get( "shop_owner_name" ).toString();
@@ -183,12 +195,20 @@ public class DBQuery {
                         shop_close_time = "PM";
                     }
 
+                    // shop_days_schedule
+                    List<Boolean> shop_days_schedule = new ArrayList <>();
+                    if (documentSnapshot.get("shop_days_schedule")!=null){
+                        shop_days_schedule = (List <Boolean>) documentSnapshot.get("shop_days_schedule");
+                    }
+
                     // tags...
 
                     ADMIN_DATA_MODEL.setShopID( shopID );
                     ADMIN_DATA_MODEL.setShopName( shop_name );
+                    ADMIN_DATA_MODEL.setVerifyCode( verify_type );
                     ADMIN_DATA_MODEL.setServiceAvailable( available_service );
                     ADMIN_DATA_MODEL.setOpen( is_open );
+                    ADMIN_DATA_MODEL.setShopHelpLine( shop_help_line );
                     ADMIN_DATA_MODEL.setShopAddress( shop_address );
                     ADMIN_DATA_MODEL.setShopAreaCode( shop_area_code );
                     ADMIN_DATA_MODEL.setShopCategory( shop_category_name );
@@ -197,6 +217,8 @@ public class DBQuery {
 //                    shopHomeActivityModel.setShopCloseTime( shop_close_msg );
                     ADMIN_DATA_MODEL.setShopLandMark( shop_landmark );
                     ADMIN_DATA_MODEL.setShopLogo( shop_logo );
+                    ADMIN_DATA_MODEL.setShopTagLine( shop_tag_line );
+                    ADMIN_DATA_MODEL.setShopDaysSchedule( shop_days_schedule );
 
                     ADMIN_DATA_MODEL.setShopOwnerAddress( shop_owner_address );
                     ADMIN_DATA_MODEL.setShopOwnerName( shop_owner_name );

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2020.
+  ~ WackyCodes : Tech Services.
+  ~ https://linktr.ee/wackycodes
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/menu_edit_product_options"
+        android:enabled="true"
+        android:menuCategory="container"
+        android:visible="true">
+
+        <item
+            android:id="@+id/menu_update_shop_logo"
+            android:iconTint="@color/colorPrimary"
+            android:orderInCategory="100"
+            android:title="Update Logo" />
+
+        <item
+            android:id="@+id/menu_update_shop_image"
+            android:iconTint="@color/colorPrimary"
+            android:orderInCategory="100"
+            android:title="Update Image" />
+
+        <item
+            android:id="@+id/menu_update_shop_status"
+            android:iconTint="@color/colorPrimary"
+            android:orderInCategory="100"
+            android:title="Update Status" />
+        <item
+            android:id="@+id/menu_update_shop_veg"
+            android:iconTint="@color/colorPrimary"
+            android:orderInCategory="100"
+            android:title="Veg/NON-Veg" />
+        <item
+            android:id="@+id/menu_update_shop_address"
+            android:iconTint="@color/colorPrimary"
+            android:orderInCategory="100"
+            android:title="Update Address" />
+        <item
+            android:id="@+id/menu_update_shop_helpline"
+            android:iconTint="@color/colorPrimary"
+            android:orderInCategory="100"
+            android:title="Update Helpline" />
+        <item
+            android:id="@+id/menu_update_shop_name"
+            android:iconTint="@color/colorPrimary"
+            android:orderInCategory="100"
+            android:title="Update Name" />
+        <item
+            android:id="@+id/menu_update_shop_time"
+            android:iconTint="@color/colorPrimary"
+            android:orderInCategory="100"
+            android:title="Close/Open Time" />
+        <item
+            android:id="@+id/menu_update_shop_schedule"
+            android:iconTint="@color/colorPrimary"
+            android:orderInCategory="100"
+            android:title="Update Schedule" />
+
+    </group>
+
+
+</menu>

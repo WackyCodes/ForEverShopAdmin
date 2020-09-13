@@ -27,9 +27,9 @@
 
         <TextView
             android:id="@+id/feature_name"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:textAlignment="textStart"
             android:text="Feature Name"
             android:textStyle="bold"
@@ -37,11 +37,11 @@
 
         <TextView
             android:id="@+id/feature_value"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:textAlignment="viewStart"
-            android:text="fEATURE VALUE"
+            android:text="FEATURE VALUE"
             android:gravity="start" />
 
     </LinearLayout>

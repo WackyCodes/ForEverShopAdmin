@@ -191,6 +191,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onResume() {
         super.onResume();
         setDialogVisibility( false );
+        if (homePageAdaptor!=null){
+            homePageAdaptor.notifyDataSetChanged();
+        }
     }
 
     private void setDialogVisibility(boolean isVisible){

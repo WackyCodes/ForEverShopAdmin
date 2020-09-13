@@ -251,7 +251,7 @@ public class AddNewProductActivity extends AppCompatActivity {
             verCode = homeCatListModelList.get( catIndex ).getHomeListModelList().get( layIndex )
                     .getProductModelList().get( productIndex ).getProductSubModelList().size() + 1;
             uploadProductID = homeCatListModelList.get( catIndex ).getHomeListModelList().get( layIndex ).getProductModelList().get( productIndex ).getpProductID();
-
+//            homeCatListModelList.get( crrShopCatIndex ).getHomeListModelList().get( layoutIndex ).getProductModelList().get( productIndex );
             getTagsFromDatabase();
             newProductIDText.setText( "Product ID : " +  uploadProductID );
         }

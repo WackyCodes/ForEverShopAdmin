@@ -42,6 +42,15 @@
         <item>Other/None</item>
     </string-array>
 
+    <string-array name="shop_veg_non_list">
+        <item>Select-Type</item>
+        <item>Pure Veg Shop</item>
+        <item>NonVeg Shop</item>
+        <item>Veg + NonVeg</item>
+        <item>Egg Shop</item>
+        <item>Other/None</item>
+    </string-array>
+
     <string-array name="qty_auto_text_list">
         <item>Select Qty Type</item>
         <item>Piece</item>

@@ -16,6 +16,8 @@ public class StaticValues {
     public static final AdminDataModel ADMIN_DATA_MODEL = new AdminDataModel();
 
     public static String SHOP_ID =  ADMIN_DATA_MODEL.getShopName();
+    public static final int VERIFIED = 1;
+    public static final int NOT_VERIFIED = 0;
 
     // ClipBoard..
     public static ClipboardManager clipboardManager;
@@ -76,6 +78,7 @@ public class StaticValues {
     public static final int SHOP_TYPE_NON_VEG = 2;
     public static final int SHOP_TYPE_VEG_NON = 3;
     public static final int SHOP_TYPE_NO_SHOW = 4;
+    public static final int SHOP_TYPE_EGG = 5;
 
     // Veg/NonVeg Label...
     public static final int PRODUCT_LACTO_VEG = 1;
@@ -121,6 +124,17 @@ public class StaticValues {
     public static final int UPDATE_IMAGES = 16;
     public static final int UPDATE_SPECIFICATION = 17;
 
+    // Update Shop Information...  used for local...
+    public static final int UPDATE_SHOP_LOGO = 1;
+    public static final int UPDATE_SHOP_IMAGE = 2;
+    public static final int UPDATE_SHOP_TAG_LINE = 3;
+    public static final int UPDATE_SHOP_ADDRESS = 4;
+    public static final int UPDATE_SHOP_HELPLINE = 5;
+    public static final int UPDATE_SHOP_NAME = 6;
+    public static final int UPDATE_SHOP_DAY_SCHEDULE = 7;
+    public static final int UPDATE_SHOP_TIME_SCHEDULE = 8;
+    public static final int UPDATE_SHOP_VEG_NON_CODE = 9;
+    public static final int UPDATE_SHOP_OPEN_CLOSE = 10;
 
 
 }

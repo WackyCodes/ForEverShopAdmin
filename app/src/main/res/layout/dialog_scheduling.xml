@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2020.
+  ~ WackyCodes : Tech Services.
+  ~ https://linktr.ee/wackycodes
+  -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/colorLightGray"
+    android:padding="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Days"
+            android:padding="8dp"
+            android:textColor="@color/colorPrimary"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAlignment="textEnd"
+            android:text="Close/Open"
+            android:padding="8dp"
+            android:textColor="@color/colorPrimary"
+            android:gravity="end" />
+
+    </LinearLayout>
+
+    <Switch
+        android:id="@+id/sunday_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/back_rectangle_4dp_layout"
+        android:backgroundTint="@color/colorWhite"
+        android:padding="8dp"
+        android:layout_margin="8dp"
+        android:text="SUNDAY"
+        android:checked="true"/>
+    <Switch
+        android:id="@+id/monday_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/back_rectangle_4dp_layout"
+        android:backgroundTint="@color/colorWhite"
+        android:padding="8dp"
+        android:layout_margin="8dp"
+        android:text="MONDAY"
+        android:checked="true"/>
+    <Switch
+        android:id="@+id/tuesday_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/back_rectangle_4dp_layout"
+        android:backgroundTint="@color/colorWhite"
+        android:padding="8dp"
+        android:layout_margin="8dp"
+        android:text="TUESDAY"
+        android:checked="true"/>
+    <Switch
+        android:id="@+id/wednesday_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/back_rectangle_4dp_layout"
+        android:backgroundTint="@color/colorWhite"
+        android:padding="8dp"
+        android:layout_margin="8dp"
+        android:text="WEDNESDAY"
+        android:checked="true"/>
+    <Switch
+        android:id="@+id/thursday_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/back_rectangle_4dp_layout"
+        android:backgroundTint="@color/colorWhite"
+        android:padding="8dp"
+        android:layout_margin="8dp"
+        android:text="THURSDAY"
+        android:checked="true"/>
+    <Switch
+        android:id="@+id/friday_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/back_rectangle_4dp_layout"
+        android:backgroundTint="@color/colorWhite"
+        android:padding="8dp"
+        android:layout_margin="8dp"
+        android:text="FRIDAY"
+        android:checked="true"/>
+    <Switch
+        android:id="@+id/saturday_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/back_rectangle_4dp_layout"
+        android:backgroundTint="@color/colorWhite"
+        android:padding="8dp"
+        android:layout_margin="8dp"
+        android:text="SATURDAY"
+        android:checked="true"/>
+
+
+</LinearLayout>

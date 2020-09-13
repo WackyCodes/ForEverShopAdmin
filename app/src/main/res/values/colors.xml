@@ -14,6 +14,7 @@
     <color name="colorRed">#ff0004</color>
     <color name="colorGray">#A2A0A0</color>
     <color name="colorDarkGray">#616161</color>
+    <color name="colorLightGray">#37E9DEDE</color>
     <color name="colorRecyclerBack">#DADADA</color>
     <color name="colorGreen">#4CAF50</color>
     <color name="colorBlue">#2196F3</color>
@@ -21,6 +22,7 @@
     <color name="colorDarkYellow">#C49304</color>
     <color name="colorPink">#DE05C8</color>
     <color name="colorNoColor">#00FFFFFF</color>
+    <color name="colorBackShadow">#77776B6B</color>
     <color name="colorCategory">#197969</color>
 
 

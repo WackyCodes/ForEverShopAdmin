@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -284,6 +283,7 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
 
         // Add Weight Data in List...
         if (pProductModel.getProductSubModelList().get( currentVariant ).getpWeight()!=null){
+            productVariantList.clear();
             for (int pWIndex = 0; pWIndex < pProductModel.getProductSubModelList().size(); pWIndex++ ) {
                 productVariantList.add( pProductModel.getProductSubModelList().get( pWIndex ).getpWeight() );
             }
@@ -331,12 +331,14 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
             addProduct.putExtra( "CAT_INDEX", crrShopCatIndex );
             addProduct.putExtra( "LAY_INDEX", layoutIndex );
             addProduct.putExtra( "UPDATE", true );
-            addProduct.putExtra( "PRO_INDEX", productIndex + 1 );
+            addProduct.putExtra( "PRO_INDEX", productIndex );
+//            homeCatListModelList.get( crrShopCatIndex ).getHomeListModelList().get( layoutIndex ).getProductModelList().get( productIndex );
             startActivity( addProduct );
             return true;
         }else
         if (id == R.id.menu_stock_update){
-            updateDataDialog( UPDATE_STOCKS, "Update Stocks", "Enter Stocks" );
+
+            updateDataDialog( UPDATE_STOCKS, "Update Stocks", "", "Enter Stocks" );
             return true;
         }else
         if (id == R.id.menu_price_update){
@@ -348,15 +350,18 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
             return true;
         }else
         if (id == R.id.menu_edit_name){
-            updateDataDialog( UPDATE_NAME, "Update Name", "Enter Product Name" );
+            updateDataDialog( UPDATE_NAME, "Update Name",
+                    pProductModel.getProductSubModelList().get( currentVariant ).getpName(), "Enter Product Name" );
             return true;
         }else
         if (id == R.id.menu_edit_details){
-            updateDataDialog( UPDATE_DETAILS, "Update Details", "Enter Products Details" );
+            updateDataDialog( UPDATE_DETAILS, "Update Details",
+                    pProductModel.getpDetails(), "Enter Products Details" );
             return true;
         }else
         if (id == R.id.menu_edit_description){
-            updateDataDialog( UPDATE_DESCRIPTION, "Update Description", "Enter Products Description" );
+            updateDataDialog( UPDATE_DESCRIPTION, "Update Description",
+                    "" ,"Enter Products Description" );
             return true;
         }else
         if (id == R.id.menu_update_images){
@@ -517,13 +522,10 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
             productStocksText.setTextColor( getResources().getColor( R.color.colorRed ) );
         }
 
-        if (productDetailsImagesAdapter!=null){
-            productDetailsImagesAdapter.notifyDataSetChanged();
-        }else{
-            productDetailsImagesAdapter = new ProductDetailsImagesAdapter( productImageList );
-            productImagesViewPager.setAdapter( productDetailsImagesAdapter );
-            productDetailsImagesAdapter.notifyDataSetChanged();
-        }
+        // Add Images Variant...
+        productDetailsImagesAdapter = new ProductDetailsImagesAdapter( productImageList );
+        productImagesViewPager.setAdapter( productDetailsImagesAdapter );
+        productDetailsImagesAdapter.notifyDataSetChanged();
 
     }
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -619,7 +621,7 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         builder.show();
     }
     // Update : Stocks, Name, Details...
-    private void updateDataDialog( final int updateCode, String title, String hint ){
+    private void updateDataDialog( final int updateCode, String title, String text, String hint ){
         final int variant = currentVariant + 1;
         final Dialog uDialog = new Dialog( this );
         uDialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
@@ -633,11 +635,12 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         // Set Dialog Body...
         okBtn.setText( "UPDATE" );
         titleText.setText( title );
-        getText.setText( "" );
+        getText.setText( text );
         getText.setHint( hint );
         if (updateCode == UPDATE_DETAILS || updateCode == UPDATE_DESCRIPTION){
             getText.setLines( 3 );
-            getText.setMaxLines( 6 );
+            getText.setMaxLines( 8 );
+            getText.setSingleLine( false );
             getText.setHorizontalScrollBarEnabled( true );
         }else{
             getText.setMaxLines( 1 );
@@ -752,7 +755,7 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         }
 
 //        fragmentTransaction.notify();
-        fragmentTransaction.commit(); //TODO : Fix this Error
+        fragmentTransaction.commit();
 
     }
 

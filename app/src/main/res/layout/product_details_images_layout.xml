@@ -133,6 +133,8 @@
             android:visibility="gone"
             android:id="@+id/weight_text"
             android:textColor="@color/colorDarkViolet"
+            android:textAlignment="center"
+            android:gravity="center"
             android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp"
             android:layout_width="wrap_content"
