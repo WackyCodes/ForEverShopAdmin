@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
@@ -53,7 +54,6 @@ import ean.ecom.eanshopadmin.product.ProductModel;
 import ean.ecom.eanshopadmin.product.ProductSubModel;
 import ean.ecom.eanshopadmin.product.ProductViewInterface;
 import ean.ecom.eanshopadmin.product.search.ProductSearchActivity;
-import ean.ecom.eanshopadmin.product.specifications.ProductDetailsSpecificationModel;
 import ean.ecom.eanshopadmin.product.update.UpdateDataRequest;
 import ean.ecom.eanshopadmin.product.update.UpdateProductFragment;
 import ean.ecom.eanshopadmin.product.update.specification.UpdateImage_SpFragment;
@@ -93,11 +93,14 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
     private List<String> productVariantList = new ArrayList <>();
 
     // --- Product Details Image Layout...
-    private TextView productDetailsText;
-//    private ConstraintLayout productDescriptionLayout;
+    // Product Features | Description | Details | Specification...
+    private List<ProductFeaturesModel> productFeaturesModelList = new ArrayList <>();
 
-//    private ViewPager productDescriptionViewPager;
-//    private TabLayout productDescriptionIndicator;
+    // Features Layouts...
+    private LinearLayout detailsLayout;
+    private TextView detailsTextView;
+    private LinearLayout descriptionLayout;
+    private TextView descriptionTextView;
     private LinearLayout specificationLayout;
     private RecyclerView specificationRecycler;
 
@@ -107,10 +110,6 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
     // Dialogs...
     private Dialog dialog;
     private boolean isAllowBack = true;
-
-    // Product Specification ...
-    private List <ProductDetailsSpecificationModel> productDetailsSpecificationModelList = new ArrayList <>();
-    private String productDescription;
 
     private int crrShopCatIndex;
     private int layoutIndex;
@@ -193,8 +192,6 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         productStocksText = findViewById( R.id.stock_text );
 
         // --- Product Details Image Layout...
-//        productDescriptionLayout = findViewById( R.id.product_details_description_ConstLayout );
-        productDetailsText = findViewById( R.id.product_details_text );
 
         pVegNonTypeImage = findViewById( R.id.product_veg_non_type_image );
         weightSpinnerLayout = findViewById( R.id.weight_spinner_layout );
@@ -206,13 +203,14 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         productImagesIndicator = findViewById( R.id.product_images_viewpager_indicator );
 
         // ---------- Product Description code----
-//        productDescriptionViewPager = findViewById( R.id.product_detail_viewpager );
-//        productDescriptionIndicator = findViewById( R.id.product_details_indicator );
-        specificationLayout = findViewById( R.id.specification_layout );
-        specificationRecycler = findViewById( R.id.specification_recycler );
+        // ---------- Features ---
+        detailsLayout = findViewById( R.id.product_details_layout );
+        detailsTextView = findViewById( R.id.product_details_text );
+        descriptionLayout = findViewById( R.id.product_description_layout );
+        descriptionTextView = findViewById( R.id.product_description_text );
+        specificationLayout = findViewById( R.id.product_specification_layout );
+        specificationRecycler = findViewById( R.id.product_specification_recycler );
 
-        // Default Tab Layout Invisible
-//        productDescriptionLayout.setVisibility( View.GONE );
 
         // set adapter with viewpager...
         productDetailsImagesAdapter = new ProductDetailsImagesAdapter( productImageList );
@@ -220,23 +218,6 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         // connect TabLayout with viewPager...
         productImagesIndicator.setupWithViewPager( productImagesViewPager, true );
 
-        //----------- Product Description ---
-//        productDescriptionViewPager.addOnPageChangeListener(
-//                new TabLayout.TabLayoutOnPageChangeListener( productDescriptionIndicator ) );
-//        productDescriptionIndicator.addOnTabSelectedListener( new TabLayout.OnTabSelectedListener() {
-//            @Override
-//            public void onTabSelected(TabLayout.Tab tab) {
-//                productDescriptionViewPager.setCurrentItem( tab.getPosition() );
-//            }
-//            @Override
-//            public void onTabUnselected(TabLayout.Tab tab) {
-//
-//            }
-//            @Override
-//            public void onTabReselected(TabLayout.Tab tab) {
-//
-//            }
-//        } );
         // Retrieve details from database...----------------
         getProductDetails();
         // SetData...
@@ -413,84 +394,89 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
                 public void onComplete(@NonNull Task <DocumentSnapshot> task) {
                     if (task.isSuccessful()){
                         DocumentSnapshot documentSnapshot = task.getResult();
+                        int p_no_of_variants = 0;
+                        if ( documentSnapshot.get( "p_no_of_variants" ) !=null ){
+                            p_no_of_variants = Integer.valueOf( String.valueOf( (long) documentSnapshot.get( "p_no_of_variants" ) ) );
+                        }
 
-                        if (!isUpdateAllowed){
+                        if (!isUpdateAllowed && p_no_of_variants>0){
                             /** Reload Model Data...*/
-                            if ( documentSnapshot.get( "p_no_of_variants" ) !=null ){
-//                            String[] pImage;
-                                int p_no_of_variants = Integer.valueOf( String.valueOf( (long) documentSnapshot.get( "p_no_of_variants" ) ) );
-                                List<ProductSubModel> productSubModelList = new ArrayList <>();
-                                for (int tempI = 1; tempI <= p_no_of_variants; tempI++){
 
-                                    // We can use Array...
-                                    ArrayList<String> Images = (ArrayList <String>) documentSnapshot.get( "p_image_" + tempI );
-                                    // add Data...
-                                    productSubModelList.add( new ProductSubModel(
-                                            task.getResult().get( "p_name_"+tempI).toString(),
-                                            Images,
-                                            task.getResult().get( "p_selling_price_"+tempI).toString(),
-                                            task.getResult().get( "p_mrp_price_"+tempI).toString(),
-                                            task.getResult().get( "p_weight_"+tempI).toString(),
-                                            task.getResult().get( "p_stocks_"+tempI).toString(),
-                                            task.getResult().get( "p_offer_"+tempI).toString()
-                                    ) );
-                                }
-                                String p_id = task.getResult().get( "p_id").toString();
-                                String p_main_name = task.getResult().get( "p_main_name" ).toString();
-//                        String p_main_image = task.getResult().get( "p_main_image" ).toString();
-                                String p_weight_type = task.getResult().get( "p_weight_type" ).toString();
-                                int p_veg_non_type = Integer.valueOf( task.getResult().get( "p_veg_non_type" ).toString() );
-                                Boolean p_is_cod = (Boolean) task.getResult().get( "p_is_cod" );
+                            List<ProductSubModel> productSubModelList = new ArrayList <>();
+                            for (int tempI = 1; tempI <= p_no_of_variants; tempI++){
 
-                                pProductModel = new ProductModel(
-                                        p_id,
-                                        p_main_name,
-                                        " ",
-                                        p_is_cod,
-                                        String.valueOf(p_no_of_variants),
-                                        p_weight_type,
-                                        p_veg_non_type,
-                                        productSubModelList
-                                );
-
-                                // Set Product Data...
-                                setProductData( 0 );
-                                // Refresh Our other Details...
-                                setOtherDetails();
-
+                                // We can use Array...
+                                ArrayList<String> Images = (ArrayList <String>) documentSnapshot.get( "p_image_" + tempI );
+                                // add Data...
+                                productSubModelList.add( new ProductSubModel(
+                                        task.getResult().get( "p_name_"+tempI).toString(),
+                                        Images,
+                                        task.getResult().get( "p_selling_price_"+tempI).toString(),
+                                        task.getResult().get( "p_mrp_price_"+tempI).toString(),
+                                        task.getResult().get( "p_weight_"+tempI).toString(),
+                                        task.getResult().get( "p_stocks_"+tempI).toString(),
+                                        task.getResult().get( "p_offer_"+tempI).toString()
+                                ) );
                             }
+                            String p_id = task.getResult().get( "p_id").toString();
+                            String p_main_name = task.getResult().get( "p_main_name" ).toString();
+//                        String p_main_image = task.getResult().get( "p_main_image" ).toString();
+                            String p_weight_type = task.getResult().get( "p_weight_type" ).toString();
+                            int p_veg_non_type = Integer.valueOf( task.getResult().get( "p_veg_non_type" ).toString() );
+                            Boolean p_is_cod = (Boolean) task.getResult().get( "p_is_cod" );
+
+                            pProductModel = new ProductModel(
+                                    p_id,
+                                    p_main_name,
+                                    " ",
+                                    p_is_cod,
+                                    String.valueOf(p_no_of_variants),
+                                    p_weight_type,
+                                    p_veg_non_type,
+                                    productSubModelList
+                            );
+
                         }
                         // Set other Details of  Product Details Image Layout...
-                      /**  if ((boolean)documentSnapshot.get( "use_tab_layout" )){
-                            // use tab layout...
-                            productDescriptionLayout.setVisibility( View.VISIBLE );
-                            // TODO : set Description data..
-                            productDescription = documentSnapshot.get( "product_description" ).toString() ;
-                            // TODO : set Specification data...
-                            for (long x = 1; x < (long) documentSnapshot.get( "pro_sp_head_num" )+1; x++){
-                                productDetailsSpecificationModelList.add( new ProductDetailsSpecificationModel( 0,
-                                        documentSnapshot.get( "pro_sp_head_" + x ).toString() ) );
-                                for (long i = 1; i < (long)documentSnapshot.get( "pro_sp_sub_head_"+x+"_num" )+1; i++){
-                                    productDetailsSpecificationModelList.add( new ProductDetailsSpecificationModel( 1,
-                                            documentSnapshot.get( "pro_sp_sub_head_" + x + i ).toString()
-                                            , documentSnapshot.get( "pro_sp_sub_head_d_" + x + i ).toString() ) );
-                                }
+                        // Load Product - Details | Description  | Features...
+                        if (p_no_of_variants>0)
+                            for (long tempX = 1; tempX <= p_no_of_variants; tempX++){
+                            // add product Specifications..
+                            List<Object> specificationModelList;
+                            // Details...
+                            String pDetails;
+                            // Description...
+                            String pDescription;
+                            if (documentSnapshot.get( "p_specification_"+tempX ) != null){
+                                specificationModelList = (List <Object>) documentSnapshot.getData().get( "p_specification_" + tempX );
+                                //  Arrays.asList( tags )
+//                                    specificationModelList = (ArrayList <AddSpecificationModel>) documentSnapshot.get("p_specification_" + tempX );
+                            }else{
+                                specificationModelList = new ArrayList <>();
                             }
 
-//                            ProductDetailsDescriptionAdaptor productDetailsDescriptionAdaptor
-//                                    = new ProductDetailsDescriptionAdaptor( getSupportFragmentManager()
-//                                    , productDescriptionIndicator.getTabCount()
-//                                    , productDescription
-//                                    , productDetailsSpecificationModelList  );
-//                            productDescriptionViewPager.setAdapter( productDetailsDescriptionAdaptor );
-//                            productDetailsDescriptionAdaptor.notifyDataSetChanged();
+                            if (documentSnapshot.get( "p_description_"+tempX ) != null){
+                                pDescription = documentSnapshot.get( "p_description_"+tempX ).toString();
+                            }else{
+                                pDescription = "";
+                            }
+                            if (documentSnapshot.get( "product_details" ) != null){
+                                pDetails = documentSnapshot.get( "product_details" ).toString();
+                            }else{
+                                pDetails = "";
+                            }
+
+                            productFeaturesModelList.add( new ProductFeaturesModel(
+                                    pDetails, pDescription, specificationModelList
+                            ) );
 
                         }
-                        else{
-                            // don't use tabLayout...
-                            productDescriptionLayout.setVisibility( View.GONE );
-                        } */
-                        productDetailsText.setText( documentSnapshot.get( "product_details" ).toString() );
+
+                        // Set Product Data...
+                        setProductData( 0 );
+                        // Refresh Our other Details...
+                        setOtherDetails();
+
                         dialog.dismiss();
                     }
                     else{
@@ -526,7 +512,10 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         productDetailsImagesAdapter = new ProductDetailsImagesAdapter( productImageList );
         productImagesViewPager.setAdapter( productDetailsImagesAdapter );
         productDetailsImagesAdapter.notifyDataSetChanged();
-
+        // Set Details | Descriptions | Specifications //
+        if (productFeaturesModelList.size() > 0){
+            setFeaturesLayout(variantIndex);
+        }
     }
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void setVegNonData(){
@@ -563,6 +552,40 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
 //                    showToast( "Upload Images first..!" );
             }
         } );
+    }
+    // Set Details | Descriptions | Specifications //
+    private void setFeaturesLayout(int variantIndex){
+        // Details...
+        if (productFeaturesModelList.get( variantIndex ).getProductDetails()!= null
+                && productFeaturesModelList.get( variantIndex ).getProductDetails().trim().length() > 8){
+            detailsLayout.setVisibility( View.VISIBLE );
+            detailsTextView.setText( productFeaturesModelList.get( variantIndex ).getProductDetails() );
+        }else{
+            detailsLayout.setVisibility( View.GONE );
+        }
+        // Description...
+        if (productFeaturesModelList.get( variantIndex ).getProductDescription()!= null
+                &&  productFeaturesModelList.get( variantIndex ).getProductDescription().trim().length() > 8 ){
+            descriptionLayout.setVisibility( View.VISIBLE );
+            descriptionTextView.setText( productFeaturesModelList.get( variantIndex ).getProductDescription() );
+        }else{
+            descriptionLayout.setVisibility( View.GONE );
+        }
+        // Specification...
+        if (productFeaturesModelList.get( variantIndex ).getSpecificationModelList()!= null
+                && productFeaturesModelList.get( variantIndex ).getSpecificationModelList().size()!=0){
+            specificationLayout.setVisibility( View.VISIBLE );
+            // set Specifications... layout
+            LinearLayoutManager layoutManager = new LinearLayoutManager( this );
+            layoutManager.setOrientation( RecyclerView.VERTICAL );
+            specificationRecycler.setLayoutManager( layoutManager );
+            // Adaptor...
+            ProductSpecificationAdaptor specificationAdaptor = new ProductSpecificationAdaptor( productFeaturesModelList.get( variantIndex ).getSpecificationModelList() );
+            specificationRecycler.setAdapter( specificationAdaptor );
+            specificationAdaptor.notifyDataSetChanged();
+        }else{
+            specificationLayout.setVisibility( View.GONE );
+        }
     }
     // ---------------------------------- Update Product -------------------------------------------
     // Update COD : ON / OFF
@@ -694,7 +717,6 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
                             break;
                         case UPDATE_DETAILS:
                             updateMap.put( "product_details", updateData );
-                            productDetailsText.setText( updateData );
                             // Details Update in local List...
                             if (crrShopCatIndex != -1 && layoutIndex != -1 && productIndex != -1 ){
                                 homeCatListModelList.get( crrShopCatIndex ).getHomeListModelList().get( layoutIndex ).getProductModelList().get( productIndex )

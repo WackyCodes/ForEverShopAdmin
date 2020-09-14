@@ -78,10 +78,9 @@
 
 <!--                <include layout="@layout/product_details_description_layout" />-->
 
-                <include layout="@layout/product_details_only_layout" />
-
+                <!-- Details -->
                 <LinearLayout
-                    android:id="@+id/specification_layout"
+                    android:id="@+id/product_details_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
@@ -90,21 +89,71 @@
                         android:layout_height="wrap_content"
                         android:padding="16dp"
                         android:textSize="16sp"
-                        android:text="Specification"
+                        android:text="Product Details"
                         android:textAlignment="viewStart"
                         android:textStyle="bold"
                         android:textColor="@color/colorPrimary"
                         android:background="@color/colorRecyclerBack"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
+                        android:gravity="start" />
+                    <TextView
+                        android:id="@+id/product_details_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:textColor="@color/colorBlack"/>
+                </LinearLayout>
+                <!-- Description    -->
+                <LinearLayout
+                    android:id="@+id/product_description_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:textSize="16sp"
+                        android:text="Product Description"
+                        android:textAlignment="viewStart"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimary"
+                        android:background="@color/colorRecyclerBack"
+                        android:gravity="start" />
+
+                    <TextView
+                        android:id="@+id/product_description_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:textColor="@color/colorBlack" />
+                </LinearLayout>
+                <!-- Specification  -->
+                <LinearLayout
+                    android:id="@+id/product_specification_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="52dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:textSize="16sp"
+                        android:text="Product Specifications"
+                        android:textAlignment="viewStart"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimary"
+                        android:background="@color/colorRecyclerBack"
                         android:gravity="start" />
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/specification_recycler"
+                        android:id="@+id/product_specification_recycler"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:textColor="@color/colorBlack" />
                 </LinearLayout>
 
 
