@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
     <application
@@ -18,7 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".main.orderlist.OrderViewActivity"></activity>
+        <activity android:name=".main.orderlist.orderviewdetails.OrderViewActivity"></activity>
         <activity android:name=".main.shop.AboutShopActivity" />
         <activity android:name=".product.search.ProductSearchActivity" />
         <activity android:name=".home.viewall.ViewAllBannerSliderActivity" />

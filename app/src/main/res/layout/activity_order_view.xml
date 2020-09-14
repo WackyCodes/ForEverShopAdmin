@@ -12,7 +12,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorLightGray"
-    tools:context=".main.orderlist.OrderViewActivity">
+    tools:context=".main.orderlist.orderviewdetails.OrderViewActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/appToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:scaleType="center"
+            app:elevation="4dp"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
+            app:popupTheme="@style/ToolTheme"
+            app:titleMarginStart="@dimen/default_gap"
+            app:subtitleTextColor="@color/colorWhite"
+            app:titleTextColor="@color/colorWhite">
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
         android:id="@+id/scrollView2"
@@ -20,7 +45,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -48,7 +73,8 @@
                     app:srcCompat="@drawable/ic_watch_later_black_24dp" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:id="@+id/order_date"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:paddingLeft="4dp"
@@ -56,8 +82,18 @@
                     android:textColor="@color/colorDarkViolet"
                     android:textSize="12dp"
                     android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/order_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="8dp"
+                    android:text="(2 day ago)"
+                    android:textSize="12dp" />
+
             </LinearLayout>
-            <!--            Order Product List View...-->
+            <!-- Order Product List View... order_view_list_item-->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/product_list_recycler"
                 android:layout_width="match_parent"
@@ -108,6 +144,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
+                        android:id="@+id/total_items_tv"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
@@ -138,6 +175,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
+                        android:id="@+id/total_items_amount_tv"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
@@ -204,6 +242,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/textView3">
 
                     <TextView
+                        android:id="@+id/shipping_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="2dp"
@@ -215,6 +254,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
+                        android:id="@+id/shipping_address"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="2dp"
@@ -226,6 +266,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
+                        android:id="@+id/shipping_address_pin"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="2dp"
@@ -258,11 +299,13 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
+            android:id="@+id/view_delivery_boy_img_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
             android:layout_gravity="end"
             android:textAlignment="viewEnd"
+            android:tint="@color/colorPrimary"
             app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -279,6 +322,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:tint="@color/colorPrimary"
                 app:srcCompat="@drawable/ic_watch_later_black_24dp" />
 
             <!--            Order Status -->
@@ -305,9 +349,10 @@
                 android:layout_marginBottom="8dp"
                 android:maxLines="2"
                 android:padding="2dp"
-                android:text="Waiting."
+                android:text="Waiting..."
                 android:textAlignment="center"
                 android:textColor="@color/colorBlack"
+                android:textStyle="bold"
                 android:textSize="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/order_status_icon"
@@ -317,17 +362,78 @@
 
             <LinearLayout
                 android:id="@+id/action_layout"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
                 android:orientation="vertical"
+                android:gravity="center"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/order_status_text_view"
                 app:layout_constraintTop_toTopOf="parent">
+                <!--  Accept Order Btn-->
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/accept_order_text_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:background="@drawable/back_rectangle_4dp_layout"
+                    android:layout_gravity="center"
+                    android:textAlignment="center"
+                    android:textAllCaps="true"
+                    android:maxLines="2"
+                    android:padding="4dp"
+                    android:text="Accept Order"
+                    android:textColor="@color/colorWhite"
+                    android:textStyle="bold"
+                    android:textSize="16dp"/>
+                <!--    Preparing/packing Order Btn-->
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/preparing_packing_text_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:background="@drawable/back_rectangle_4dp_layout"
+                    android:layout_gravity="center"
+                    android:textAlignment="center"
+                    android:textAllCaps="true"
+                    android:maxLines="2"
+                    android:padding="4dp"
+                    android:text="Packed"
+                    android:textColor="@color/colorWhite"
+                    android:textStyle="bold"
+                    android:textSize="16dp"/>
+
+                <EditText
+                    android:id="@+id/delivery_otp_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:background="@drawable/back_white_05dp_primary_4dp_layout"
+                    android:hint="Enter OTP"
+                    android:inputType="number"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="14dp" />
+
+                <TextView
+                    android:id="@+id/out_for_delivery_text_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:background="@drawable/back_rectangle_4dp_layout"
+                    android:layout_gravity="center"
+                    android:textAlignment="center"
+                    android:textAllCaps="true"
+                    android:padding="2dp"
+                    android:text="Out For Delivery"
+                    android:textColor="@color/colorWhite"
+                    android:textStyle="bold"
+                    android:textSize="14dp"/>
 
             </LinearLayout>
 
@@ -367,7 +473,6 @@
             </LinearLayout>
             <!--            Delivery by information Layout -->
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:visibility="gone"
                 android:id="@+id/delivery_boy_const_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -412,6 +517,7 @@
                     android:textAlignment="center"
                     android:textSize="14dp"
                     android:textStyle="bold"
+                    android:textColor="@color/colorDarkViolet"
                     app:layout_constraintBottom_toBottomOf="@+id/sample2"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/sample2"
@@ -427,6 +533,7 @@
                     android:textAlignment="center"
                     android:textSize="12dp"
                     android:textStyle="bold"
+                    android:textColor="@color/colorDarkViolet"
                     app:layout_constraintBottom_toBottomOf="@+id/sample3"
                     app:layout_constraintStart_toStartOf="@+id/delivery_by_name_text_view"
                     app:layout_constraintTop_toTopOf="@+id/sample3" />
@@ -452,10 +559,6 @@
         </LinearLayout>
 
     </LinearLayout>
-
-
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
