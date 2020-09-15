@@ -42,7 +42,7 @@ public class OrderViewPagerFragment extends Fragment {
         this.listType = listType;
     }
 
-    public OrderListAdaptor orderViewPagerListAdaptor;
+    public static OrderListAdaptor orderViewPagerListAdaptor;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

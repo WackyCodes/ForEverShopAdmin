@@ -17,6 +17,8 @@ public class OrderProductItemModel {
     private String productName;
     private String productSellingPrice;
     private String productQty;
+    private String productMRP;
+    private String productWeight;
 
     public OrderProductItemModel(String productID, String productImage, String productName, String productSellingPrice, String productQty) {
         this.productID = productID;
@@ -66,4 +68,19 @@ public class OrderProductItemModel {
         this.productQty = productQty;
     }
 
+    public String getProductMRP() {
+        return productMRP;
+    }
+
+    public void setProductMRP(String productMRP) {
+        this.productMRP = productMRP;
+    }
+
+    public String getProductWeight() {
+        return productWeight;
+    }
+
+    public void setProductWeight(String productWeight) {
+        this.productWeight = productWeight;
+    }
 }

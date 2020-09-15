@@ -21,6 +21,7 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.List;
 
 import ean.ecom.eanshopadmin.R;
+import ean.ecom.eanshopadmin.main.orderlist.OrderProductItemModel;
 
 /**
  * Created by Shailendra (WackyCodes) on 14/09/2020 23:43
@@ -28,9 +29,9 @@ import ean.ecom.eanshopadmin.R;
  */
 public class OrderViewListAdaptor extends RecyclerView.Adapter<OrderViewListAdaptor.ViewHolder> {
 
-    private List<OrderViewListItemModel> orderViewListItemModelList;
+    private List<OrderProductItemModel> orderViewListItemModelList;
 
-    public OrderViewListAdaptor(List <OrderViewListItemModel> orderViewListItemModelList) {
+    public OrderViewListAdaptor(List <OrderProductItemModel> orderViewListItemModelList) {
         this.orderViewListItemModelList = orderViewListItemModelList;
     }
 
@@ -74,16 +75,16 @@ public class OrderViewListAdaptor extends RecyclerView.Adapter<OrderViewListAdap
         }
 
         private void setData(int position){
-            OrderViewListItemModel model = orderViewListItemModelList.get( position );
+            OrderProductItemModel model = orderViewListItemModelList.get( position );
 
             Glide.with( itemView.getContext() ).load( model.getProductImage() ).apply( new RequestOptions().placeholder( R.drawable.ic_photo_black_24dp ) ).into( pImage );
 
             pName.setText( model.getProductName() );
-            pPrice.setText( "Rs." + model.getProductPrice() + "/-" );
+            pPrice.setText( "Rs." + model.getProductSellingPrice() + "/-" );
             pMRP.setText( "Rs." + model.getProductMRP() + "/-" );
 
             pQTY.setText( "QTY : "+ model.getProductQty() );
-            pVariant.setText( "Variant : " + model.getProductWeight() );
+//            pVariant.setText( "Variant : " + model.getProductWeight() );
 
         }
 

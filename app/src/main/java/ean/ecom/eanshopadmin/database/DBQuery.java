@@ -517,6 +517,8 @@ public class DBQuery {
                                     // Assign new OrderListModel...
                                     orderListModel = new OrderListModel();
 
+                                    orderListModel.setDeliveryStatus( deliveryStatus );
+
                                     orderListModel.setOrderID( documentSnapshot.get( "order_id" ).toString() );
                                     orderListModel.setDeliveryStatus( documentSnapshot.get( "delivery_status" ).toString() );
                                     orderListModel.setPayMode( documentSnapshot.get( "pay_mode" ).toString() );

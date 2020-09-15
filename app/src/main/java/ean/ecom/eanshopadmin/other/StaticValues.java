@@ -117,6 +117,8 @@ public class StaticValues {
     public static final int ORDER_LIST_NEW_ORDER = 1;
     public static final int ORDER_LIST_PREPARING = 2;
     public static final int ORDER_LIST_READY_TO_DELIVER = 3;
+    public static final int ORDER_LIST_OUT_FOR_DELIVERY = 4;
+    public static final int ORDER_LIST_SUCCESS = 5;
 
     // Update Product ...
     public static final int UPDATE_WEIGHT = 14;
