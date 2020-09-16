@@ -1113,6 +1113,10 @@ public class AddNewProductActivity extends AppCompatActivity {
         // Description and Specifications...
         updateMap.put( "p_description_"+verNo, newProDescription.getText().toString() );
         updateMap.put( "p_specification_"+verNo, new ArrayList<AddSpecificationModel>()  );
+        // Details ... Guides
+        updateMap.put( "p_details_"+verNo, ""  );//newProDetails.getText().toString()
+        updateMap.put( "p_guide_"+verNo, ""  ); // newProDetails.getText().toString()
+
         // Images...
         updateMap.put( "p_image_"+verNo, imageList );
         // Tags...
@@ -1190,23 +1194,6 @@ public class AddNewProductActivity extends AppCompatActivity {
     /// Add New Products....
     private void uploadProduct(final String productID, Map<String, Object> updateMap, final ProductModel productModel){
 
-      /**  if (useTabLayoutSwitch.isChecked()){
-            updateMap.put( "use_tab_layout", true );
-            // Specification and descriptions...
-            updateMap.put( "product_description", newProDescription.getText().toString() );
-            updateMap.put( "pro_sp_head_num",specificationModelList.size() );
-            for (int i = 0; i < specificationModelList.size(); i++){
-                updateMap.put( "pro_sp_head_"+(i+1), specificationModelList.get( i ).getSpHeading() );
-                // This is for assign data of subList...
-                updateMap.put( "pro_sp_sub_head_"+(i+1)+"_num", specificationModelList.get( i ).getSpecificationFeatureModelList().size() );
-                for(int j = 0; j < specificationModelList.get( i ).getSpecificationFeatureModelList().size(); j++){
-                    updateMap.put( "pro_sp_sub_head_" +(i+1) + "" + (j+1), specificationModelList.get( i ).getSpecificationFeatureModelList().get( j ).getFeatureName() );
-                    updateMap.put( "pro_sp_sub_head_d_" +(i+1) + "" + (j+1), specificationModelList.get( i ).getSpecificationFeatureModelList().get( j ).getFeatureDetails() );
-                }
-            }
-        }else{
-            updateMap.put( "use_tab_layout", false );
-        } */
         firebaseFirestore
                 .collection( "SHOPS" ).document( SHOP_ID )
                 .collection( "PRODUCTS" ).document( productID ).set( updateMap )

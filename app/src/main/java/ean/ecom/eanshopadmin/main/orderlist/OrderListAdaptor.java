@@ -6,6 +6,7 @@ package ean.ecom.eanshopadmin.main.orderlist;
  * https://linktr.ee/wackycodes
  */
 
+import android.content.Intent;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,7 @@ import ean.ecom.eanshopadmin.R;
 import ean.ecom.eanshopadmin.database.DBQuery;
 import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderFragment;
 import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderTabAdaptor;
+import ean.ecom.eanshopadmin.main.orderlist.orderviewdetails.OrderViewActivity;
 import ean.ecom.eanshopadmin.other.StaticMethods;
 
 import static ean.ecom.eanshopadmin.other.StaticMethods.showToast;
@@ -138,7 +140,7 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
 
         }
 
-        private void setData( String orderID, String pName, String oItemsAmounts, String oStatus,  String oDate, String oTime, int oTotalItems, String pImage ){
+        private void setData(final String orderID, String pName, String oItemsAmounts, String oStatus, String oDate, String oTime, int oTotalItems, String pImage ){
 
             // set Image Resource from database..
             // Current Date : "yyyy/MM/dd"
@@ -157,7 +159,14 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
             itemView.setOnClickListener( new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    showToast(itemView.getContext(), "Code Not Found!");
+//                    showToast(itemView.getContext(), "Code Not Found!");
+
+//                    Intent orderViewIntent = new Intent( itemView.getContext(), OrderViewActivity.class );
+//                    orderViewIntent.putExtra( "ORDER_ID" , orderID );
+//                    orderViewIntent.putExtra( "ORDER_STATUS" , listType);
+//                    itemView.getContext().startActivity( orderViewIntent );
+//                    orderID = getIntent().getStringExtra( "ORDER_ID" );
+//                    LIST_TYPE = getIntent().getIntExtra( "ORDER_STATUS", -1 );
                 }
             } );
 
@@ -205,7 +214,7 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
 
         }
 
-        private void setData(String orderID, String pName, String oItemsAmounts, String oStatus, String oDate, String oTime, int oTotalItems, String pImage, final int index ){
+        private void setData(final String orderID, String pName, String oItemsAmounts, String oStatus, String oDate, String oTime, int oTotalItems, String pImage, final int index ){
 
             // Decide based On List Type...
             switch (listType){
@@ -242,7 +251,11 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
             itemView.setOnClickListener( new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    showToast(itemView.getContext(), "Code Not Found!");
+//                    showToast(itemView.getContext(), "Code Not Found!");
+                    Intent orderViewIntent = new Intent( itemView.getContext(), OrderViewActivity.class );
+                    orderViewIntent.putExtra( "ORDER_ID" , orderID );
+                    orderViewIntent.putExtra( "ORDER_STATUS" , listType);
+                    itemView.getContext().startActivity( orderViewIntent );
                 }
             } );
 

@@ -13,6 +13,9 @@ public class ProductSubModel {
     private String pWeight;
     private String pStocks;
     private String pOffer;
+    private String pDescription;
+    private String pDetails;
+    private String pGuideInfo;
     // Specification List...
     private List<AddSpecificationModel> pSpecificationList;
 
@@ -88,5 +91,29 @@ public class ProductSubModel {
 
     public void setpSpecificationList(List <AddSpecificationModel> pSpecificationList) {
         this.pSpecificationList = pSpecificationList;
+    }
+
+    public String getpDescription() {
+        return pDescription;
+    }
+
+    public void setpDescription(String pDescription) {
+        this.pDescription = pDescription;
+    }
+
+    public String getpDetails() {
+        return pDetails;
+    }
+
+    public void setpDetails(String pDetails) {
+        this.pDetails = pDetails;
+    }
+
+    public String getpGuideInfo() {
+        return pGuideInfo;
+    }
+
+    public void setpGuideInfo(String pGuideInfo) {
+        this.pGuideInfo = pGuideInfo;
     }
 }

@@ -17,6 +17,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import ean.ecom.eanshopadmin.other.DialogsClass;
@@ -38,22 +39,30 @@ public class OrderStatusUpdateQuery implements OrderViewInteractor.OrderStatusUp
     }
 
     @Override
-    public void onFindDeliveryBoyQuery(OrderViewInteractor orderStatusUpdator) {
+    public void onFindDeliveryBoyQuery(final OrderViewInteractor orderStatusUpdator, String orderID) {
 
         newOrderNotificationLR = getShopCollectionRef( "ORDERS" )
-                .document( "OrderID" )
+                .document( orderID )
                 .addSnapshotListener( new EventListener <DocumentSnapshot>() {
                     @Override
                     public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-
                         if (documentSnapshot!=null){
+                            if(documentSnapshot.get( "delivery_by_uid" )!= null){
+                                Map<String, Object> deliveryBoyInfo = new HashMap <>();
 
-
-
-
+                                deliveryBoyInfo.put( "delivery_by_uid",  documentSnapshot.get( "delivery_by_uid" ).toString());
+                                deliveryBoyInfo.put( "delivery_by_name",  documentSnapshot.get( "delivery_by_name" ).toString());
+                                deliveryBoyInfo.put( "delivery_by_mobile",  documentSnapshot.get( "delivery_by_mobile" ).toString());
+                                deliveryBoyInfo.put( "delivery_id",  documentSnapshot.get( "delivery_id" ).toString());
+//                                deliveryBoyInfo.put( "delivery_date",  documentSnapshot.get( "delivery_date" ).toString());
+//                                deliveryBoyInfo.put( "delivery_day",  documentSnapshot.get( "delivery_day" ).toString());
+//                                deliveryBoyInfo.put( "delivery_time",  documentSnapshot.get( "delivery_time" ).toString());
+                                orderStatusUpdator.onDeliveryBoyFound( deliveryBoyInfo );
+                            }
                         }
 
                     }
                 } );
     }
 }
+

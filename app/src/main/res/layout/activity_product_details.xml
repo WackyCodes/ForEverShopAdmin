@@ -78,46 +78,25 @@
 
 <!--                <include layout="@layout/product_details_description_layout" />-->
 
-                <!-- Details -->
-                <LinearLayout
-                    android:id="@+id/product_details_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:textSize="16sp"
-                        android:text="Product Details"
-                        android:textAlignment="viewStart"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"
-                        android:background="@color/colorRecyclerBack"
-                        android:gravity="start" />
-                    <TextView
-                        android:id="@+id/product_details_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:textColor="@color/colorBlack"/>
-                </LinearLayout>
                 <!-- Description    -->
                 <LinearLayout
                     android:id="@+id/product_description_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/back_rectangle_4dp_layout"
+                    android:elevation="4dp"
+                    android:layout_margin="2dp"
+                    android:padding="4dp"
                     android:orientation="vertical">
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="16dp"
+                        android:padding="8dp"
                         android:textSize="16sp"
-                        android:text="Product Description"
+                        android:text="Description"
                         android:textAlignment="viewStart"
                         android:textStyle="bold"
                         android:textColor="@color/colorPrimary"
-                        android:background="@color/colorRecyclerBack"
                         android:gravity="start" />
 
                     <TextView
@@ -127,23 +106,55 @@
                         android:padding="16dp"
                         android:textColor="@color/colorBlack" />
                 </LinearLayout>
+                <!-- Details -->
+                <LinearLayout
+                    android:id="@+id/product_details_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/back_rectangle_4dp_layout"
+                    android:elevation="4dp"
+                    android:layout_margin="2dp"
+                    android:padding="4dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:textSize="16sp"
+                        android:text="Details"
+                        android:textAlignment="viewStart"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimary"
+                        android:gravity="start" />
+                    <TextView
+                        android:id="@+id/product_details_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:textColor="@color/colorBlack"/>
+                </LinearLayout>
                 <!-- Specification  -->
                 <LinearLayout
                     android:id="@+id/product_specification_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/back_rectangle_4dp_layout"
+                    android:elevation="4dp"
                     android:layout_marginBottom="52dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:padding="4dp"
                     android:orientation="vertical">
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="16dp"
+                        android:padding="8dp"
                         android:textSize="16sp"
-                        android:text="Product Specifications"
+                        android:text="Specifications"
                         android:textAlignment="viewStart"
                         android:textStyle="bold"
                         android:textColor="@color/colorPrimary"
-                        android:background="@color/colorRecyclerBack"
                         android:gravity="start" />
 
                     <androidx.recyclerview.widget.RecyclerView

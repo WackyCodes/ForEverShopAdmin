@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -19,16 +20,26 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ean.ecom.eanshopadmin.R;
+import ean.ecom.eanshopadmin.database.DBQuery;
 import ean.ecom.eanshopadmin.other.DialogsClass;
 import ean.ecom.eanshopadmin.other.StaticMethods;
 import ean.ecom.eanshopadmin.product.ProductViewInterface;
 import ean.ecom.eanshopadmin.product.productview.ProductDetails;
 
+import static ean.ecom.eanshopadmin.database.DBQuery.homeCatListModelList;
+import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_DESCRIPTION;
+import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_DETAILS;
+import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_GUIDE_INFO;
+import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_NAME;
 import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_PRICE;
+import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_STOCKS;
 import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_WEIGHT;
 
 /*
@@ -46,15 +57,17 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
     private int requestType;
     private int listVariant;
     private String productID;
+    private String previousText;
 
     public UpdateProductFragment(ProductViewInterface rootActivity, UpdateData.UpdateRequest updateRequest, int requestType
-            ,int listVariant, String productID) {
+            ,int listVariant, String productID, String previousText) {
         // Required empty public constructor
         rootListener = rootActivity;
         this.updateRequest = updateRequest;
         this.requestType = requestType;
         this.listVariant = listVariant;
         this.productID = productID;
+        this.previousText = previousText;
     }
     // Dialog...
     private Dialog dialog;
@@ -78,7 +91,13 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
     private TextView productVerText;
     private TextView updateTitle;
 
+    private Spinner proCopyFromSpinner;
+
     // ---------------              ----------
+    // -------
+    private LinearLayout updateDetailsLayout; // update_product_text_layout
+    private TextView updateDetailsHeadingText; // update_dialog_title_text
+    private EditText updateDetailsEditText; // update_dialog_edit_text
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -104,9 +123,15 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
         productVerText = view.findViewById( R.id.pro_ver_no_text );
         updateTitle = view.findViewById( R.id.update_title );
 
+        // Dialog for -- Details | Descriptions | Guide
+        updateDetailsLayout = view.findViewById( R.id.update_product_text_layout );
+        updateDetailsHeadingText = view.findViewById( R.id.update_dialog_title_text );
+        updateDetailsEditText = view.findViewById( R.id.update_dialog_edit_text );
+        proCopyFromSpinner = view.findViewById( R.id.copy_from_spinner );
+
         // set Header...
         productIDText.setText( "Product ID : "+ productID );
-        productVerText.setText( "Ver : " + (listVariant + 1) );
+        productVerText.setText( "Variant : " + (listVariant + 1) );
 
         // Set Layout Visibility...
         setLayoutVisibility();
@@ -114,6 +139,8 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
         setUpdateMrpSelling();
         // Weight updates Interaction...
         setuWeightSpinner();
+        // set Spinner Copy Form..
+        setProCopyFromSpinner();
 
         updateBtn.setOnClickListener( new View.OnClickListener() {
             @Override
@@ -123,9 +150,50 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
                         if (isNotEmpty( uWeight )){
                             updateWeight();
                         }
+                        break;
                     case UPDATE_PRICE:
                         if (isValidPriceData()){
                             updatePrice();
+                        }
+                        break;
+                    case UPDATE_STOCKS:
+                        if (TextUtils.isEmpty( updateDetailsEditText.getText().toString() )){
+                            updateDetailsEditText.setError( "Required!" );
+                        }else{
+                            // product Stocks
+                            updateTextData( "p_stocks_" + (listVariant + 1), updateDetailsEditText.getText().toString() );
+                        }
+                        break;
+                    case UPDATE_NAME:
+                        if (TextUtils.isEmpty( updateDetailsEditText.getText().toString() )){
+                            updateDetailsEditText.setError( "Required!" );
+                        }else{
+                            // product Name
+                            updateTextData( "p_name_" + (listVariant + 1), updateDetailsEditText.getText().toString() );
+                        }
+                        break;
+                    case UPDATE_DETAILS:
+                        if (TextUtils.isEmpty( updateDetailsEditText.getText().toString() )){
+                            updateDetailsEditText.setError( "Required!" );
+                        }else{
+                            // product_details
+                            updateTextData( "p_details_" + (listVariant + 1), updateDetailsEditText.getText().toString() );
+                        }
+                        break;
+                    case UPDATE_DESCRIPTION:
+                        if (TextUtils.isEmpty( updateDetailsEditText.getText().toString() )){
+                            updateDetailsEditText.setError( "Required!" );
+                        }else{
+                            // Description...
+                            updateTextData( "p_description_" + (listVariant + 1), updateDetailsEditText.getText().toString() );
+                        }
+                        break;
+                    case UPDATE_GUIDE_INFO:
+                        if (TextUtils.isEmpty( updateDetailsEditText.getText().toString() )){
+                            updateDetailsEditText.setError( "Required!" );
+                        }else{
+                            // Important Information...
+                            updateTextData( "p_guide_" + (listVariant + 1), updateDetailsEditText.getText().toString() );
                         }
                         break;
                     default:
@@ -168,6 +236,58 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
                 weightType = null;
             }
         } );
+
+    }
+
+    // Set Copy From Spinner
+    private void setProCopyFromSpinner(){
+        List <String> productVarList = new ArrayList <>();
+        productVarList.clear();
+        productVarList.add( "Select" );
+        for (int i = 0; i < ProductDetails.pProductModel.getProductSubModelList().size(); i++){
+            productVarList.add( String.valueOf( 1+i ) );
+        }
+        // Qty Type Text Adopter...
+        ArrayAdapter <String> qtyTypeList = new ArrayAdapter<String>( getContext(),
+                android.R.layout.simple_spinner_item, productVarList );
+        proCopyFromSpinner.setAdapter( qtyTypeList );
+        proCopyFromSpinner.setOnItemSelectedListener( new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView <?> parent, View view, int position, long id) {
+                if (position > 0 && position != (listVariant+1) ){
+                    dialog.show();
+                    setProCopyFromSpinnerData( position - 1 );
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView <?> parent) {
+
+            }
+        } );
+    }
+    // set Data From other Variant...
+    private void setProCopyFromSpinnerData( int position){
+        switch (requestType){
+            case UPDATE_WEIGHT:
+            case UPDATE_PRICE:
+            case UPDATE_STOCKS:
+                showToast( "Not Accessible!" );
+                break;
+            case UPDATE_NAME:
+                updateDetailsHeadingText.setText( ProductDetails.pProductModel.getProductSubModelList().get( position ).getpName() );
+                break;
+            case UPDATE_DETAILS:
+                updateDetailsHeadingText.setText( ProductDetails.pProductModel.getProductSubModelList().get( position ).getpDetails() );
+                break;
+            case UPDATE_DESCRIPTION:
+                updateDetailsHeadingText.setText( ProductDetails.pProductModel.getProductSubModelList().get( position ).getpDescription() );
+                break;
+            case UPDATE_GUIDE_INFO:
+                updateDetailsHeadingText.setText( ProductDetails.pProductModel.getProductSubModelList().get( position ).getpGuideInfo() );
+                break;
+            default:
+                break;
+        }
 
     }
 
@@ -302,6 +422,7 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
     }
     // Weight Updates request...
     private void updateWeight(){
+//        dialog.show();
         Map<String, Object> updateMap = new HashMap <>();
         if (weightType.equals( "NONE" )){
             updateMap.put( "p_weight_"+(listVariant+1), weightType );
@@ -310,11 +431,15 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
         }
         updateMap.put( "p_last_update_time", StaticMethods.getCrrDate() + " " + StaticMethods.getCrrTime() );
         updateRequest.onUpdateRequest(  this, productID, updateMap);
-//        if (crrShopCatIndex != -1 && layoutIndex != -1 && productIndex != -1 ){
-//            homeCatListModelList.get( crrShopCatIndex ).getHomeListModelList().get( layoutIndex ).getProductModelList().get( productIndex )
-//                    .getProductSubModelList().get( listVariant ).setpWeight( uWeight.getText().toString() + "-" +weightType );
-//        }
             // Finish this activity...
+    }
+    // Update EditText Text Dialog Data...
+    private void updateTextData(String updateKey, String updateValue){
+        dialog.show();
+        Map<String, Object> updateMap = new HashMap <>();
+        updateMap.put( updateKey, updateValue );
+        updateMap.put( "p_last_update_time", StaticMethods.getCrrDate() + " " + StaticMethods.getCrrTime() );
+        updateRequest.onUpdateRequest(  this, productID, updateMap);
     }
 
     // On Finish Update...
@@ -327,6 +452,23 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
             case UPDATE_PRICE:
                 ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpMrpPrice( uMrpEditText.getText().toString() );
                 ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpSellingPrice( uSellingEditText.getText().toString() );
+                break;
+            case UPDATE_STOCKS:
+                ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpStocks( updateDetailsEditText.getText().toString() );
+                break;
+            case UPDATE_NAME:
+                ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpName( updateDetailsEditText.getText().toString() );
+                break;
+            case UPDATE_DETAILS:
+                // product_details
+                ProductDetails.pProductModel.setpDetails( updateDetailsEditText.getText().toString() ); // used For Temporary...
+                ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpDetails( updateDetailsEditText.getText().toString() );
+                break;
+            case UPDATE_DESCRIPTION:
+                ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpDescription( updateDetailsEditText.getText().toString() );
+                break;
+            case UPDATE_GUIDE_INFO:
+                ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpGuideInfo( updateDetailsEditText.getText().toString() );
                 break;
             default:
                 break;
@@ -351,15 +493,48 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
             case UPDATE_WEIGHT:
                 updateWeightLayout.setVisibility( View.VISIBLE );
                 updatePriceLayout.setVisibility( View.GONE );
+                updateDetailsLayout.setVisibility( View.GONE );
                 updateTitle.setText( "Update Weight" );
                 break;
             case UPDATE_PRICE:
                 updatePriceLayout.setVisibility( View.VISIBLE );
                 updateWeightLayout.setVisibility( View.GONE );
+                updateDetailsLayout.setVisibility( View.GONE );
                 updateTitle.setText( "Update Prices" );
+                break;
+            case UPDATE_STOCKS:
+                updateDetailsHeadingText.setText( "Update Stocks" );
+                setVisibilityForDetailsDialog();
+                updateDetailsEditText.setSingleLine( true );
+                updateDetailsEditText.setInputType( InputType.TYPE_CLASS_NUMBER );
+                break;
+            case UPDATE_NAME:
+                updateDetailsHeadingText.setText( "Update Name" );
+                setVisibilityForDetailsDialog();
+                updateDetailsEditText.setMaxLines( 2 );
+                break;
+            case UPDATE_DETAILS:
+                updateDetailsHeadingText.setText( "Update Details" );
+                setVisibilityForDetailsDialog();
+                break;
+            case UPDATE_DESCRIPTION:
+                updateDetailsHeadingText.setText( "Update Descriptions" );
+                setVisibilityForDetailsDialog();
+                break;
+            case UPDATE_GUIDE_INFO:
+                updateDetailsHeadingText.setText( "Update Guide/Important information" );
+                setVisibilityForDetailsDialog();
                 break;
             default:
                 break;
+        }
+    }
+    private void setVisibilityForDetailsDialog(){
+        updateWeightLayout.setVisibility( View.GONE );
+        updatePriceLayout.setVisibility( View.GONE );
+        updateDetailsLayout.setVisibility( View.VISIBLE );
+        if (previousText!=null){
+            updateDetailsEditText.setText( previousText );
         }
     }
     private boolean isNotEmpty(EditText editText){

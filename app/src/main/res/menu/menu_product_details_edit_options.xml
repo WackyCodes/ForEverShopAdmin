@@ -71,6 +71,12 @@
             android:iconTint="@color/colorPrimary"/>
 
         <item
+            android:id="@+id/menu_update_guide_info"
+            android:orderInCategory="100"
+            android:title="User Guide"
+            android:iconTint="@color/colorPrimary"/>
+
+        <item
             android:id="@+id/menu_remove_products"
             android:orderInCategory="100"
             android:title="Remove Products"

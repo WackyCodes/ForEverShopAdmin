@@ -42,7 +42,9 @@
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginBottom="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
@@ -225,7 +227,7 @@
                 <ImageView
                     android:id="@+id/shipping_address_image"
                     android:layout_width="100dp"
-                    android:layout_height="0dp"
+                    android:layout_height="80dp"
                     android:tint="@color/colorPrimary"
                     app:layout_constraintBottom_toBottomOf="@+id/shipping_address_layout"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -473,6 +475,7 @@
             </LinearLayout>
             <!--            Delivery by information Layout -->
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:visibility="gone"
                 android:id="@+id/delivery_boy_const_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">

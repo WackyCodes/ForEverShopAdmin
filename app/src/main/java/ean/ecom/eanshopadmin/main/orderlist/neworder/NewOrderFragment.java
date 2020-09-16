@@ -73,6 +73,14 @@ public class NewOrderFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (newOrderTabAdaptor!=null){
+            newOrderTabAdaptor.notifyDataSetChanged();
+        }
+    }
+
     /**  Order Status
      *          1. WAITING - ( For Accept )
      *          2. ACCEPTED - ( Preparing )

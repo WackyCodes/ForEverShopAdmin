@@ -2,12 +2,16 @@ package ean.ecom.eanshopadmin.main.orderlist.orderviewdetails;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Dialog;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -30,6 +34,7 @@ import ean.ecom.eanshopadmin.main.orderlist.OrderListModel;
 import ean.ecom.eanshopadmin.main.orderlist.OrderProductItemModel;
 import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderTabAdaptor;
 import ean.ecom.eanshopadmin.main.orderlist.neworder.OrderViewPagerFragment;
+import ean.ecom.eanshopadmin.other.DialogsClass;
 import ean.ecom.eanshopadmin.other.StaticMethods;
 
 import static ean.ecom.eanshopadmin.database.DBQuery.newOrderList;
@@ -61,6 +66,7 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
     private int LIST_TYPE = -1;
     private int ListIndex = -1;
     private String orderID = null;
+    private Dialog dialog;
 
 
     // Variables...
@@ -80,6 +86,7 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
     private TextView shippingName; // shipping_name
     private TextView shippingAddress; // shipping_address
     private TextView shippingPin; // shipping_address_pin
+    private ImageView shippingImage; // shipping_address_image
 
     // Order Status...
     private ImageView orderStatusIcon ; // order_status_icon
@@ -102,6 +109,7 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
     private TextView deliveryBoyStatus; // delivery_boy_status
     private TextView deliveryBoyProfileBtn; // delivery_boy_view_profile
 
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,10 +117,9 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         setContentView( R.layout.activity_order_view );
 
         //--------
-
         orderID = getIntent().getStringExtra( "ORDER_ID" );
         LIST_TYPE = getIntent().getIntExtra( "ORDER_STATUS", -1 );
-
+        dialog = DialogsClass.getDialog( this );
         //---------------------------------------------------------------------------------
         orderDate = findViewById( R.id.order_date );
         orderTime = findViewById( R.id.order_time );
@@ -128,6 +135,7 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         shippingName = findViewById( R.id.shipping_name );
         shippingAddress = findViewById( R.id.shipping_address );
         shippingPin = findViewById( R.id.shipping_address_pin );
+        shippingImage = findViewById( R.id.shipping_address_image );
 
         // Order Status...
         orderStatusIcon = findViewById( R.id.order_status_icon );
@@ -152,6 +160,18 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
 
         //---------------------------------------------------------------------------------
 
+        toolbar = findViewById( R.id.appToolbar );
+        setSupportActionBar( toolbar );
+        try {
+            getSupportActionBar().setDisplayShowTitleEnabled( true );
+            getSupportActionBar().setDisplayHomeAsUpEnabled( true );
+            getSupportActionBar().setTitle( orderID );
+        }catch (NullPointerException ignored){ }
+
+        shippingImage.setImageResource( R.drawable.ic_person_pin_circle_black_24dp );
+//        searchingDeliveryBoyLayout.setVisibility( View.GONE );
+//        deliveryBoyViewLayout.setVisibility( View.GONE );
+
         LinearLayoutManager layoutManager = new LinearLayoutManager( this );
         layoutManager.setOrientation( RecyclerView.VERTICAL );
         orderListRecycler.setLayoutManager( layoutManager );
@@ -160,24 +180,59 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         acceptOrderBtn.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO:
-
+                dialog.show();
+                int list_index = getListIndex( orderID );
+                if (list_index < 0 || list_index > newOrderList.size()){
+                    dialog.dismiss();
+                    showToast( OrderViewActivity.this, "Order Item Not found!" );
+                }else{
+                    setAcceptOrderBtn( list_index );
+                    // Change List type...
+                    LIST_TYPE = ORDER_LIST_PREPARING;
+                    setOrderStatusLayout();
+                }
             }
         } );
         // Packed Order Click Btn...
         packingDoneBtn.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO:
+                dialog.show();
+                int list_index = getListIndex( orderID );
+                if (list_index < 0 || list_index > preparingOrderList.size()){
+                    dialog.dismiss();
+                    showToast( OrderViewActivity.this, "Order Item Not found!" );
 
+                }else{
+                    setPackingTextBtn( list_index );
+
+                    // Change List type...
+                    LIST_TYPE = ORDER_LIST_READY_TO_DELIVER;
+                    setOrderStatusLayout();
+                }
             }
         } );
         // Out For Delivery Click Btn...
         outForDeliveryBtn.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO:
+                if (TextUtils.isEmpty( deliveryOtpEditText.getText().toString() )){
+                    deliveryOtpEditText.setError( "Required!" );
+                }
+                else {
+                    dialog.show();
+                    int list_index = getListIndex( orderID );
 
+                    if (list_index < 0 || list_index > readyToDeliveredList.size()){
+                        dialog.dismiss();
+                        showToast( OrderViewActivity.this, "Order Item Not found!" );
+                    }else{
+                        setOutForDeliveryBtn(  deliveryOtpEditText.getText().toString() , list_index );
+                        // Change List type...
+                        LIST_TYPE = ORDER_LIST_OUT_FOR_DELIVERY;
+                        setOrderStatusLayout();
+                    }
+                }
             }
         } );
         // Visibility for Delivery View Click Btn...
@@ -191,6 +246,16 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         // Get Sample Index and Set Data...
         ListIndex = getListIndex(orderID);
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//        int id = item.getItemId();
+        if ( item.getItemId() == android.R.id.home){
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected( item );
     }
 
     // new Order List...
@@ -260,8 +325,15 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
     // Set Activity Data...
     private void setActivityData(){
 
+        // Date
         orderDate.setText( orderListModel.getOrderDate() );
-        orderTime.setText( orderListModel.getOrderTime() );
+//        Time
+        String timeDuration = StaticMethods.getTimeFromNow(  orderListModel.getOrderDate(),  orderListModel.getOrderTime() +":00" );
+        if(timeDuration.substring( 3 ).equals( orderListModel.getOrderDate() )){
+            orderTime.setText( "at " + orderListModel.getOrderTime() );
+        }else{
+            orderTime.setText( "Order " + timeDuration );
+        }
 
 //        orderListRecycler
         OrderViewListAdaptor viewListAdaptor = new OrderViewListAdaptor( orderListModel.getOrderProductItemsList() );
@@ -336,12 +408,25 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
             // Check and send Request...
             if (orderListModel.getDeliveredByName() != null && orderListModel.getDeliveredByAuthID() != null){
                 deliveryBoyViewLayout.setVisibility( View.VISIBLE );
-                // TODO : SET DATA>>>
+                // Set Data...
+                setDeliveryData();
             }else{
                 requestToFindDeliveryBoy();
             }
             setDeliveryBoyViewBtn(true);
         }
+    }
+    // Set Delivery Data...
+    private void setDeliveryData(){
+        deliveryBoyName.setText( orderListModel.getDeliveredByName() );
+        if (LIST_TYPE == ORDER_LIST_OUT_FOR_DELIVERY  ){
+            deliveryBoyStatus.setText( "On the Way" );
+        }else if(LIST_TYPE != ORDER_LIST_SUCCESS){
+            deliveryBoyStatus.setText( "Delivered" );
+        }else{
+            deliveryBoyStatus.setText( "Upcoming..." );
+        }
+
     }
     // Set Visibility Btn.
     private void setDeliveryBoyViewBtn(boolean setDown){
@@ -362,14 +447,30 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         }
         if ( orderListModel.getDeliveryID() != null ){
             // send Request...
-            updateQuery.onFindDeliveryBoyQuery( this );
+            updateQuery.onFindDeliveryBoyQuery( this, orderID );
         }
+    }
+
+    private void updateOrderStatusInModel(String updateStatus){
+        orderListModel.setDeliveryStatus( updateStatus );
+
     }
 
     //----------------------- Override Methods
     @Override
-    public void onDeliveryBoyFound() {
+    public void onDeliveryBoyFound(Map<String, Object> deliveryBoyInfo) {
+        orderListModel.setDeliveredByAuthID( deliveryBoyInfo.get( "delivery_by_uid" ).toString() );
+        orderListModel.setDeliveredByMobile( deliveryBoyInfo.get( "delivery_by_mobile" ).toString() );
+        orderListModel.setDeliveredByName( deliveryBoyInfo.get( "delivery_by_name" ).toString() );
+        orderListModel.setDeliveryID( deliveryBoyInfo.get( "delivery_id" ).toString() );
 
+        if (searchingDeliveryBoyLayout.getVisibility() == View.VISIBLE){
+            deliveryBoyViewLayout.setVisibility( View.VISIBLE );
+            searchingDeliveryBoyLayout.setVisibility( View.GONE );
+        }else{
+            deliveryBoyViewLayout.setVisibility( View.VISIBLE );
+        }
+        setDeliveryData();
     }
 
     @Override
@@ -380,6 +481,9 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
     //----------------------- Action Button Query --------------------------------------------------
     // Accept Order Click Listener...
     private void setAcceptOrderBtn(int index){
+        if (!dialog.isShowing()){
+            dialog.show();
+        }
         // Create Map For Notify User...
         Map <String, Object> notifyMap = new HashMap <>();
         notifyMap.put( "index", StaticMethods.getRandomIndex() );
@@ -420,9 +524,10 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         deliveryMap.put( "shipping_address", orderListModel.getShippingAddress() );
         deliveryMap.put( "shipping_pin", orderListModel.getShippingPinCode() );
 
-        DBQuery.setDeliveryDocument( null, deliveryMap, newOrderList.get( index ));
+        DBQuery.setDeliveryDocument( dialog, deliveryMap, newOrderList.get( index ));
 
         newOrderList.remove( index );
+
         // Show the No Order Text.. If List size = 0;
 //        if (newOrderList.size() == 0){
 //            NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_NEW_ORDER, View.VISIBLE );
@@ -432,16 +537,20 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         if (OrderViewPagerFragment.orderViewPagerListAdaptor != null){
             OrderViewPagerFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
         } */
-
+        // Update In Local Model//
+        updateOrderStatusInModel("ACCEPTED");
     }
 
     // set Packing Done Btn Click Listener...
     private void setPackingTextBtn(int index){
+        if (!dialog.isShowing()){
+            dialog.show();
+        }
 
         Map <String, Object> updateMap = new HashMap <>();
         updateMap.put( "delivery_status", "PACKED" );
         preparingOrderList.get( index ).setDeliveryStatus( "PACKED" );
-        DBQuery.updateOrderStatus( null, preparingOrderList.get( index ) ,updateMap );
+        DBQuery.updateOrderStatus( dialog, preparingOrderList.get( index ) ,updateMap );
 
         // Create Map For Notify User...
         Map <String, Object> notifyMap = new HashMap <>();
@@ -464,10 +573,16 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
 //            NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_PREPARING, View.VISIBLE );
 //        }
         // Notify Data Changed...
+
+        // Update In Local Model//
+        updateOrderStatusInModel("PACKED");
     }
 
     // Out For Delivery Action...
     private void setOutForDeliveryBtn(String otpPin, int index){
+        if (!dialog.isShowing()){
+            dialog.show();
+        }
         getDeliveryOtp( readyToDeliveredList.get( index ).getDeliveryID(), otpPin );
     }
 
@@ -483,14 +598,20 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
                     String otp = task.getResult().get( "verify_otp" ).toString();
                     if (otp.equals( verifyOtp )){
                         // TODO: Out For Delivery...
-                        showToast(  OrderViewActivity.this, "Otp Matched!" );
+                        showToast(  OrderViewActivity.this, "Verified." );
+                        dialog.dismiss();
 
+                        // Update In Local Model//
+//                        updateOrderStatusInModel("PACKED");
                     }else{
-//                        outForDeliveryPinEt.setError( "Not Matched!" );
+                        deliveryOtpEditText.setError( "Not Matched!" );
+                        dialog.dismiss();
+                        showToast( OrderViewActivity.this, "Please Enter Correct OTP!" );
                     }
 
                 }else{
-
+                    dialog.dismiss();
+                    showToast( OrderViewActivity.this, "Something Went Wrong! Error : "+ task.getException().getMessage() );
                 }
             }
         } );

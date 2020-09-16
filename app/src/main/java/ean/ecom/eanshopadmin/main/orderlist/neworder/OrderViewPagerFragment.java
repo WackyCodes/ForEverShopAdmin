@@ -70,5 +70,13 @@ public class OrderViewPagerFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (orderViewPagerListAdaptor!=null){
+            orderViewPagerListAdaptor.notifyDataSetChanged();
+        }
+    }
+
 
 }

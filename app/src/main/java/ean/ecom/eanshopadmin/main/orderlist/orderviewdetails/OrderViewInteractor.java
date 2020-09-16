@@ -17,12 +17,12 @@ import java.util.Map;
  */
 public interface OrderViewInteractor {
 
-    void onDeliveryBoyFound(  );
+    void onDeliveryBoyFound( Map<String, Object> deliveryBoyInfo );
     void onUpdateOrderStatus( int updateCode );
 
     interface OrderStatusUpdator{
         void onUpdateStatusQuery(OrderViewInteractor orderStatusUpdator, Map<String, Object> updateMap);
-        void onFindDeliveryBoyQuery(OrderViewInteractor orderStatusUpdator);
+        void onFindDeliveryBoyQuery(OrderViewInteractor orderStatusUpdator, String orderID);
     }
 
 }

@@ -21,8 +21,12 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -41,6 +45,7 @@ import ean.ecom.eanshopadmin.R;
 import ean.ecom.eanshopadmin.other.DialogsClass;
 import ean.ecom.eanshopadmin.other.StaticMethods;
 import ean.ecom.eanshopadmin.product.ProductViewInterface;
+import ean.ecom.eanshopadmin.product.productview.ProductDetails;
 import ean.ecom.eanshopadmin.product.update.AddNewImageAdaptor;
 import ean.ecom.eanshopadmin.product.update.UpdateData;
 import ean.ecom.eanshopadmin.product.update.UpdateDataRequest;
@@ -50,6 +55,7 @@ import static ean.ecom.eanshopadmin.database.DBQuery.storageReference;
 import static ean.ecom.eanshopadmin.other.StaticValues.GALLERY_CODE;
 import static ean.ecom.eanshopadmin.other.StaticValues.READ_EXTERNAL_MEMORY_CODE;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_ID;
+import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_IMAGES;
 import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_SPECIFICATION;
 import static ean.ecom.eanshopadmin.product.update.AddNewImageAdaptor.uploadImageDataModelList;
 
@@ -91,9 +97,11 @@ public class UpdateImage_SpFragment extends Fragment implements
         if (uploadImageDataModelList != null){
             this.localImageList = uploadImageDataModelList;
             updateImageFromIndex = uploadImageDataModelList.size();
+            //  pProductModel.getProductSubModelList().get( currentVariant ).getpImage()
         }
         if (specificationModelList != null){
             UpdateImage_SpFragment.specificationModelList = specificationModelList;
+            // pProductModel.getProductSubModelList().get( currentVariant ).getpSpecificationList()
         }
     }
 
@@ -133,7 +141,7 @@ public class UpdateImage_SpFragment extends Fragment implements
 
         // set Header...
         productIDText.setText( "Product ID : "+ productID );
-        productVerText.setText( "Ver : " + (listVariant + 1) );
+        productVerText.setText( "Variant : " + (listVariant + 1) );
 
         /// Set Layout ...
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager( getContext() );
@@ -195,7 +203,66 @@ public class UpdateImage_SpFragment extends Fragment implements
             }
         } );
 
+        // Set Copy From Spinner
+        setProCopyFromSpinner();
+
         return view;
+    }
+
+    // Set Copy From Spinner
+    private void setProCopyFromSpinner(){
+        List<String> productVarList = new ArrayList <>();
+        productVarList.clear();
+        productVarList.add( "Select" );
+        for (int i = 0; i < ProductDetails.pProductModel.getProductSubModelList().size(); i++){
+            productVarList.add( String.valueOf( 1+i ) );
+        }
+        // Qty Type Text Adopter...
+        ArrayAdapter <String> qtyTypeList = new ArrayAdapter<String>( getContext(),
+                android.R.layout.simple_spinner_item, productVarList );
+        proCopyFromSpinner.setAdapter( qtyTypeList );
+        proCopyFromSpinner.setOnItemSelectedListener( new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView <?> parent, View view, int position, long id) {
+                if (position > 0 && position != (listVariant+1) ){
+                    dialog.show();
+                    setProCopyFromSpinnerData( position - 1 );
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView <?> parent) {
+
+            }
+        } );
+    }
+    // Set Data from Another Variant...
+    private void setProCopyFromSpinnerData(int position){
+        if (updateCode == UPDATE_SPECIFICATION){
+            if (ProductDetails.pProductModel.getProductSubModelList().get( position ).getpSpecificationList() != null){
+                UpdateImage_SpFragment.specificationModelList = ProductDetails.pProductModel.getProductSubModelList().get( position ).getpSpecificationList();
+                // Adaptor...
+//                specificationAdaptor = new AddSpecificationAdaptor( );
+//                recyclerView.setAdapter( specificationAdaptor );
+                specificationAdaptor.notifyDataSetChanged();
+                dialog.dismiss();
+            }else{
+                showToast( "No Specification Found!" );
+                dialog.dismiss();
+            }
+        }else{
+            if (ProductDetails.pProductModel.getProductSubModelList().get( position ).getpImage() != null){
+                localImageList = ProductDetails.pProductModel.getProductSubModelList().get( position ).getpImage();
+                updateImageFromIndex =  localImageList.size();
+                //  Notify the layout
+                imageAdaptor = new AddNewImageAdaptor( this, localImageList, updateImageFromIndex );
+                recyclerView.setAdapter( imageAdaptor );
+                imageAdaptor.notifyDataSetChanged();
+                dialog.dismiss();
+            }else{
+                showToast( "No Images Found!" );
+                dialog.dismiss();
+            }
+        }
     }
 
     private boolean isListNotEmpty( ){
