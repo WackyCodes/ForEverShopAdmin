@@ -2,7 +2,6 @@ package ean.ecom.eanshopadmin.product;
 
 import java.util.List;
 
-import ean.ecom.eanshopadmin.product.update.specification.AddSpecificationModel;
 
 public class ProductSubModel {
 
@@ -17,7 +16,8 @@ public class ProductSubModel {
     private String pDetails;
     private String pGuideInfo;
     // Specification List...
-    private List<AddSpecificationModel> pSpecificationList;
+//    private List<AddSpecificationModel> pSpecificationList;
+    private List<Object> pSpecificationList;
 
     public ProductSubModel(String pName, List<String> pImage, String pSellingPrice, String pMrpPrice, String pWeight, String pStocks, String pOffer) {
         this.pName = pName;
@@ -85,11 +85,11 @@ public class ProductSubModel {
         this.pOffer = pOffer;
     }
 
-    public List <AddSpecificationModel> getpSpecificationList() {
+    public List <Object> getpSpecificationList() {
         return pSpecificationList;
     }
 
-    public void setpSpecificationList(List <AddSpecificationModel> pSpecificationList) {
+    public void setpSpecificationList(List <Object> pSpecificationList) {
         this.pSpecificationList = pSpecificationList;
     }
 

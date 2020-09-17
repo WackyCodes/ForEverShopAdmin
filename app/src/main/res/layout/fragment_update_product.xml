@@ -89,7 +89,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginRight="4dp"
                     android:background="@color/colorPrimary"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -105,7 +104,8 @@
                     <Spinner
                         android:id="@+id/copy_from_spinner"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
+                        android:foregroundTint="@color/colorWhite"
                         android:backgroundTint="@color/colorWhite" />
 
                 </LinearLayout>

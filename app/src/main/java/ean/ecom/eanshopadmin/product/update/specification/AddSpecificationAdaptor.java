@@ -123,7 +123,8 @@ public class AddSpecificationAdaptor extends RecyclerView.Adapter<AddSpecificati
                     sp_headingText.setVisibility( View.GONE );
                 }
 
-            }else{
+            }
+            else{
                 // visible Bottom and invisible Top...
                 sp_layout_top.setVisibility( View.GONE );
                 sp_add_new_layout.setVisibility( View.VISIBLE );
@@ -178,7 +179,8 @@ public class AddSpecificationAdaptor extends RecyclerView.Adapter<AddSpecificati
                         if (position == specificationModelList.size()-1){
                             sp_add_new_layout.setVisibility( View.VISIBLE );
                         }
-                    }else{
+                    }
+                    else{
                         if (specificationFeatureModelList.size() == 0){
                             showToast( "Add Some feature first..!" );
                         }else{
@@ -240,5 +242,75 @@ public class AddSpecificationAdaptor extends RecyclerView.Adapter<AddSpecificati
             Toast.makeText( itemView.getContext(), msg, Toast.LENGTH_SHORT ).show();
         }
     }
+
+
+    ///////////////////////////////////////  Features Adaptor  /////////////////////////////////////
+
+    class AddSpecificationFeatureAdaptor  extends  RecyclerView.Adapter<AddSpecificationFeatureAdaptor.ViewHolder> {
+
+        //    private List <AddSpecificationModel> specificationModelList;
+        private List<AddSpecificationFeatureModel> specificationFeatureModelList;
+        private int index;
+
+        public AddSpecificationFeatureAdaptor(List <AddSpecificationFeatureModel> specificationFeatureModelList, int index) {
+            this.specificationFeatureModelList = specificationFeatureModelList;
+            this.index = index;
+        }
+
+        public AddSpecificationFeatureAdaptor(int index ) {
+            this.index = index;
+        }
+
+        @NonNull
+        @Override
+        public AddSpecificationFeatureAdaptor.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View spFeatureView = LayoutInflater.from( parent.getContext() ).inflate( R.layout.product_detail_specification_item, parent, false );
+            return new ViewHolder( spFeatureView );
+        }
+        @Override
+        public void onBindViewHolder(@NonNull AddSpecificationFeatureAdaptor.ViewHolder holder, int position) {
+            if(index >= 0){
+//            String name = specificationModelList.get( index ).getSpecificationFeatureModelList().get( position ).getFeatureName();
+//            String details = specificationModelList.get( index ).getSpecificationFeatureModelList().get( position ).getFeatureDetails();
+
+                String name = specificationFeatureModelList.get( position ).getFeatureName();
+                String details = specificationFeatureModelList.get( position ).getFeatureDetails();
+                holder.setData( name, details, position );
+            }
+        }
+        @Override
+        public int getItemCount() {
+            if (index >= 0)
+                return specificationFeatureModelList.size();
+            else
+                return 0;
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            private TextView featureName;
+            private TextView featureDetails;
+            private ImageButton featureDeleteBtn;
+            public ViewHolder(@NonNull View itemView) {
+                super( itemView );
+                featureName = itemView.findViewById( R.id.feature_name );
+                featureDetails = itemView.findViewById( R.id.feature_value );
+                featureDeleteBtn = itemView.findViewById( R.id.add_new_pro_sp_feature_delete_btn );
+            }
+            private void setData(String name, String detail, final int pos){
+                featureDeleteBtn.setVisibility( View.VISIBLE );
+                featureName.setText( name );
+                featureDetails.setText( detail );
+                featureDeleteBtn.setOnClickListener( new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        specificationFeatureModelList.remove( pos );
+                        UpdateImage_SpFragment.specificationAdaptor.notifyDataSetChanged();
+                        // :  addSpecificationFeatureAdaptor.notifyDataSetChanged();
+                    }
+                } );
+            }
+        }
+    }
+
 
 }

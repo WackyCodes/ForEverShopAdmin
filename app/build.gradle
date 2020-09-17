@@ -9,8 +9,8 @@ android {
         applicationId "ean.ecom.eanshopadmin"
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 202
-        versionName "1.208.02"
+        versionCode 203
+        versionName "1.209.01"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true

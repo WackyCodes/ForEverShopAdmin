@@ -17,72 +17,28 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="54dp"
+            android:elevation="6dp"
+            android:orientation="horizontal"
             android:background="@color/colorPrimary">
 
             <ImageView
                 android:id="@+id/home_back_imageview"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
                 android:padding="6dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_arrow_back_black_24dp" />
+                android:layout_marginLeft="4dp"
+                app:srcCompat="@drawable/ic_arrow_back_black_24dp"
+                />
 
-            <TextView
-                android:id="@+id/pro_ver_no_text"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="4dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="Variety : 1"
-                android:textAlignment="center"
-                android:textColor="@color/colorWhite"
-                app:layout_constraintBottom_toTopOf="@+id/copy_from_spinner_layout"
-                app:layout_constraintStart_toStartOf="@+id/copy_from_spinner_layout"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <LinearLayout
-                android:id="@+id/copy_from_spinner_layout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:paddingLeft="4dp"
-                    android:text="Copy From :"
-                    android:textAlignment="center"
-                    android:textColor="@color/colorWhite" />
-
-                <Spinner
-                    android:id="@+id/copy_from_spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/colorWhite" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/home_back_imageview"
-                app:layout_constraintTop_toTopOf="parent">
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/update_title"
@@ -94,18 +50,67 @@
                     android:textColor="@color/colorWhite"
                     android:textSize="16dp"
                     android:textStyle="bold" />
-
                 <TextView
                     android:id="@+id/pro_id_text"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="Product ID : 4620545102"
-                    android:textColor="@color/colorWhite" />
+                    android:text="Product ID : "
+                    android:textColor="@color/colorWhite"
+                    />
 
             </LinearLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary"
+                android:orientation="vertical"
+                android:gravity="end"
+                android:textAlignment="viewEnd"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <TextView
+                    android:id="@+id/pro_ver_no_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:padding="2dp"
+                    android:layout_marginRight="10dp"
+                    android:text="Variant : 1"
+                    android:textColor="@color/colorWhite"
+                    />
+
+                <LinearLayout
+                    android:id="@+id/copy_from_spinner_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/colorPrimary"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingLeft="4dp"
+                        android:text="Copy From :"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorWhite" />
+
+                    <Spinner
+                        android:id="@+id/copy_from_spinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:foregroundTint="@color/colorWhite"
+                        android:backgroundTint="@color/colorWhite" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
         <ScrollView
             android:id="@+id/recycler_scroll_view"

@@ -86,7 +86,7 @@ public class UpdateImage_SpFragment extends Fragment implements
 
     public UpdateImage_SpFragment(ProductViewInterface rootActivity, int listVariant, String productID, int updateCode,
                                   @Nullable List<String> uploadImageDataModelList,
-                                  @Nullable List <AddSpecificationModel> specificationModelList) {
+                                  @Nullable List <Object> specificationModelList) {
         // Required empty public constructor
         this.rootListener = rootActivity;
         this.listVariant = listVariant;
@@ -100,8 +100,9 @@ public class UpdateImage_SpFragment extends Fragment implements
             //  pProductModel.getProductSubModelList().get( currentVariant ).getpImage()
         }
         if (specificationModelList != null){
-            UpdateImage_SpFragment.specificationModelList = specificationModelList;
+            UpdateImage_SpFragment.specificationModelList = new ArrayList <>();
             // pProductModel.getProductSubModelList().get( currentVariant ).getpSpecificationList()
+            setSpecificationModelList( specificationModelList );
         }
     }
 
@@ -224,7 +225,7 @@ public class UpdateImage_SpFragment extends Fragment implements
         proCopyFromSpinner.setOnItemSelectedListener( new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView <?> parent, View view, int position, long id) {
-                if (position > 0 && position != (listVariant+1) ){
+                if (position > 0 ){ //  && position != (listVariant+1)
                     dialog.show();
                     setProCopyFromSpinnerData( position - 1 );
                 }
@@ -239,11 +240,12 @@ public class UpdateImage_SpFragment extends Fragment implements
     private void setProCopyFromSpinnerData(int position){
         if (updateCode == UPDATE_SPECIFICATION){
             if (ProductDetails.pProductModel.getProductSubModelList().get( position ).getpSpecificationList() != null){
-                UpdateImage_SpFragment.specificationModelList = ProductDetails.pProductModel.getProductSubModelList().get( position ).getpSpecificationList();
+                UpdateImage_SpFragment.specificationModelList = new ArrayList <>();
+                setSpecificationModelList( ProductDetails.pProductModel.getProductSubModelList().get( position ).getpSpecificationList() );
                 // Adaptor...
 //                specificationAdaptor = new AddSpecificationAdaptor( );
 //                recyclerView.setAdapter( specificationAdaptor );
-                specificationAdaptor.notifyDataSetChanged();
+//                specificationAdaptor.notifyDataSetChanged();
                 dialog.dismiss();
             }else{
                 showToast( "No Specification Found!" );
@@ -262,6 +264,41 @@ public class UpdateImage_SpFragment extends Fragment implements
                 showToast( "No Images Found!" );
                 dialog.dismiss();
             }
+        }
+    }
+    // set Specification List...
+    private void setSpecificationModelList(List <Object> specificationModelList ){
+        for ( Object object : specificationModelList ){
+            // For Every Object We have A Data Model.. in the map Form...
+            HashMap <String, Object> specificationModelMap = (HashMap <String, Object>) object;
+
+            if (specificationModelMap.get( "specificationFeatureModelList" ) != null){
+                // Get Feature List...
+                List<Object> featureModelList = (List <Object>) specificationModelMap.get( "specificationFeatureModelList" );
+
+                List<AddSpecificationFeatureModel> featureModelListLocal  = new ArrayList <>();
+
+                for (Object featureObj : featureModelList){
+                    HashMap <String, Object> featureMap = (HashMap <String, Object>) featureObj;
+                    featureModelListLocal.add( new AddSpecificationFeatureModel(
+                            featureMap.get( "featureName" ).toString(),
+                            featureMap.get( "featureDetails" ).toString()
+                    ) );
+                }
+
+                UpdateImage_SpFragment.specificationModelList.add( new AddSpecificationModel(
+                        specificationModelMap.get( "spHeading" ).toString(),
+                        featureModelListLocal
+                ) );
+
+                if (specificationAdaptor!=null){
+                    specificationAdaptor.notifyDataSetChanged();
+                }
+            }
+            if (specificationAdaptor!=null){
+                specificationAdaptor.notifyDataSetChanged();
+            }
+
         }
     }
 

@@ -254,7 +254,7 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
         proCopyFromSpinner.setOnItemSelectedListener( new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView <?> parent, View view, int position, long id) {
-                if (position > 0 && position != (listVariant+1) ){
+                if (position > 0 ){ //  && position != (listVariant+1)
                     dialog.show();
                     setProCopyFromSpinnerData( position - 1 );
                 }
@@ -274,21 +274,21 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
                 showToast( "Not Accessible!" );
                 break;
             case UPDATE_NAME:
-                updateDetailsHeadingText.setText( ProductDetails.pProductModel.getProductSubModelList().get( position ).getpName() );
+                updateDetailsEditText.setText( ProductDetails.pProductModel.getProductSubModelList().get( position ).getpName() );
                 break;
             case UPDATE_DETAILS:
-                updateDetailsHeadingText.setText( ProductDetails.pProductModel.getProductSubModelList().get( position ).getpDetails() );
+                updateDetailsEditText.setText( ProductDetails.pProductModel.getProductSubModelList().get( position ).getpDetails() );
                 break;
             case UPDATE_DESCRIPTION:
-                updateDetailsHeadingText.setText( ProductDetails.pProductModel.getProductSubModelList().get( position ).getpDescription() );
+                updateDetailsEditText.setText( ProductDetails.pProductModel.getProductSubModelList().get( position ).getpDescription() );
                 break;
             case UPDATE_GUIDE_INFO:
-                updateDetailsHeadingText.setText( ProductDetails.pProductModel.getProductSubModelList().get( position ).getpGuideInfo() );
+                updateDetailsEditText.setText( ProductDetails.pProductModel.getProductSubModelList().get( position ).getpGuideInfo() );
                 break;
             default:
                 break;
         }
-
+        dialog.dismiss();
     }
 
     // Price Update...

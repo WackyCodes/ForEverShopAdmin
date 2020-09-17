@@ -91,7 +91,10 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="8dp"
+                        android:paddingLeft="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingRight="8dp"
+                        android:paddingBottom="8dp"
                         android:textSize="16sp"
                         android:text="Description"
                         android:textAlignment="viewStart"
@@ -119,7 +122,10 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="8dp"
+                        android:paddingLeft="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingRight="8dp"
+                        android:paddingBottom="8dp"
                         android:textSize="16sp"
                         android:text="Details"
                         android:textAlignment="viewStart"
@@ -128,6 +134,36 @@
                         android:gravity="start" />
                     <TextView
                         android:id="@+id/product_details_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:textColor="@color/colorBlack"/>
+                </LinearLayout>
+                <!-- User Guide -->
+                <LinearLayout
+                    android:id="@+id/product_guide_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/back_rectangle_4dp_layout"
+                    android:elevation="4dp"
+                    android:layout_margin="2dp"
+                    android:padding="4dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingRight="8dp"
+                        android:paddingBottom="8dp"
+                        android:textSize="16sp"
+                        android:text="Guide / Important information"
+                        android:textAlignment="viewStart"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimary"
+                        android:gravity="start" />
+                    <TextView
+                        android:id="@+id/product_guide_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="16dp"
@@ -149,7 +185,10 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="8dp"
+                        android:paddingLeft="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingRight="8dp"
+                        android:paddingBottom="8dp"
                         android:textSize="16sp"
                         android:text="Specifications"
                         android:textAlignment="viewStart"

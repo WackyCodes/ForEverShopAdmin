@@ -892,7 +892,9 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
                                     productSubModelList
                             );
 
-                            homeCatListModelList.get( catIndex ).getHomeListModelList().get( index ).getProductModelList().add( productModel );
+                            if (homeCatListModelList.get( catIndex ).getHomeListModelList().size() > index){
+                                homeCatListModelList.get( catIndex ).getHomeListModelList().get( index ).getProductModelList().add( productModel );
+                            }
 //                            homeCatListModelList.get( catIndex ).getHomeListModelList().get( index ).setProductModelList( tempProductModelList );
 
                             if (productHrGridAdaptor != null) {

@@ -45,9 +45,7 @@ import java.util.Map;
 
 import ean.ecom.eanshopadmin.R;
 import ean.ecom.eanshopadmin.addnew.AddNewProductActivity;
-import ean.ecom.eanshopadmin.other.StaticValues;
 import ean.ecom.eanshopadmin.product.update.AddNewImageAdaptor;
-import ean.ecom.eanshopadmin.product.update.specification.AddSpecificationModel;
 import ean.ecom.eanshopadmin.database.DBQuery;
 import ean.ecom.eanshopadmin.other.CheckInternetConnection;
 import ean.ecom.eanshopadmin.other.DialogsClass;
@@ -57,6 +55,8 @@ import ean.ecom.eanshopadmin.product.ProductViewInterface;
 import ean.ecom.eanshopadmin.product.search.ProductSearchActivity;
 import ean.ecom.eanshopadmin.product.update.UpdateDataRequest;
 import ean.ecom.eanshopadmin.product.update.UpdateProductFragment;
+import ean.ecom.eanshopadmin.product.update.specification.AddSpecificationFeatureModel;
+import ean.ecom.eanshopadmin.product.update.specification.AddSpecificationModel;
 import ean.ecom.eanshopadmin.product.update.specification.UpdateImage_SpFragment;
 
 import static ean.ecom.eanshopadmin.database.DBQuery.homeCatListModelList;
@@ -103,6 +103,8 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
     private List<ProductFeaturesModel> productFeaturesModelList = new ArrayList <>();
 
     // Features Layouts...
+    private LinearLayout guideLayout;
+    private TextView guideTextView;
     private LinearLayout detailsLayout;
     private TextView detailsTextView;
     private LinearLayout descriptionLayout;
@@ -208,6 +210,8 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
 
         // ---------- Product Description code----
         // ---------- Features ---
+        guideLayout = findViewById( R.id.product_guide_layout );
+        guideTextView = findViewById( R.id.product_guide_text );
         detailsLayout = findViewById( R.id.product_details_layout );
         detailsTextView = findViewById( R.id.product_details_text );
         descriptionLayout = findViewById( R.id.product_description_layout );
@@ -473,6 +477,7 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
                             pProductModel.getProductSubModelList().get( (tempX-1) ).setpDescription( pDescription );
                             pProductModel.getProductSubModelList().get( (tempX-1) ).setpDetails( pDetails );
                             pProductModel.getProductSubModelList().get( (tempX-1) ).setpGuideInfo( pGuide ); // p_guide_
+                            pProductModel.getProductSubModelList().get( (tempX-1) ).setpSpecificationList( specificationModelList );
 
                         }
 
@@ -591,6 +596,16 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         }else{
             specificationLayout.setVisibility( View.GONE );
         }
+
+        // Guide...
+        if (pProductModel.getProductSubModelList().get( variantIndex ).getpGuideInfo()!= null
+                && pProductModel.getProductSubModelList().get( variantIndex ).getpGuideInfo().trim().length() > 6){
+            guideLayout.setVisibility( View.VISIBLE );
+            guideTextView.setText( productFeaturesModelList.get( variantIndex ).getProductDetails() );
+        }else{
+            guideLayout.setVisibility( View.GONE );
+        }
+
     }
     // ---------------------------------- Update Product -------------------------------------------
     // Update COD : ON / OFF
@@ -663,13 +678,12 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
                                 pProductModel.getProductSubModelList().get( currentVariant ).getpImage(), null) );
                 break;
             case UPDATE_SPECIFICATION:
-                if (pProductModel.getProductSubModelList().get( currentVariant ).getpSpecificationList() == null){
-                    pProductModel.getProductSubModelList().get( currentVariant ).setpSpecificationList( new ArrayList <AddSpecificationModel>() );
-                }
                 fragmentTransaction.replace( updateFrameLayout.getId(),
                         new UpdateImage_SpFragment( this, currentVariant, productID, UPDATE_SPECIFICATION,
-                                null,
-                                pProductModel.getProductSubModelList().get( currentVariant ).getpSpecificationList() ) );
+                                null, productFeaturesModelList.get( currentVariant ).getSpecificationModelList()
+                        ) );
+
+                //  pProductModel.getProductSubModelList().get( currentVariant ).getpSpecificationList()
                 break;
             case UPDATE_STOCKS:
             case UPDATE_PRICE:
@@ -725,8 +739,9 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
                     AddNewImageAdaptor.uploadImageDataModelList = null;// To Release memory..
                     break;
                 case UPDATE_SPECIFICATION:
-                    ProductDetails.pProductModel.getProductSubModelList().get( currentVariant ).setpSpecificationList( UpdateImage_SpFragment.specificationModelList );
-                    UpdateImage_SpFragment.specificationModelList = null; // To Release memory..
+                    List<Object> tempObjList = getSpecificationObjectList();
+                    ProductDetails.pProductModel.getProductSubModelList().get( currentVariant ).setpSpecificationList( tempObjList );
+                    productFeaturesModelList.get( currentVariant ).setSpecificationModelList( tempObjList );
                     break;
                 case UPDATE_DETAILS:
                     productFeaturesModelList.get( currentVariant ).setProductDetails(
@@ -759,8 +774,31 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         showToast( msg );
     }
 
+    private List<Object> getSpecificationObjectList(){
+        List<Object> specificationList = new ArrayList <>();
+        for ( AddSpecificationModel addSpecificationModel : UpdateImage_SpFragment.specificationModelList ){
+            HashMap <String, Object> specificationMap = new HashMap <>();
+            // Add Features For One Model...
+            List<Object> featureObjectList = new ArrayList <>();
+            for ( AddSpecificationFeatureModel featureModel : addSpecificationModel.getSpecificationFeatureModelList() ){
+                HashMap <String, Object> featureMap = new HashMap <>();
+                featureMap.put( "featureName", featureModel.getFeatureName() );
+                featureMap.put( "featureDetails", featureModel.getFeatureDetails() );
+                featureObjectList.add( featureMap );
+            }
+
+            // Add Data into Model Map..
+            specificationMap.put( "spHeading", addSpecificationModel.getSpHeading() );
+            specificationMap.put( "specificationFeatureModelList", featureObjectList );
+
+            specificationList.add( specificationMap );
+        }
+        // UpdateImage_SpFragment.specificationModelList = null; // To Release memory..
+        return specificationList;
+    }
 
 //------------------- Not Usable.. --------------------------
+    /**
     // Update : Stocks, Name, Details...
     private void updateDataDialog( final int updateCode, String title, String text, String hint ){
         final int variant = currentVariant + 1;
@@ -861,6 +899,8 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         } );
 
     }
+
+     */
 
 
 
