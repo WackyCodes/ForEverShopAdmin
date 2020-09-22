@@ -707,6 +707,7 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
         private ImageView indexUpBtn;
         private ImageView indexDownBtn;
         private ImageView deleteLayoutBtn;
+        private ImageView editTitleBtn;// edit_title_image_btn
         private Switch visibleBtn;
         private int temp = 0;
         private Dialog dialog;
@@ -726,11 +727,12 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
             indexDownBtn = itemView.findViewById( R.id.hrViewDownImgView );
             visibleBtn = itemView.findViewById( R.id.hrViewVisibilitySwitch );
             deleteLayoutBtn = itemView.findViewById( R.id.edit_layout_imgView );
+            editTitleBtn = itemView.findViewById( R.id.edit_title_image_btn );
             dialog = DialogsClass.getDialog( itemView.getContext() );
             visibleBtn.setVisibility( View.INVISIBLE );
         }
 
-        private void setData(String productLayId, final String layoutTitle, final List<String> productIDList, List<ProductModel> productModelList, final int index){
+        private void setData(final String productLayId, final String layoutTitle, final List<String> productIDList, List<ProductModel> productModelList, final int index){
             indexNo.setText( "position : "+ (1+index) );
             this.layoutTitle.setText( layoutTitle );
             // Set Warning Text Visibility...
@@ -789,7 +791,7 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
             }
 
             //--------------------------------------------------------------------------------------
-
+            // Delete Layout Btn Click...
             deleteLayoutBtn.setOnClickListener( new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -805,7 +807,13 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
                     }
                 }
             } );
-
+            // Edit Title Btn Click
+            editTitleBtn.setOnClickListener( new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showDialogEditTitle( itemView.getContext(), index, productLayId, layoutTitle );
+                }
+            } );
             // -------  Update Layout...
             setIndexUpDownVisibility( index, indexUpBtn, indexDownBtn ); // set Up and Down Btn Visibility...
             indexUpBtn.setOnClickListener( new View.OnClickListener() {
@@ -926,6 +934,7 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
         private ImageView indexUpBtn;
         private ImageView indexDownBtn;
         private ImageView deleteLayoutBtn;
+        private ImageView editTitleBtn;// edit_title_image_btn
         private Switch visibleBtn;
         private int temp = 0;
         private Dialog dialog;
@@ -943,11 +952,12 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
             indexDownBtn = itemView.findViewById( R.id.hrViewDownImgView );
             visibleBtn = itemView.findViewById( R.id.hrViewVisibilitySwitch );
             deleteLayoutBtn = itemView.findViewById( R.id.edit_layout_imgView );
+            editTitleBtn = itemView.findViewById( R.id.edit_title_image_btn );
             dialog = DialogsClass.getDialog( itemView.getContext() );
             visibleBtn.setVisibility( View.INVISIBLE );
         }
 
-        private void setData(String productLayId, final String layoutTitle, final List<String> productIDList, final List<ProductModel> productModelList, final int index){
+        private void setData(final String productLayId, final String layoutTitle, final List<String> productIDList, final List<ProductModel> productModelList, final int index){
             this.layoutTitle.setText( layoutTitle );
             indexNo.setText( "position : "+ (1+index) );
             // -------------------------------------------------------------------------------------
@@ -1061,6 +1071,7 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
             }
 
             // -------------------------------------------------------------------------------------
+            // Delete Layout Btn Click
             deleteLayoutBtn.setOnClickListener( new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -1076,7 +1087,14 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
                     }
                 }
             } );
-
+            // Edit Title Btn Click
+            editTitleBtn.setOnClickListener( new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showDialogEditTitle( itemView.getContext(), index, productLayId, layoutTitle );
+                }
+            } );
+            // View All Btn Click
             layoutViewAllBtn.setOnClickListener( new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1148,7 +1166,8 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
         }
 
     }
-    //============  Product Grid View Holder ============
+    //============  Product Grid View Holder =======================================================
+
     // Load Product Data...
     private class LoadProductData implements Runnable{
         private int index, childIndex;
@@ -1225,8 +1244,54 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
 
         }
     }
-
-
+    // Dialog to Edit Layout Title...
+    private void showDialogEditTitle(final Context context, final int index, final String layoutId, String catTitle ){
+        final Dialog dialog = DialogsClass.getDialog( context );
+        final Dialog uDialog = new Dialog( context );
+        uDialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
+        uDialog.setContentView( R.layout.dialog_single_edit_text );
+        uDialog.getWindow().setLayout( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT );
+        uDialog.setCancelable( false );
+        Button okBtn = uDialog.findViewById( R.id.dialog_ok_btn );
+        Button cancelBtn = uDialog.findViewById( R.id.dialog_cancel_btn );
+        TextView titleText = uDialog.findViewById( R.id.dialog_title );
+        titleText.setText( "Edit Title" );
+        final EditText getText = uDialog.findViewById( R.id.dialog_editText );
+        if (catTitle!=null){
+            getText.setText( catTitle );
+        }else{
+            getText.setHint( "Enter title here" );
+        }
+        // show the Dialog..
+        uDialog.show();
+        // action Button...
+        cancelBtn.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                uDialog.dismiss();
+            }
+        } );
+        okBtn.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!TextUtils.isEmpty( getText.getText().toString() )) {
+                    // Show Dialog...
+                    dialog.show();
+                    //Check Condition to create Map
+                    Map <String, Object> updateMap = new HashMap <>();
+                    updateMap.put( "layout_title", getText.getText().toString() );
+                    updateOnDocument( dialog, layoutId, updateMap );
+                    // Update in Local List..
+                    homePageList.get( index ).setProductLayoutTitle( getText.getText().toString() );
+                    // Dismiss the title Dialog...
+                    uDialog.dismiss();
+                }else{
+                    getText.setError( "Required!" );
+                }
+            }
+        } );
+    }
+    // Update Index of Layouts...
     private void setIndexUpDownVisibility( int index, ImageView indexUpBtn,  ImageView indexDownBtn){
         if (homePageList.size()>1){
             indexUpBtn.setVisibility( View.VISIBLE );
@@ -1274,6 +1339,7 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
         }
 
     }
+    // Update Query On Database in Requested Layout...
     private void updateOnDocument(final Dialog dialog, String layoutId, Map <String, Object> updateMap){
         firebaseFirestore.collection( "SHOPS" ).document( SHOP_ID )
                 .collection( catID ).document( layoutId ).update( updateMap )
@@ -1289,6 +1355,7 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
     private void showToast(String msg, Context context){
         Toast.makeText( context, msg, Toast.LENGTH_SHORT ).show();
     }
+    // Request to Delete Any Layout From Database
     private void alertDialog(final Context context, final int index, final String layoutId
             , @Nullable final String deletePath, @Nullable final String deleteID){
         AlertDialog.Builder alertD = new AlertDialog.Builder( context );
@@ -1337,6 +1404,5 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
         alertD.show();
     }
 
-    // Add Category...
 
 }

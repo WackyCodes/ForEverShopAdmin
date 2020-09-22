@@ -593,7 +593,6 @@ public class DBQuery {
                                         "You have "+ cartCount +" new Orders!", REQUEST_TO_NOTIFY_NEW_ORDER );
                             }
 
-
                         }
                     }
                 } );

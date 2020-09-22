@@ -19,7 +19,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".main.orderlist.orderviewdetails.OrderViewActivity"></activity>
+        <activity android:name=".main.ActionActivity"></activity>
+        <activity android:name=".main.orderlist.orderviewdetails.OrderViewActivity" />
         <activity android:name=".main.shop.AboutShopActivity" />
         <activity android:name=".product.search.ProductSearchActivity" />
         <activity android:name=".home.viewall.ViewAllBannerSliderActivity" />

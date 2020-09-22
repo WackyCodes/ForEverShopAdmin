@@ -136,7 +136,8 @@
             android:textSize="14dp"
             android:text="Add New Product"
             android:textAlignment="center"
-            android:textColor="@color/colorPrimary"/>
+            android:textColor="@color/colorPrimary"
+            android:gravity="center_horizontal" />
     </LinearLayout>
 
 </LinearLayout>

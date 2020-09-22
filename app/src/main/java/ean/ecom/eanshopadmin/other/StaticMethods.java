@@ -385,10 +385,27 @@ public class StaticMethods {
     }
 
 
-    /*
-        // TODO : List...
+    // Responsive Price...
+    public static String getResponsivePrice(String price){
+        String returnPrice = "";
+        int round = 0;
+        char[] val = price.toCharArray();
+        for (int i = val.length-1; i>=0; i-- ){
+            round++;
+            returnPrice = val[i] + returnPrice;
+            // Put , or Not...
+            if (round%3 == 0 && i!=0){
+                returnPrice = "," + returnPrice;
+            }else
+            if ( i==1 && returnPrice.length() > 3) {
+                if (price.length() < 8 && price.length() % 2 == 0) {
+                    returnPrice = "," + returnPrice;
+                }
+            }
+        }
+        return returnPrice;
+    }
 
 
-     */
 
 }
