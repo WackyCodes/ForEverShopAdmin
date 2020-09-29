@@ -99,7 +99,8 @@
                         android:paddingLeft="4dp"
                         android:text="Copy From :"
                         android:textAlignment="center"
-                        android:textColor="@color/colorWhite" />
+                        android:textColor="@color/colorWhite"
+                        android:gravity="center_horizontal" />
 
                     <Spinner
                         android:id="@+id/copy_from_spinner"

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.text.TextUtils;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +25,7 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_ID;
 
@@ -137,9 +140,13 @@ public class StaticMethods {
 //    }
 
     public static String getRandomProductId(Context context){
-        String productId = SHOP_ID.substring( 4 ) + getFiveDigitRandom();
+        if (SHOP_ID != null){
+            String productId = SHOP_ID.substring( 4 ) + getFiveDigitRandom();
 //        String str1 = SHOP_ID.substring( 4 );
-        return productId;
+            return productId;
+        }else{
+            return null;
+        }
     }
 
     // Remove Duplicate from string...
@@ -406,6 +413,30 @@ public class StaticMethods {
         return returnPrice;
     }
 
+    // Weigth Pattern
+    public static boolean isValidWeight(EditText editText, Context context){
+        String val = editText.getText().toString().trim();
+        String weightPattern = "[0-9]{1,}[.]?[0-9]{0,}" + "[x]{0,1}" + "[0-9]+";
+        /**
+         * Case 1 : 234
+         * case 2 : 233.2
+         * case 3 : 32x2
+         * case 4 : 32.3x2
+         */
+        Pattern pat = Pattern.compile(weightPattern);
+        boolean bool = pat.matcher(val).matches();
+
+        if (TextUtils.isEmpty( val )) {
+            editText.setError( "Please Enter Weight! " );
+            return false;
+        } else if (!bool){
+            editText.setError( "Incorrect Weight! " );
+            showToast( context, "Please Enter Correct weight! Ex. 367  or  367.3  or  367x7  " );
+            return false;
+        }
+
+        return true;
+    }
 
 
 }

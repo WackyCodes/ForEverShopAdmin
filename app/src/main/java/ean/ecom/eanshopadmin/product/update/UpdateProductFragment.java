@@ -145,20 +145,26 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
         updateBtn.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                dialog.show();
                 switch (requestType){
                     case UPDATE_WEIGHT:
-                        if (isNotEmpty( uWeight )){
+                        if (StaticMethods.isValidWeight( uWeight, getContext() )){
                             updateWeight();
+                        }else{
+                            dialog.dismiss();
                         }
                         break;
                     case UPDATE_PRICE:
                         if (isValidPriceData()){
                             updatePrice();
+                        }else{
+                            dialog.dismiss();
                         }
                         break;
                     case UPDATE_STOCKS:
                         if (TextUtils.isEmpty( updateDetailsEditText.getText().toString() )){
                             updateDetailsEditText.setError( "Required!" );
+                            dialog.dismiss();
                         }else{
                             // product Stocks
                             updateTextData( "p_stocks_" + (listVariant + 1), updateDetailsEditText.getText().toString() );
@@ -167,6 +173,7 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
                     case UPDATE_NAME:
                         if (TextUtils.isEmpty( updateDetailsEditText.getText().toString() )){
                             updateDetailsEditText.setError( "Required!" );
+                            dialog.dismiss();
                         }else{
                             // product Name
                             updateTextData( "p_name_" + (listVariant + 1), updateDetailsEditText.getText().toString() );
@@ -175,6 +182,7 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
                     case UPDATE_DETAILS:
                         if (TextUtils.isEmpty( updateDetailsEditText.getText().toString() )){
                             updateDetailsEditText.setError( "Required!" );
+                            dialog.dismiss();
                         }else{
                             // product_details
                             updateTextData( "p_details_" + (listVariant + 1), updateDetailsEditText.getText().toString() );
@@ -183,6 +191,7 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
                     case UPDATE_DESCRIPTION:
                         if (TextUtils.isEmpty( updateDetailsEditText.getText().toString() )){
                             updateDetailsEditText.setError( "Required!" );
+                            dialog.dismiss();
                         }else{
                             // Description...
                             updateTextData( "p_description_" + (listVariant + 1), updateDetailsEditText.getText().toString() );
@@ -191,6 +200,7 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
                     case UPDATE_GUIDE_INFO:
                         if (TextUtils.isEmpty( updateDetailsEditText.getText().toString() )){
                             updateDetailsEditText.setError( "Required!" );
+                            dialog.dismiss();
                         }else{
                             // Important Information...
                             updateTextData( "p_guide_" + (listVariant + 1), updateDetailsEditText.getText().toString() );
@@ -228,6 +238,10 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
                     if (position == 8){
                         uWeight.setText( "NONE" );
                         weightType = "NONE";
+                    }else if( !TextUtils.isEmpty( uWeight.getText().toString() )){
+                        if ( uWeight.getText().toString().toUpperCase().equals( "NONE" ) ){
+                            uWeight.setText( "" );
+                        }
                     }
                 }
             }
@@ -408,7 +422,7 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
     //------------------------------- Update Request -------------------------------
     // product Price Updates...
     private void updatePrice(){
-        dialog.show();
+//        dialog.show();
         //  : Update...
         int temIndex = (listVariant+1);
         Map <String, Object> updateMap = new HashMap <>();
@@ -435,7 +449,9 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
     }
     // Update EditText Text Dialog Data...
     private void updateTextData(String updateKey, String updateValue){
-        dialog.show();
+        if (dialog.isShowing()){
+            dialog.show();
+        }
         Map<String, Object> updateMap = new HashMap <>();
         updateMap.put( updateKey, updateValue );
         updateMap.put( "p_last_update_time", StaticMethods.getCrrDate() + " " + StaticMethods.getCrrTime() );

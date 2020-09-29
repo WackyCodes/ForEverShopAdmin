@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import ean.ecom.eanshopadmin.R;
 
@@ -45,13 +46,27 @@ public class HomeActivity extends AppCompatActivity {
 //        }
 
         // Set Frame...
-        if (homeCurrentFragment == FRAGMENT_HOME){
-            setForwardFragment( new HomeFragment( 0, "HOME", "Home" ) );
-        }else{
-            setForwardFragment( new HomeFragment( homeCurrentCatIndex, homeCurrentCatID, homeCatListModelList.get( homeCurrentCatIndex ).getCatName() ) );
-        }
+        setHomeCurrentFragment();
         //
 
+    }
+
+    private void setHomeCurrentFragment(){
+        try{
+            if (homeCurrentFragment == FRAGMENT_HOME){
+                setForwardFragment( new HomeFragment( 0, "HOME", "Home" ) );
+            }else{
+                setForwardFragment( new HomeFragment( homeCurrentCatIndex, homeCurrentCatID, homeCatListModelList.get( homeCurrentCatIndex ).getCatName() ) );
+            }
+        }catch ( RuntimeException e ){
+            Toast.makeText( homeActivity, "Please Wait..! "+ e.getMessage(), Toast.LENGTH_SHORT ).show();
+            try {
+                e.wait( 1000 );
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+            setHomeCurrentFragment();
+        }
     }
 
     @Override
@@ -60,7 +75,8 @@ public class HomeActivity extends AppCompatActivity {
             super.onBackPressed();
         }else{
             // Set Home Fragment...
-            setBackFragment( new HomeFragment( 0, "HOME", "Home" ) );
+//            setBackFragment( new HomeFragment( 0, "HOME", "Home" ) );
+            setHomeCurrentFragment();
         }
 
     }
@@ -78,7 +94,6 @@ public class HomeActivity extends AppCompatActivity {
     // Fragment Transaction...
     private void setForwardFragment( Fragment fragment){
         FragmentTransaction fragmentTransaction = this.getSupportFragmentManager().beginTransaction();
-
         fragmentTransaction.add( homeActivityFrame.getId(),fragment );
         fragmentTransaction.commit();
     }

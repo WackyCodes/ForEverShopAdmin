@@ -156,12 +156,14 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
                 pProductModel = homeCatListModelList.get( crrShopCatIndex ).getHomeListModelList().get( layoutIndex ).getProductModelList().get( productIndex );
             }else{
                 // If User Come From Searching Page....
+                isUpdateAllowed = false;
                 pProductModel = ProductSearchActivity.searchProductList.get( productIndex );
             }
 
         }else{
             // If User Come from Banner Click...
             isUpdateAllowed = false;
+//            productIndex = -1; // Not Need
             // TODO: Reload The Product Details...
         }
 

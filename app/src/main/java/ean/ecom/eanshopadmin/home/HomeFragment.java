@@ -30,9 +30,11 @@ import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_HOME_STRIP_AD_CONTAI
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
 
+    public HomeFragment() {
+    }
 
+    // Required empty public constructor
     public HomeFragment( int catIndex, String catID, String catName) {
-        // Required empty public constructor
         this.catIndex = catIndex;
         this.catID = catID;
         this.catName = catName;
@@ -83,7 +85,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         layoutManager.setOrientation( RecyclerView.VERTICAL );
         homeFragmentRecycler.setLayoutManager( layoutManager );
         // TODO: Set Adaptor...
-        homePageAdaptor = new HomePageAdaptor( catIndex, homeCatListModelList.get( catIndex ).getHomeListModelList());
+        homePageAdaptor = new HomePageAdaptor( catIndex, catID, homeCatListModelList.get( catIndex ).getHomeListModelList());
         homeFragmentRecycler.setAdapter( homePageAdaptor );
         homePageAdaptor.notifyDataSetChanged();
         if (homeCatListModelList.get(catIndex).getHomeListModelList().size() == 0){

@@ -15,7 +15,7 @@ public class StaticValues {
     public static String CURRENT_CITY_CODE = "BHOPAL";
     public static final AdminDataModel ADMIN_DATA_MODEL = new AdminDataModel();
 
-    public static String SHOP_ID =  ADMIN_DATA_MODEL.getShopName();
+    public static String SHOP_ID =  ADMIN_DATA_MODEL.getShopID();
     public static final int VERIFIED = 1;
     public static final int NOT_VERIFIED = 0;
 

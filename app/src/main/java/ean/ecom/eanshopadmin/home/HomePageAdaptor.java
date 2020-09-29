@@ -86,10 +86,11 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
     private List <HomeListModel> homePageList;
     private RecyclerView.RecycledViewPool recycledViewPool;
 
-    public HomePageAdaptor(int catIndex, List <HomeListModel> homePageList) {
+    public HomePageAdaptor(int catIndex, String catID, List <HomeListModel> homePageList) {
         this.catIndex = catIndex;
         this.catTitle = homeCatListModelList.get( catIndex ).getCatName();
-        this.catID = homeCatListModelList.get( catIndex ).getCatID();
+//        this.catID = homeCatListModelList.get( catIndex ).getCatID();
+        this.catID = catID;
         this.homePageList = homePageList;
     }
 
@@ -733,6 +734,7 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
         }
 
         private void setData(final String productLayId, final String layoutTitle, final List<String> productIDList, List<ProductModel> productModelList, final int index){
+            layoutID = productLayId;
             indexNo.setText( "position : "+ (1+index) );
             this.layoutTitle.setText( layoutTitle );
             // Set Warning Text Visibility...
@@ -798,7 +800,7 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
                     // delete layout
                     if (productIDList.size() <= 1){
                         if (productIDList.size() == 0)
-                            alertDialog( itemView.getContext(), index, layoutID, null,null  );
+                            alertDialog( itemView.getContext(), index, productLayId, null,null  );
                         else
 //                            alertDialog( itemView.getContext(), index, layoutID, "SHOPS/" + SHOP_ID +"/banners", bannerList.get( 0 ).getDeleteID()  );
                             showToast( "Code Not Found!", itemView.getContext() );
@@ -939,7 +941,6 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
         private int temp = 0;
         private Dialog dialog;
         private int layoutPosition;
-        private String layoutID;
 
         public ProductGridViewHolder(@NonNull View itemView) {
             super( itemView );
@@ -1078,9 +1079,9 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
                     // delete layout
                     if (productIDList.size() <= 1){
                         if (productIDList.size() == 0)
-                            alertDialog( itemView.getContext(), index, layoutID, null,null  );
+                            alertDialog( itemView.getContext(), index, productLayId, null,null  );
                         else
-//                            alertDialog( itemView.getContext(), index, layoutID, "SHOPS/" + SHOP_ID +"/banners", bannerList.get( 0 ).getDeleteID()  );
+//                            alertDialog( itemView.getContext(), index, productLayId, "SHOPS/" + SHOP_ID +"/banners", bannerList.get( 0 ).getDeleteID()  );
                             showToast( "Code Not Found!", itemView.getContext() );
                     }else{
                         showToast( "You have more than 1 banner in this layout!", itemView.getContext() );
@@ -1368,6 +1369,7 @@ public class HomePageAdaptor extends RecyclerView.Adapter {
                 dialog.dismiss();
                 final Dialog pDialog = DialogsClass.getDialog( context );
                 pDialog.show();
+
                 // Query to delete the Layout...!
                 firebaseFirestore.collection( "SHOPS" ).document( SHOP_ID )
                         .collection( catID ).document( layoutId ).delete()

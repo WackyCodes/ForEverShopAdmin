@@ -60,6 +60,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import ean.ecom.eanshopadmin.R;
 import ean.ecom.eanshopadmin.home.HomeFragment;
@@ -248,20 +249,33 @@ public class AddNewProductActivity extends AppCompatActivity {
             newProVeganLayoutSample.setVisibility( View.GONE );
             newProDetails.setVisibility( View.GONE );
 
-            verCode = homeCatListModelList.get( catIndex ).getHomeListModelList().get( layIndex )
-                    .getProductModelList().get( productIndex ).getProductSubModelList().size() + 1;
-            uploadProductID = homeCatListModelList.get( catIndex ).getHomeListModelList().get( layIndex ).getProductModelList().get( productIndex ).getpProductID();
+            try {
+                verCode = homeCatListModelList.get( catIndex ).getHomeListModelList().get( layIndex )
+                        .getProductModelList().get( productIndex ).getProductSubModelList().size() + 1;
+                uploadProductID = homeCatListModelList.get( catIndex ).getHomeListModelList().get( layIndex ).getProductModelList().get( productIndex ).getpProductID();
 //            homeCatListModelList.get( crrShopCatIndex ).getHomeListModelList().get( layoutIndex ).getProductModelList().get( productIndex );
+            }catch (IndexOutOfBoundsException e){
+                showToast( "Exception Occur : "+ e.getMessage() + " Please Try Again!");
+                finish();
+                return;
+            }
             getTagsFromDatabase();
             newProductIDText.setText( "Product ID : " +  uploadProductID );
         }
         else{
+            // Add New Product Id...
+            uploadProductID = StaticMethods.getRandomProductId( AddNewProductActivity.this );
+
             newProDetailsSampleText.setVisibility( View.VISIBLE );
             newProVeganLayoutSample.setVisibility( View.VISIBLE );
             newProDetails.setVisibility( View.VISIBLE );
-            // Add New Product Id...
-            uploadProductID = StaticMethods.getRandomProductId( this );
-            checkForProductID(); // Check Product ID is Exist or not...
+
+            if (uploadProductID != null){
+                checkForProductID( ); // Check Product ID is Exist or not...
+            }else{
+                showToast( "Please Try Again!" );
+                finish();
+            }
         }
 
 //        newProductIDText.setText( "Product ID : " +  uploadProductID );
@@ -308,6 +322,10 @@ public class AddNewProductActivity extends AppCompatActivity {
                     if (position == 8){
                         newProVersionWeight.setText( "NONE" );
                         qtyTypeText = "NONE";
+                    }else if( !TextUtils.isEmpty( newProVersionWeight.getText().toString() )){
+                        if ( newProVersionWeight.getText().toString().toUpperCase().equals( "NONE" ) ){
+                            newProVersionWeight.setText( "" );
+                        }
                     }
                 }
             }
@@ -480,11 +498,16 @@ public class AddNewProductActivity extends AppCompatActivity {
                 return false;
             }
 
-
-            if (isNotEmptyEditText(newProVersionWeight)){ // Finally....
+            if (StaticMethods.isValidWeight( newProVersionWeight, this )){
                 return true;
-            }else
+            }else{
                 return false;
+            }
+
+//            if (isNotEmptyEditText(newProVersionWeight)){ // Finally....
+//                return true;
+//            }else
+//                return false;
 
         }
         else{
@@ -493,6 +516,7 @@ public class AddNewProductActivity extends AppCompatActivity {
             return false;
         }
     }
+
     // Validation For section 2...
     // tag List...
     private void updateTagList(String tString){
@@ -1038,7 +1062,12 @@ public class AddNewProductActivity extends AppCompatActivity {
                         if (documentSnapshot.exists()){
                             // Regenerate Product ID...
                             uploadProductID = StaticMethods.getRandomProductId( AddNewProductActivity.this );
-                            checkForProductID();
+                            if (uploadProductID != null){
+                                checkForProductID(  ); // Check Product ID is Exist or not...
+                            }else{
+                                showToast( "Something went wrong, Please Try Again!" );
+                                finish();
+                            }
                         }else{
                             // Set Product ID...
                             newProductIDText.setText( "Product ID : " +  uploadProductID );
@@ -1114,7 +1143,7 @@ public class AddNewProductActivity extends AppCompatActivity {
         updateMap.put( "p_description_"+verNo, newProDescription.getText().toString() );
         updateMap.put( "p_specification_"+verNo, new ArrayList<AddSpecificationModel>()  );
         // Details ... Guides
-        updateMap.put( "p_details_"+verNo, ""  );//newProDetails.getText().toString()
+        updateMap.put( "p_details_"+verNo, newProDetails.getText().toString()  );//newProDetails.getText().toString()
         updateMap.put( "p_guide_"+verNo, ""  ); // newProDetails.getText().toString()
 
         // Images...
