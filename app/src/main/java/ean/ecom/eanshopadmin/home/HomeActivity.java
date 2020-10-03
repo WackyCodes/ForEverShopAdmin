@@ -61,7 +61,7 @@ public class HomeActivity extends AppCompatActivity {
         }catch ( RuntimeException e ){
             Toast.makeText( homeActivity, "Please Wait..! "+ e.getMessage(), Toast.LENGTH_SHORT ).show();
             try {
-                e.wait( 1000 );
+                e.wait( 2000 );
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
@@ -93,14 +93,14 @@ public class HomeActivity extends AppCompatActivity {
 
     // Fragment Transaction...
     private void setForwardFragment( Fragment fragment){
-        FragmentTransaction fragmentTransaction = this.getSupportFragmentManager().beginTransaction();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.add( homeActivityFrame.getId(),fragment );
         fragmentTransaction.commit();
     }
 
     // Fragment Transaction...
     private void setBackFragment( Fragment fragment){
-        FragmentTransaction fragmentTransaction = this.getSupportFragmentManager().beginTransaction();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setCustomAnimations( R.anim.slide_from_left, R.anim.slide_out_from_right );
         fragmentTransaction.add( homeActivityFrame.getId(),fragment );
         fragmentTransaction.commit();

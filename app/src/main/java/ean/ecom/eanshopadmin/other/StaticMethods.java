@@ -391,7 +391,6 @@ public class StaticMethods {
         // Do Greater than...
     }
 
-
     // Responsive Price...
     public static String getResponsivePrice(String price){
         String returnPrice = "";
@@ -416,9 +415,9 @@ public class StaticMethods {
     // Weigth Pattern
     public static boolean isValidWeight(EditText editText, Context context){
         String val = editText.getText().toString().trim();
-        String weightPattern = "[0-9]{1,}[.]?[0-9]{0,}" + "[x]{0,1}" + "[0-9]+";
+        String weightPattern = "[0-9]{0,}[.]?[0-9]{0,}" + "[x]{0,1}" + "[0-9]+";
         /**
-         * Case 1 : 234
+         * Case 1 : 234, 1, 67 etc.
          * case 2 : 233.2
          * case 3 : 32x2
          * case 4 : 32.3x2

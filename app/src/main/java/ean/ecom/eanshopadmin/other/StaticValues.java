@@ -144,5 +144,17 @@ public class StaticValues {
     public static final int UPDATE_SHOP_VEG_NON_CODE = 9;
     public static final int UPDATE_SHOP_OPEN_CLOSE = 10;
 
+    /**  Order Status
+     *          1. WAITING - ( For Accept )
+     *          2. ACCEPTED - ( Preparing )
+     *          3. PACKED - ( Waiting for Delivery ) READY_TO_DELIVERY
+     *          4. PROCESS  - When Any Delivery Boy Accept to Delivering...
+     *          5. PICKED - ( On Delivery ) OUT_FOR_DELIVERY...
+     *          6. SUCCESS - Success Full Delivered..!
+     *          7. CANCELLED -  When Order has been cancelled by user...
+     *          8. FAILED -  when PayMode Online and payment has been failed...
+     *          9. PENDING - when Payment is Pending...
+     *
+     */
 
 }

@@ -37,13 +37,14 @@ class TestClass {
     private static boolean isValidWeight(String val){
         System.out.println( val );
 //        String weightPattern = "[0-9]{1,}[.]?[[0-9]{0,2}]{0,2}" + "[x]{0,1}" + "[0-9]+";
-//        Pattern pat = Pattern.compile(weightPattern);
-//        boolean bool = pat.matcher(val).matches();
+        String weightPattern = "[0-9]{0,}[.]?[0-9]{0,}" + "[x]{0,1}" + "[0-9]+";
+        Pattern pat = Pattern.compile(weightPattern);
+        boolean bool = pat.matcher(val).matches();
 //        boolean bool =Pattern.matches( "[0-9]+", val );
 
-//        if (!bool){
-//            return false;
-//        }
+        if (!bool){
+            return false;
+        }
 
         return true;
     }

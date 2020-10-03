@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,11 +58,6 @@ public class GridViewAllAdaptor extends BaseAdapter {
     @Override
     public View getView(final int i, View v, final ViewGroup viewGroup) {
 //            product_square_layout_item
-
-        ProductModel productModel = productModelList.get( i );
-        final int verCode = 0;
-        ProductSubModel productSubModel = productModel.getProductSubModelList().get( verCode );
-
         View view = LayoutInflater.from( viewGroup.getContext() ).inflate( R.layout.product_square_layout_item, null );
 
         ConstraintLayout itemLayout = view.findViewById( R.id.product_view_const_layout );
@@ -75,35 +71,42 @@ public class GridViewAllAdaptor extends BaseAdapter {
         TextView perOffText = view.findViewById( R.id.hr_off_percentage );
         TextView stocksText = view.findViewById( R.id.stock_text );
 
-        // Set Data...
-        Glide.with( viewGroup.getContext() ).load( productSubModel.getpImage().get( 0 ) )
-                .apply( new RequestOptions()
-                .placeholder( R.drawable.ic_photo_black_24dp ) ).into( img );
-        // Stocks Text...
-        if(Integer.parseInt( productSubModel.getpStocks() )>0){
-            stocksText.setText( "In stocks(" + productSubModel.getpStocks() + ")" );
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                stocksText.setBackgroundTintList( ColorStateList.valueOf( viewGroup.getResources().getColor( R.color.colorGreen ) ) );
+        try{
+            ProductModel productModel = productModelList.get( i );
+            final int verCode = 0;
+            ProductSubModel productSubModel = productModel.getProductSubModelList().get( verCode );
+            // Set Data...
+            Glide.with( viewGroup.getContext() ).load( productSubModel.getpImage().get( 0 ) )
+                    .apply( new RequestOptions()
+                            .placeholder( R.drawable.ic_photo_black_24dp ) ).into( img );
+            // Stocks Text...
+            if(Integer.parseInt( productSubModel.getpStocks() )>0){
+                stocksText.setText( "In stocks(" + productSubModel.getpStocks() + ")" );
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    stocksText.setBackgroundTintList( ColorStateList.valueOf( viewGroup.getResources().getColor( R.color.colorGreen ) ) );
+                }
+            }else{
+                stocksText.setText( "Out of Stocks" );
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    stocksText.setBackgroundTintList( ColorStateList.valueOf( viewGroup.getResources().getColor( R.color.colorRed ) ) );
+                }
             }
-        }else{
-            stocksText.setText( "Out of Stocks" );
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                stocksText.setBackgroundTintList( ColorStateList.valueOf( viewGroup.getResources().getColor( R.color.colorRed ) ) );
-            }
+
+            name.setText( productSubModel.getpName() );
+            price.setText( "Rs." + productSubModel.getpSellingPrice() + "/-" );
+            cutPrice.setText( "Rs." + productSubModel.getpMrpPrice() + "/-" );
+            int saveAmt = Integer.parseInt( productSubModel.getpMrpPrice() ) - Integer.parseInt( productSubModel.getpSellingPrice() );
+            perOffText.setText( "Rs." + saveAmt + "save");
+
+            view.setOnClickListener( new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    addOnProductClick( viewGroup.getContext(), i );
+                }
+            } );
+        }catch(Exception e){
+            Log.d( "GridViewAllAdaptor",  "Exception :" + e.getMessage()  );
         }
-
-        name.setText( productSubModel.getpName() );
-        price.setText( "Rs." + productSubModel.getpSellingPrice() + "/-" );
-        cutPrice.setText( "Rs." + productSubModel.getpMrpPrice() + "/-" );
-        int saveAmt = Integer.parseInt( productSubModel.getpMrpPrice() ) - Integer.parseInt( productSubModel.getpSellingPrice() );
-        perOffText.setText( "Rs." + saveAmt + "save");
-
-        view.setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addOnProductClick( viewGroup.getContext(), i );
-            }
-        } );
 
         return view;
 
