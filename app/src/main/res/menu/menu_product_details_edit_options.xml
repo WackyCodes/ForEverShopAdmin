@@ -13,8 +13,8 @@
             android:id="@+id/menu_add_another_varient"
             android:iconTint="@color/colorPrimary"
             android:orderInCategory="100"
-
             android:title="+ Add Another Variety"/>
+
         <item
             android:id="@+id/menu_stock_update"
             android:orderInCategory="100"
@@ -32,7 +32,6 @@
             android:orderInCategory="100"
             android:title="COD ON/OFF"
             android:iconTint="@color/colorPrimary"/>
-
 
         <item
             android:id="@+id/menu_edit_name"
@@ -77,11 +76,16 @@
             android:iconTint="@color/colorPrimary"/>
 
         <item
+            android:id="@+id/menu_update_offer"
+            android:orderInCategory="100"
+            android:title="Update Offer"
+            android:iconTint="@color/colorPrimary"/>
+
+        <item
             android:id="@+id/menu_remove_products"
             android:orderInCategory="100"
             android:title="Remove Products"
             android:iconTint="@color/colorPrimary"/>
-
 
     </group>
 

@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -70,6 +71,7 @@ import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_DETAILS;
 import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_GUIDE_INFO;
 import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_IMAGES;
 import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_NAME;
+import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_OFFER;
 import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_PRICE;
 import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_SPECIFICATION;
 import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_STOCKS;
@@ -91,6 +93,7 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
     private TextView productCutPrice;
     private TextView productCODText; // product_item_cod_text
     private TextView productStocksText; // stock_text
+    private TextView productOfferText; // p_offer_text
 
     // create a list for testing...
     private List <String> productImageList = new ArrayList <>();
@@ -198,6 +201,7 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         productCODText.setVisibility( View.VISIBLE );
 
         productStocksText = findViewById( R.id.stock_text );
+        productOfferText = findViewById( R.id.p_offer_text );
 
         // --- Product Details Image Layout...
 
@@ -362,6 +366,10 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
             updateDialog(UPDATE_GUIDE_INFO);
             return true;
         }else
+        if (id == R.id.menu_update_offer){
+            updateDialog(UPDATE_OFFER);
+            return true;
+        }else
         if (id == R.id.menu_remove_products){
             return true;
         }
@@ -519,7 +527,13 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
             productStocksText.setText( "Out of Stocks" );
             productStocksText.setTextColor( getResources().getColor( R.color.colorRed ) );
         }
-
+        // Set Offer
+        if (productSubModel.getpOffer() != null){
+            productOfferText.setText( productSubModel.getpOffer() );
+            productOfferText.setVisibility( View.VISIBLE );
+        }else{
+            productOfferText.setVisibility( View.GONE );
+        }
         // Add Images Variant...
         productDetailsImagesAdapter = new ProductDetailsImagesAdapter( productImageList );
         productImagesViewPager.setAdapter( productDetailsImagesAdapter );
@@ -528,6 +542,7 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         if (productFeaturesModelList.size() > 0){
             setFeaturesLayout(variantIndex);
         }
+
     }
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void setVegNonData(){
@@ -690,6 +705,7 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
             case UPDATE_STOCKS:
             case UPDATE_PRICE:
             case UPDATE_WEIGHT:
+            case UPDATE_OFFER:
                 fragmentTransaction.replace( updateFrameLayout.getId(),
                         new UpdateProductFragment( this, new UpdateDataRequest(), requestType, currentVariant, productID, null ) );
                 break;
@@ -734,7 +750,30 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
             switch (requestType){
                 // TODO : In Local List...
                 case UPDATE_WEIGHT:
+                    try{
+                        String weight = ProductDetails.pProductModel.getProductSubModelList().get( currentVariant ).getpWeight();
+                        pProductModel.getProductSubModelList().get( currentVariant ).setpWeight( weight );
+                    }catch (Exception e){
+                        Log.d( "OnSetProduct", "Set Product After Update Weight :" + e.getMessage() );
+                    }
+                    break;
                 case UPDATE_PRICE:
+                    try{
+                        String mrpPrice = ProductDetails.pProductModel.getProductSubModelList().get( currentVariant ).getpMrpPrice();
+                        String sellingPrice = ProductDetails.pProductModel.getProductSubModelList().get( currentVariant ).getpSellingPrice();
+                        pProductModel.getProductSubModelList().get( currentVariant ).setpSellingPrice( sellingPrice );
+                        pProductModel.getProductSubModelList().get( currentVariant ).setpMrpPrice( mrpPrice );
+                    }catch (Exception e){
+                        Log.d( "OnSetProduct", "Set Product After Update Price :" + e.getMessage() );
+                    }
+                    break;
+                case UPDATE_OFFER:
+                    try{
+                        String offer = ProductDetails.pProductModel.getProductSubModelList().get( currentVariant ).getpOffer();
+                        pProductModel.getProductSubModelList().get( currentVariant ).setpOffer( offer );
+                    }catch (Exception e){
+                        Log.d( "OnSetProduct", "Set Product After Update Offer :" + e.getMessage() );
+                    }
                     break;
                 case UPDATE_IMAGES:
                     ProductDetails.pProductModel.getProductSubModelList().get( currentVariant ).setpImage( AddNewImageAdaptor.uploadImageDataModelList );

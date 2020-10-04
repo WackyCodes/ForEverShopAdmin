@@ -9,6 +9,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,7 @@ import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_DESCRIPTION;
 import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_DETAILS;
 import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_GUIDE_INFO;
 import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_NAME;
+import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_OFFER;
 import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_PRICE;
 import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_STOCKS;
 import static ean.ecom.eanshopadmin.other.StaticValues.UPDATE_WEIGHT;
@@ -148,10 +150,13 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
                 dialog.show();
                 switch (requestType){
                     case UPDATE_WEIGHT:
-                        if (StaticMethods.isValidWeight( uWeight, getContext() )){
+                        if (StaticMethods.isValidWeight( uWeight, getContext() ) && weightType!=null){
                             updateWeight();
                         }else{
                             dialog.dismiss();
+                            if (weightType == null){
+                                showToast( "Please Select weight Type" );
+                            }
                         }
                         break;
                     case UPDATE_PRICE:
@@ -177,6 +182,15 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
                         }else{
                             // product Name
                             updateTextData( "p_name_" + (listVariant + 1), updateDetailsEditText.getText().toString() );
+                        }
+                        break;
+                    case UPDATE_OFFER:
+                        if (TextUtils.isEmpty( updateDetailsEditText.getText().toString() )){
+                            updateDetailsEditText.setError( "Required!" );
+                            dialog.dismiss();
+                        }else{
+                            // product Offer
+                            updateTextData( "p_offer_" + (listVariant + 1), updateDetailsEditText.getText().toString() );
                         }
                         break;
                     case UPDATE_DETAILS:
@@ -235,7 +249,7 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
             public void onItemSelected(AdapterView <?> parent, View view, int position, long id) {
                 if (position > 0){
                     weightType = parent.getItemAtPosition( position ).toString();
-                    if (position == 8){
+                    if (position == 9){
                         uWeight.setText( "NONE" );
                         weightType = "NONE";
                     }else if( !TextUtils.isEmpty( uWeight.getText().toString() )){
@@ -285,6 +299,7 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
             case UPDATE_WEIGHT:
             case UPDATE_PRICE:
             case UPDATE_STOCKS:
+            case UPDATE_OFFER:
                 showToast( "Not Accessible!" );
                 break;
             case UPDATE_NAME:
@@ -461,33 +476,40 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
     // On Finish Update...
     @Override
     public void onUpdateFinished(boolean isSuccess) {
-        switch (requestType){
-            case UPDATE_WEIGHT:
-                ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpWeight( uWeight.getText().toString() );
-                break;
-            case UPDATE_PRICE:
-                ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpMrpPrice( uMrpEditText.getText().toString() );
-                ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpSellingPrice( uSellingEditText.getText().toString() );
-                break;
-            case UPDATE_STOCKS:
-                ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpStocks( updateDetailsEditText.getText().toString() );
-                break;
-            case UPDATE_NAME:
-                ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpName( updateDetailsEditText.getText().toString() );
-                break;
-            case UPDATE_DETAILS:
-                // product_details
-                ProductDetails.pProductModel.setpDetails( updateDetailsEditText.getText().toString() ); // used For Temporary...
-                ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpDetails( updateDetailsEditText.getText().toString() );
-                break;
-            case UPDATE_DESCRIPTION:
-                ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpDescription( updateDetailsEditText.getText().toString() );
-                break;
-            case UPDATE_GUIDE_INFO:
-                ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpGuideInfo( updateDetailsEditText.getText().toString() );
-                break;
-            default:
-                break;
+        try{
+            switch (requestType){
+                case UPDATE_WEIGHT:
+                    ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpWeight( uWeight.getText().toString() );
+                    break;
+                case UPDATE_PRICE:
+                    ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpMrpPrice( uMrpEditText.getText().toString() );
+                    ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpSellingPrice( uSellingEditText.getText().toString() );
+                    break;
+                case UPDATE_STOCKS:
+                    ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpStocks( updateDetailsEditText.getText().toString() );
+                    break;
+                case UPDATE_NAME:
+                    ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpName( updateDetailsEditText.getText().toString() );
+                    break;
+                case UPDATE_OFFER:
+                    ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpOffer( updateDetailsEditText.getText().toString() );
+                    break;
+                case UPDATE_DETAILS:
+                    // product_details
+                    ProductDetails.pProductModel.setpDetails( updateDetailsEditText.getText().toString() ); // used For Temporary...
+                    ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpDetails( updateDetailsEditText.getText().toString() );
+                    break;
+                case UPDATE_DESCRIPTION:
+                    ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpDescription( updateDetailsEditText.getText().toString() );
+                    break;
+                case UPDATE_GUIDE_INFO:
+                    ProductDetails.pProductModel.getProductSubModelList().get( listVariant ).setpGuideInfo( updateDetailsEditText.getText().toString() );
+                    break;
+                default:
+                    break;
+            }
+        }catch (Exception e){
+            Log.d( "onUpdateFinished", "UpdateProductFragment Exception :" + e.getMessage() );
         }
         if (isSuccess){
             showToast( "Successfully Updates!" );
@@ -528,6 +550,11 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
                 updateDetailsHeadingText.setText( "Update Name" );
                 setVisibilityForDetailsDialog();
                 updateDetailsEditText.setMaxLines( 2 );
+                break;
+            case UPDATE_OFFER:
+                updateDetailsHeadingText.setText( "Update Offer" );
+                setVisibilityForDetailsDialog();
+                updateDetailsEditText.setMaxLines( 1 );
                 break;
             case UPDATE_DETAILS:
                 updateDetailsHeadingText.setText( "Update Details" );

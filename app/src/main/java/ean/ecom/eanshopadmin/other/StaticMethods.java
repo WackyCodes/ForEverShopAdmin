@@ -415,6 +415,10 @@ public class StaticMethods {
     // Weigth Pattern
     public static boolean isValidWeight(EditText editText, Context context){
         String val = editText.getText().toString().trim();
+        if (val.toUpperCase().equals( "NONE" )){
+            return true;
+        }
+
         String weightPattern = "[0-9]{0,}[.]?[0-9]{0,}" + "[x]{0,1}" + "[0-9]+";
         /**
          * Case 1 : 234, 1, 67 etc.

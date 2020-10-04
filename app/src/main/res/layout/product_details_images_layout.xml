@@ -7,6 +7,21 @@
     android:layout_height="match_parent">
 
 
+    <TextView
+        android:id="@+id/p_offer_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="2dp"
+        android:elevation="4dp"
+        android:layout_margin="2dp"
+        android:background="@drawable/back_rectangle_4dp_layout"
+        android:backgroundTint="@color/colorYellow"
+        android:textColor="@color/colorBlack"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="12sp"/>
+
+
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/product_images_viewpager"
         android:layout_width="0dp"
@@ -146,7 +161,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:backgroundTint="@color/colorDarkViolet"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:gravity="center_horizontal" />
 
     </LinearLayout>
 

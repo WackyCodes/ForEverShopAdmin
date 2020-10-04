@@ -130,6 +130,7 @@ public class StaticValues {
     public static final int UPDATE_IMAGES = 16;
     public static final int UPDATE_SPECIFICATION = 17;
     public static final int UPDATE_GUIDE_INFO = 18;
+    public static final int UPDATE_OFFER = 19;
 
 
     // Update Shop Information...  used for local...

@@ -60,6 +60,7 @@
         <item>KG</item>
         <item>Dozen</item>
         <item>Pound</item>
+        <item>Watt</item>
         <item>Other</item>
     </string-array>
 
