@@ -1,4 +1,10 @@
-package ean.ecom.eanshopadmin.admin.notification;
+package ean.ecom.eanshopadmin.notification;
+
+/*
+ * Copyright (c) 2020.
+ * WackyCodes : Tech Services.
+ * https://linktr.ee/wackycodes
+ */
 
 public class NotificationModel {
 

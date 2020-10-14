@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import ean.ecom.eanshopadmin.admin.notification.NotificationModel;
+import ean.ecom.eanshopadmin.notification.NotificationModel;
 import ean.ecom.eanshopadmin.other.DialogsClass;
 
 import static ean.ecom.eanshopadmin.MainActivity.badgeNotifyCount;

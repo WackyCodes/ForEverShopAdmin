@@ -2,14 +2,15 @@ package ean.ecom.eanshopadmin.main.shoprating;
 
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
@@ -26,12 +27,15 @@ import ean.ecom.eanshopadmin.R;
  */
 public class ShopRatingFragment extends Fragment {
 
+    private RecyclerView recyclerView;
+
+    private TextView tvTotalRatings;
+    private TextView tvNumOfRatings;
+    private TextView tvNoRating;
+    private LinearLayout layoutRating;
 
     public ShopRatingFragment() {
-        // Required empty public constructor
     }
-
-    private RecyclerView recyclerView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -39,7 +43,16 @@ public class ShopRatingFragment extends Fragment {
         View view = inflater.inflate( R.layout.fragment_shop_rating, container, false );
 
         recyclerView = view.findViewById( R.id.shop_rating_recycler_view );
-        LinearLayoutManager layoutManager = new LinearLayoutManager( getContext() );
+        tvTotalRatings = view.findViewById( R.id.total_rating_textView );
+        tvNumOfRatings = view.findViewById( R.id.total_rating_peoples_textView );
+        tvNoRating = view.findViewById( R.id.no_record_textView );
+        layoutRating = view.findViewById( R.id.total_rating_layout );
+
+        // Set data...
+        tvNoRating.setVisibility( View.VISIBLE );
+        layoutRating.setVisibility( View.GONE );
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager( getActivity() );
         layoutManager.setOrientation( RecyclerView.VERTICAL );
         recyclerView.setLayoutManager( layoutManager );
 
@@ -55,5 +68,6 @@ public class ShopRatingFragment extends Fragment {
 
         return view;
     }
+
 
 }

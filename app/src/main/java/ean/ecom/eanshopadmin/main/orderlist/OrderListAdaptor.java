@@ -368,6 +368,8 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
             deliveryMap.put( "shop_pin", ADMIN_DATA_MODEL.getShopAreaCode() );
             deliveryMap.put( "shipping_address", orderListModel.getShippingAddress() );
             deliveryMap.put( "shipping_pin", orderListModel.getShippingPinCode() );
+            deliveryMap.put( "shop_geo_point", ADMIN_DATA_MODEL.getShopGeoPoint() );
+            deliveryMap.put( "shipping_geo_point", orderListModel.getShippingGeoPoint() );
 
             DBQuery.setDeliveryDocument( null, deliveryMap, orderListModelList.get( index ));
 

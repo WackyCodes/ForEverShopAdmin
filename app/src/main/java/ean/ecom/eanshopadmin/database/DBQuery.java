@@ -765,6 +765,9 @@ public class DBQuery {
     // Query to Delivery Boy...  ------------------------
     public static void setDeliveryDocument(@Nullable final Dialog dialog, Map<String, Object> deliveryMap, final OrderListModel orderListModel ){
 
+//        deliveryMap.put( "shop_geo_point", ADMIN_DATA_MODEL.getShopGeoPoint() );
+//        deliveryMap.put( "shipping_geo_point", orderListModel.getShippingGeoPoint() );
+
         firebaseFirestore.collection( "DELIVERY" )
                 .document( ADMIN_DATA_MODEL.getShopCityCode() )
                 .collection( "DELIVERY" )

@@ -6,6 +6,8 @@ package ean.ecom.eanshopadmin.main.orderlist;
  * https://linktr.ee/wackycodes
  */
 
+import com.google.firebase.firestore.GeoPoint;
+
 import java.util.List;
 
 /**
@@ -37,6 +39,7 @@ public class OrderListModel {
     private String shippingName;
     private String shippingAddress;
     private String shippingPinCode;
+    private GeoPoint shippingGeoPoint;
 
     // Delivery Status...
     private String deliveryStatus;
@@ -168,6 +171,14 @@ public class OrderListModel {
 
     public void setShippingPinCode(String shippingPinCode) {
         this.shippingPinCode = shippingPinCode;
+    }
+
+    public GeoPoint getShippingGeoPoint() {
+        return shippingGeoPoint;
+    }
+
+    public void setShippingGeoPoint(GeoPoint shippingGeoPoint) {
+        this.shippingGeoPoint = shippingGeoPoint;
     }
 
     public String getDeliveryStatus() {

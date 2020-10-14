@@ -18,9 +18,14 @@ import java.util.List;
 import ean.ecom.eanshopadmin.R;
 import ean.ecom.eanshopadmin.other.DialogsClass;
 
+import static ean.ecom.eanshopadmin.other.StaticValues.REQUEST_TO_VIEW_FAVORITE_CUST;
 import static ean.ecom.eanshopadmin.other.StaticValues.REQUEST_TO_VIEW_HOME;
+import static ean.ecom.eanshopadmin.other.StaticValues.REQUEST_TO_VIEW_INCOME_RECORDS;
 import static ean.ecom.eanshopadmin.other.StaticValues.REQUEST_TO_VIEW_ORDER_LIST;
+import static ean.ecom.eanshopadmin.other.StaticValues.REQUEST_TO_VIEW_SELLING_RECORDS;
+import static ean.ecom.eanshopadmin.other.StaticValues.REQUEST_TO_VIEW_SERVICE_AREA;
 import static ean.ecom.eanshopadmin.other.StaticValues.REQUEST_TO_VIEW_SHOP;
+import static ean.ecom.eanshopadmin.other.StaticValues.REQUEST_TO_VIEW_SHOP_RATING;
 
 public class MainFragment extends Fragment {
 
@@ -43,17 +48,25 @@ public class MainFragment extends Fragment {
 
         homeGridView = view.findViewById( R.id.home_fragment_grid_view );
 
-
         // Home List...
         if (mainPageList.size() == 0){
-            mainPageList.add( new MainFragmentModel( R.drawable.ic_home_black_24dp, "View Home", REQUEST_TO_VIEW_HOME ) );
-            mainPageList.add( new MainFragmentModel( R.drawable.ic_devices_black_24dp, "Order List", REQUEST_TO_VIEW_ORDER_LIST ) );
-            mainPageList.add( new MainFragmentModel( R.drawable.ic_account_balance_black_24dp, "Income Records", -1 ) );
-            mainPageList.add( new MainFragmentModel( R.drawable.ic_assignment_black_24dp, "Selling Records", -1 ) );
-            mainPageList.add( new MainFragmentModel( R.drawable.ic_store_black_24dp, "My Shop", REQUEST_TO_VIEW_SHOP ) );
-            mainPageList.add( new MainFragmentModel( R.drawable.ic_stars_black_24dp, "Shop Rating", -1 ) );
-            mainPageList.add( new MainFragmentModel( R.drawable.ic_map_black_24dp, "Service Area", -1 ) );
-            mainPageList.add( new MainFragmentModel( R.drawable.ic_favorite_black_24dp, "Favorite Customers", -1 ) );
+            mainPageList.add( new MainFragmentModel( R.drawable.ic_home_black_24dp,
+                    "View Home", REQUEST_TO_VIEW_HOME ) );
+            mainPageList.add( new MainFragmentModel( R.drawable.ic_devices_black_24dp,
+                    "Order List", REQUEST_TO_VIEW_ORDER_LIST ) );
+            mainPageList.add( new MainFragmentModel( R.drawable.ic_account_balance_black_24dp,
+                    "Income Records", REQUEST_TO_VIEW_INCOME_RECORDS ) );
+            mainPageList.add( new MainFragmentModel( R.drawable.ic_assignment_black_24dp,
+                    "Selling Records", REQUEST_TO_VIEW_SELLING_RECORDS ) );
+            mainPageList.add( new MainFragmentModel( R.drawable.ic_store_black_24dp,
+                    "My Shop", REQUEST_TO_VIEW_SHOP ) );
+            mainPageList.add( new MainFragmentModel( R.drawable.ic_stars_black_24dp,
+                    "Shop Rating", REQUEST_TO_VIEW_SHOP_RATING ) );
+            mainPageList.add( new MainFragmentModel( R.drawable.ic_map_black_24dp,
+                    "Service Area", REQUEST_TO_VIEW_SERVICE_AREA ) );
+            mainPageList.add( new MainFragmentModel( R.drawable.ic_favorite_black_24dp,
+                    "Favorite Customers", REQUEST_TO_VIEW_FAVORITE_CUST ) );
+
         }
 
         // Create and Set Adaptor...

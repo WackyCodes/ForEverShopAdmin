@@ -25,20 +25,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import ean.ecom.eanshopadmin.database.AdminQuery;
 import ean.ecom.eanshopadmin.database.DBQuery;
 import ean.ecom.eanshopadmin.home.HomeCatListModel;
 import ean.ecom.eanshopadmin.home.HomeListModel;
 import ean.ecom.eanshopadmin.launching.AuthActivity;
-import ean.ecom.eanshopadmin.launching.WelcomeActivity;
 import ean.ecom.eanshopadmin.main.MainFragment;
+import ean.ecom.eanshopadmin.notification.NotificationFragment;
 import ean.ecom.eanshopadmin.other.DialogsClass;
 
 import static ean.ecom.eanshopadmin.database.AdminQuery.notificationModelList;
@@ -51,6 +48,7 @@ import static ean.ecom.eanshopadmin.database.DBQuery.preparingOrderList;
 import static ean.ecom.eanshopadmin.database.DBQuery.readyToDeliveredList;
 import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.CURRENT_CITY_NAME;
+import static ean.ecom.eanshopadmin.other.StaticValues.REQUEST_TO_NOTIFICATION;
 import static ean.ecom.eanshopadmin.other.StaticValues.REQUEST_TO_NOTIFY_NEW_ORDER;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_ID;
 import static ean.ecom.eanshopadmin.other.StaticValues.clipboardManager;
@@ -175,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 // GOTO : New Order....
                 Intent orderListIntent = new Intent( MainActivity.this, SetFragmentActivity.class );
-                orderListIntent.putExtra( "FRAGMENT_NO", REQUEST_TO_NOTIFY_NEW_ORDER );
+                orderListIntent.putExtra( "FRAGMENT_ID", REQUEST_TO_NOTIFY_NEW_ORDER );
                 startActivity( orderListIntent );
             }
         } );
@@ -193,8 +191,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         notificationItem.getActionView().setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent catIntent = new Intent( MainActivity.this, NotificationActivity.class);
-//                startActivity( catIntent );
+                Intent notificationIntent = new Intent( MainActivity.this, SetFragmentActivity.class );
+                notificationIntent.putExtra( "FRAGMENT_ID", REQUEST_TO_NOTIFICATION);
+                startActivity( notificationIntent );
             }
         } );
 
@@ -217,8 +216,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return true;
         }else
         if (id == R.id.menu_notification_main){
-//            Intent catIntent = new Intent( MainActivity.this, NotificationActivity.class);
-//            startActivity( catIntent );
+            Intent notificationIntent = new Intent( MainActivity.this, SetFragmentActivity.class );
+            notificationIntent.putExtra( "FRAGMENT_ID",  REQUEST_TO_NOTIFICATION);
+            startActivity( notificationIntent );
             return true;
         } else
             return super.onOptionsItemSelected( item );

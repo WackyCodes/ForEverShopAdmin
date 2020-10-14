@@ -1,5 +1,7 @@
 package ean.ecom.eanshopadmin.admin;
 
+import com.google.firebase.firestore.GeoPoint;
+
 import java.util.List;
 
 public class AdminDataModel {
@@ -44,6 +46,7 @@ public class AdminDataModel {
     private String shopOwnerAddress;
     private String shopOwnerMobile;
     private String shopOwnerEmail;
+    private GeoPoint shopGeoPoint;
 
     private String shopHelpLine;
     private String shopEmail;
@@ -376,6 +379,14 @@ public class AdminDataModel {
 
     public int getShopLicenceType() {
         return shopLicenceType;
+    }
+
+    public GeoPoint getShopGeoPoint() {
+        return shopGeoPoint;
+    }
+
+    public void setShopGeoPoint(GeoPoint shopGeoPoint) {
+        this.shopGeoPoint = shopGeoPoint;
     }
 
     public void setShopLicenceType(int shopLicenceType) {
