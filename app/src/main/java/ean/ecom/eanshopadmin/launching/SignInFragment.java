@@ -388,6 +388,8 @@ public class SignInFragment extends Fragment {
                             // Assign Current User...
                             currentUser = firebaseAuth.getCurrentUser();
                             // Success...
+                            SHOP_ID = signInShopID.getText().toString().trim();
+                            ADMIN_DATA_MODEL.setAdminMobile( signInMobile.getText().toString().trim() );
                             // Go to Next Activity...
                             checkAdminPermission( context );
                         }else{
@@ -411,6 +413,8 @@ public class SignInFragment extends Fragment {
                             updateMap.put( "auth_id", firebaseAuth.getCurrentUser().getUid() );
                             AdminQuery.updateAdminData( null, null, signInShopID.getText().toString(), signInMobile.getText().toString(), updateMap );
                             // Add More Details...
+                            SHOP_ID = signInShopID.getText().toString().trim();
+                            ADMIN_DATA_MODEL.setAdminMobile( signInMobile.getText().toString().trim() );
                             checkAdminPermission( context );
                         }else{
                             currentUser = null;
