@@ -6,7 +6,6 @@ package ean.ecom.eanshopadmin.main.orderlist.orderviewdetails;
  * https://linktr.ee/wackycodes
  */
 
-import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -14,13 +13,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import ean.ecom.eanshopadmin.other.DialogsClass;
 
 import static ean.ecom.eanshopadmin.database.AdminQuery.getShopCollectionRef;
 
@@ -64,5 +60,7 @@ public class OrderStatusUpdateQuery implements OrderViewInteractor.OrderStatusUp
                     }
                 } );
     }
+
+
 }
 

@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 import ean.ecom.eanshopadmin.MainActivity;
 import ean.ecom.eanshopadmin.R;
 import ean.ecom.eanshopadmin.other.DialogsClass;
+import ean.ecom.eanshopadmin.other.StaticMethods;
 
 import static ean.ecom.eanshopadmin.database.DBQuery.firebaseFirestore;
 import static ean.ecom.eanshopadmin.launching.AuthActivity.authActivity;
@@ -38,8 +39,12 @@ import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_ID;
 
 public class ShopSetUpFragment extends Fragment {
 
-    public ShopSetUpFragment() {
-        // Required empty public constructor
+    private String LocalShopID;
+    private String userMobile;
+    public ShopSetUpFragment(String LocalShopID, String userMobile) {
+        // Required empty public
+        this.LocalShopID = LocalShopID;
+        this.userMobile = userMobile;
     }
 
     private FrameLayout shopSetUpFrame;
@@ -77,6 +82,17 @@ public class ShopSetUpFragment extends Fragment {
         } );
 
         return view;
+    }
+
+    private void writeDataInLocal(Context context, String shopID, String mobile){
+        SHOP_ID = shopID;
+        ADMIN_DATA_MODEL.setAdminMobile( mobile );
+        try{
+            StaticMethods.writeFileInLocal( context, "shop", shopID);
+            StaticMethods.writeFileInLocal( context, "mobile", mobile );
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private boolean isValidData(){
@@ -139,6 +155,10 @@ public class ShopSetUpFragment extends Fragment {
                     public void onComplete(@NonNull Task <Void> task) {
                         dialog.dismiss();
                         if (task.isSuccessful()){
+
+                            // Write Data in Local Memory..!
+                            writeDataInLocal( context, LocalShopID, userMobile);
+
                             Intent intent = new Intent( context, MainActivity.class );
                             context.startActivity( intent );
 //                            getActivity().finish();

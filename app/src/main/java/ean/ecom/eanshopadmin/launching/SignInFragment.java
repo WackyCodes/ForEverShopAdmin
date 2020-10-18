@@ -137,7 +137,7 @@ public class SignInFragment extends Fragment {
                         if (adminEmail != null){
                             if (isAuth){
                                 // Login...
-                                adminLogIn( view.getContext(), adminEmail, signInPassword.getText().toString());
+                                adminLogIn( view.getContext(), adminEmail, signInPassword.getText().toString() );
                             }else{
                                 // Sign In... Authenticate...
                                 adminSignIn( view.getContext(), adminEmail, signUpPass1.getText().toString() );
@@ -186,13 +186,12 @@ public class SignInFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 // Set Up Home Page....
-                setFragment( new ShopSetUpFragment() );
+                setFragment( new ShopSetUpFragment( signInShopID.getText().toString().trim(), signInMobile.getText().toString().trim() ) );
             }
         } );
 
         return view;
     }
-
 
     private void textWatcher(final View view){
         // Shop ID text Watcher...
@@ -389,8 +388,6 @@ public class SignInFragment extends Fragment {
                             // Assign Current User...
                             currentUser = firebaseAuth.getCurrentUser();
                             // Success...
-                            // Write in Local file
-                            writeDataInLocal( context, signInShopID.getText().toString().trim(), signInMobile.getText().toString() );
                             // Go to Next Activity...
                             checkAdminPermission( context );
                         }else{
@@ -413,8 +410,6 @@ public class SignInFragment extends Fragment {
                             Map<String, Object> updateMap = new HashMap <>();
                             updateMap.put( "auth_id", firebaseAuth.getCurrentUser().getUid() );
                             AdminQuery.updateAdminData( null, null, signInShopID.getText().toString(), signInMobile.getText().toString(), updateMap );
-                            // Write in Local file
-                            writeDataInLocal( context, signInShopID.getText().toString().trim(), signInMobile.getText().toString() );
                             // Add More Details...
                             checkAdminPermission( context );
                         }else{
@@ -473,8 +468,12 @@ public class SignInFragment extends Fragment {
     private void writeDataInLocal(Context context, String shopID, String mobile){
         SHOP_ID = shopID;
         ADMIN_DATA_MODEL.setAdminMobile( mobile );
-        StaticMethods.writeFileInLocal( context, "shop", shopID);
-        StaticMethods.writeFileInLocal( context, "mobile", mobile );
+        try{
+            StaticMethods.writeFileInLocal( context, "shop", shopID);
+            StaticMethods.writeFileInLocal( context, "mobile", mobile );
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     // Forget Password Method...
@@ -497,6 +496,7 @@ public class SignInFragment extends Fragment {
                 });
     }
 
+    // Check for Shop SetUp...
     private void checkForSetUp(final Context context){
         firebaseFirestore
                 .collection( "SHOPS" ).document( SHOP_ID )
@@ -509,8 +509,12 @@ public class SignInFragment extends Fragment {
                                 signInUpScrollView.setVisibility( View.GONE );
                                 shopSetUpLayout.setVisibility( View.VISIBLE );
                                 dialog.dismiss();
-                            }else{
-                              // GOTO MAIN activity...
+                            }
+                            else{
+                                // Write in Local file
+                                writeDataInLocal( context, signInShopID.getText().toString().trim(), signInMobile.getText().toString() );
+
+                                // GOTO MAIN activity...
                                 dialog.dismiss();
                                 Intent intent = new Intent( context, MainActivity.class );
                                 context.startActivity( intent );
