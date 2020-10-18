@@ -14,6 +14,7 @@ import android.content.ClipboardManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -37,6 +39,7 @@ import ean.ecom.eanshopadmin.launching.AuthActivity;
 import ean.ecom.eanshopadmin.main.MainFragment;
 import ean.ecom.eanshopadmin.notification.NotificationFragment;
 import ean.ecom.eanshopadmin.other.DialogsClass;
+import ean.ecom.eanshopadmin.other.StaticMethods;
 
 import static ean.ecom.eanshopadmin.database.AdminQuery.notificationModelList;
 import static ean.ecom.eanshopadmin.database.DBQuery.currentUser;
@@ -266,6 +269,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             signOut.dismiss();
                             // GOTO : AuthActivity...!
                             startActivity( new Intent( MainActivity.this, AuthActivity.class ) );
+
+                            // Delete File From Storage...
+                            StaticMethods.deleteFileFolder(
+                            new File( MainActivity.this.getExternalFilesDir( Environment.getExternalStorageDirectory().getAbsolutePath() ),
+                                    "shop" + "/"+ "shop" + ".txt") );
+                            StaticMethods.deleteFileFolder(
+                            new File( MainActivity.this.getExternalFilesDir( Environment.getExternalStorageDirectory().getAbsolutePath() ),
+                                    "mobile" + "/"+ "mobile" + ".txt") );
 
                             // Clean All The Data...
                             homeCatListModelList.clear();

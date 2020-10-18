@@ -11,6 +11,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import ean.ecom.eanshopadmin.R;
 
+import static ean.ecom.eanshopadmin.database.DBQuery.firebaseAuth;
+
 public class AuthActivity  extends AppCompatActivity {
     public static AppCompatActivity authActivity;
     private FrameLayout parentFrameLayout;
@@ -31,8 +33,15 @@ public class AuthActivity  extends AppCompatActivity {
         if (keyCode == KeyEvent.KEYCODE_BACK){
 //            SignInFragment.disableCloseSignFormButton = false;
             // back key...
+            firebaseAuth.signOut();
         }
         return super.onKeyDown( keyCode, event );
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        firebaseAuth.signOut();
     }
 
     // Fragment Transaction...

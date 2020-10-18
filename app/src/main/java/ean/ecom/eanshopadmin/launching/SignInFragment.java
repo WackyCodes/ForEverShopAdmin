@@ -6,17 +6,23 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.text.method.TransformationMethod;
+import android.transition.Visibility;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,8 +70,11 @@ public class SignInFragment extends Fragment {
     private EditText signInShopID;
     private ImageView verifyShop;
     private EditText signInMobile;
+    private ImageView verifyMobile;
 
+    private ConstraintLayout signInLayout;
     private EditText signInPassword;
+    private ImageView visiblePassIcon;
     private TextView signInForgetPassword;
 
     private LinearLayout createPassLayout;
@@ -99,8 +108,11 @@ public class SignInFragment extends Fragment {
         signInShopID = view.findViewById( R.id.sign_in_shop_id );
         verifyShop = view.findViewById( R.id.verify_shop_image );
         signInMobile = view.findViewById( R.id.sign_in_mobile );
+        verifyMobile = view.findViewById( R.id.verify_mobile_image );
 
+        signInLayout = view.findViewById( R.id.password_const_layout );
         signInPassword = view.findViewById( R.id.sign_in_password );
+        visiblePassIcon = view.findViewById( R.id.visible_pass_icon );
         signInForgetPassword = view.findViewById( R.id.sign_in_forget_password );
 
         signInEmail = view.findViewById( R.id.sign_in_email );
@@ -119,8 +131,9 @@ public class SignInFragment extends Fragment {
         shopSetUpLayout.setVisibility( View.GONE );
 
         // Default Visibility...
-        verifyShop.setVisibility( View.GONE );
-        signInPassword.setVisibility( View.GONE );
+        verifyShop.setVisibility( View.INVISIBLE );
+        signInLayout.setVisibility( View.GONE );
+        verifyMobile.setVisibility( View.INVISIBLE );
         signInForgetPassword.setVisibility( View.GONE );
         createPassLayout.setVisibility( View.GONE );
 
@@ -190,6 +203,22 @@ public class SignInFragment extends Fragment {
             }
         } );
 
+        // Visibility...
+        visiblePassIcon.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (signInPassword.getTransformationMethod().equals( PasswordTransformationMethod.getInstance() )){
+                    // hide password...
+                    signInPassword.setTransformationMethod( HideReturnsTransformationMethod.getInstance() );
+                    visiblePassIcon.setImageResource( R.drawable.ic_visibility_off_black_24dp );
+                }else{
+                    // Show Password...
+                    signInPassword.setTransformationMethod( PasswordTransformationMethod.getInstance() );
+                    visiblePassIcon.setImageResource( R.drawable.ic_visibility_black_24dp );
+                }
+            }
+        } );
+
         return view;
     }
 
@@ -219,7 +248,7 @@ public class SignInFragment extends Fragment {
                     }
 
                 }else{
-                    verifyShop.setVisibility( View.GONE );
+                    verifyShop.setVisibility( View.INVISIBLE );
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         signInShopID.setBackgroundTintList( view.getContext().getResources().getColorStateList( R.color.colorRed ) );
                     }
@@ -255,6 +284,7 @@ public class SignInFragment extends Fragment {
                     }
 
                 }else{
+                    verifyMobile.setVisibility( View.INVISIBLE );
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         signInMobile.setBackgroundTintList( view.getContext().getResources().getColorStateList( R.color.colorRed ) );
                     }
@@ -272,11 +302,11 @@ public class SignInFragment extends Fragment {
     private void setVisibility( boolean isAuthenticate){
 //        verifyShop.setVisibility( View.GONE );
         if (isAuthenticate){
-            signInPassword.setVisibility( View.VISIBLE );
+            signInLayout.setVisibility( View.VISIBLE );
             signInForgetPassword.setVisibility( View.VISIBLE );
             createPassLayout.setVisibility( View.GONE );
         }else{
-            signInPassword.setVisibility( View.GONE );
+            signInLayout.setVisibility( View.GONE );
             signInForgetPassword.setVisibility( View.GONE );
             createPassLayout.setVisibility( View.VISIBLE );
         }
@@ -339,7 +369,7 @@ public class SignInFragment extends Fragment {
                                 signInShopID.setBackgroundTintList( context.getResources().getColorStateList( R.color.colorRed ) );
                             }
                             signInShopID.setError( "Shop ID not found!" );
-                            verifyShop.setVisibility( View.GONE );
+                            verifyShop.setVisibility( View.INVISIBLE );
                         }
                     }
                 } );
@@ -359,15 +389,16 @@ public class SignInFragment extends Fragment {
                                 adminEmail = documentSnapshot.get( "admin_email" ).toString();
                                 setVisibility( true );
                                 isAuth = true;
-
                             }else{
                                 // Show Create Pass..
                                 adminEmail = documentSnapshot.get( "admin_email" ).toString();
                                 isAuth = false;
                                 setVisibility( false );
                             }
+                            verifyMobile.setVisibility( View.VISIBLE );
                             dialog.dismiss();
                         }else{
+                            verifyMobile.setVisibility( View.INVISIBLE );
                             adminEmail = null;
                             isAuth = false;
                             DialogsClass.alertDialog( context, "Alert!", "This Mobile Number is not Registered Yet!" ).show();

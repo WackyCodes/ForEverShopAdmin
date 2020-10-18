@@ -22,7 +22,7 @@
             android:id="@+id/menu_update_shop_image"
             android:iconTint="@color/colorPrimary"
             android:orderInCategory="100"
-            android:title="Update Image" />
+            android:title="Update Shop Image" />
 
         <item
             android:id="@+id/menu_update_shop_status"
@@ -43,12 +43,12 @@
             android:id="@+id/menu_update_shop_helpline"
             android:iconTint="@color/colorPrimary"
             android:orderInCategory="100"
-            android:title="Update Helpline" />
+            android:title="Update Shop Helpline No" />
         <item
             android:id="@+id/menu_update_shop_name"
             android:iconTint="@color/colorPrimary"
             android:orderInCategory="100"
-            android:title="Update Name" />
+            android:title="Update Shop Name" />
         <item
             android:id="@+id/menu_update_shop_time"
             android:iconTint="@color/colorPrimary"

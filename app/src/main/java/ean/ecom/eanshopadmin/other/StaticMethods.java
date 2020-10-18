@@ -247,6 +247,22 @@ public class StaticMethods {
         }
     }
 
+    public static void deleteFileFolder(File file){
+        try{
+//            for(File subFile : file.listFiles()){
+//                if (subFile.isDirectory()){
+//                    deleteFileFolder( subFile );
+//                }else{
+//                    subFile.delete();
+//                }
+//            }
+            file.delete();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
     public static String getTimeFromNow( String dateData, String timeData ){
         String timing =  "on " + dateData;
         try
