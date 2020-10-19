@@ -83,15 +83,17 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         OrderListModel orderListModel = orderListModelList.get( position );
+        OrderProductsModel orderProductsModel = new OrderProductsModel();
+        orderProductsModel.setData( (Map <String, Object>) orderListModel.getOrderProductItemsList().get( 0 ) );
 
         String orderID = orderListModel.getOrderID();
-        String pName = orderListModel.getOrderProductItemsList().get( 0 ).getProductName();
+        String pName = orderProductsModel.getProductName();
         String oItemsAmounts = orderListModel.getProductAmounts();
         String oStatus = orderListModel.getDeliveryStatus();
         String oDate = orderListModel.getOrderDate();
         String oTime = orderListModel.getOrderTime();
         int oTotalItems = orderListModel.getOrderProductItemsList().size();
-        String pImage = orderListModel.getOrderProductItemsList().get( 0 ).getProductImage();
+        String pImage = orderProductsModel.getProductImage();
         switch (listType){
             case ORDER_LIST_CHECK:
                 // TODO : Set Data...
@@ -215,7 +217,8 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
         }
 
         private void setData(final String orderID, String pName, String oItemsAmounts, String oStatus, String oDate, String oTime, int oTotalItems, String pImage, final int index ){
-
+            final OrderProductsModel orderProductsModel = new OrderProductsModel();
+            orderProductsModel.setData( (Map <String, Object>)  orderListModelList.get( index ).getOrderProductItemsList().get( 0 ) );
             // Decide based On List Type...
             switch (listType){
                 case ORDER_LIST_NEW_ORDER:
@@ -262,15 +265,15 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
             // Accept Order Action...
             acceptOrderBtn.setOnClickListener( new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
-                    setAcceptOrderBtn( index );
+                public void onClick(View v) {
+                    setAcceptOrderBtn( index, orderProductsModel );
                 }
             } );
             // Packing Order Action...
             packingTextBtn.setOnClickListener( new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    setPackingTextBtn( index );
+                    setPackingTextBtn( index, orderProductsModel );
                 }
             } );
             // Out For Delivery Action...
@@ -289,16 +292,17 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
 
         }
 
-        private void setAcceptOrderBtn(int index){
+        private void setAcceptOrderBtn(int index, OrderProductsModel orderProductsModel){
             // Create Map For Notify User...
+
             Map <String, Object> notifyMap = new HashMap <>();
             notifyMap.put( "index", StaticMethods.getRandomIndex() );
             notifyMap.put( "notify_type", 1 );
             notifyMap.put( "notify_id", StaticMethods.getFiveDigitRandom() );
             notifyMap.put( "notify_click_id", orderListModelList.get( index ).getOrderID() );
-            notifyMap.put( "notify_image",  orderListModelList.get( index ).getOrderProductItemsList().get( 0 ).getProductImage() );
+            notifyMap.put( "notify_image",  orderProductsModel.getProductImage() );
             notifyMap.put( "notify_title", "Your Order preparing to pack" );
-            notifyMap.put( "notify_body",  orderListModelList.get( index ).getOrderProductItemsList().get( 0 ).getProductName() );
+            notifyMap.put( "notify_body",  orderProductsModel.getProductName() );
             notifyMap.put( "notify_date", StaticMethods.getCrrDate() );
             notifyMap.put( "notify_time", StaticMethods.getCrrTime() );
             notifyMap.put( "notify_is_read", false );
@@ -310,7 +314,7 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
 
         }
 
-        private void setPackingTextBtn(int index){
+        private void setPackingTextBtn(int index, OrderProductsModel orderProductsModel){
 
             Map <String, Object> updateMap = new HashMap <>();
             updateMap.put( "delivery_status", "PACKED" );
@@ -323,9 +327,9 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
             notifyMap.put( "notify_type", 1 );
             notifyMap.put( "notify_id", StaticMethods.getFiveDigitRandom() );
             notifyMap.put( "notify_click_id", orderListModelList.get( index ).getOrderID() );
-            notifyMap.put( "notify_image",  orderListModelList.get( index ).getOrderProductItemsList().get( 0 ).getProductImage() );
+            notifyMap.put( "notify_image", orderProductsModel.getProductImage() );
             notifyMap.put( "notify_title", "Your Order has been packed! Waiting for delivery..." );
-            notifyMap.put( "notify_body",  orderListModelList.get( index ).getOrderProductItemsList().get( 0 ).getProductName() );
+            notifyMap.put( "notify_body",  orderProductsModel.getProductName() );
             notifyMap.put( "notify_date", StaticMethods.getCrrDate() );
             notifyMap.put( "notify_time", StaticMethods.getCrrTime() );
             notifyMap.put( "notify_is_read", false );

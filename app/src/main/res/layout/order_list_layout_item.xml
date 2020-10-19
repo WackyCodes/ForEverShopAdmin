@@ -37,7 +37,8 @@
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="@+id/product_image"
         app:layout_constraintEnd_toEndOf="@+id/product_image"
-        app:layout_constraintStart_toStartOf="@+id/product_image" />
+        app:layout_constraintStart_toStartOf="@+id/product_image"
+        android:gravity="center_horizontal" />
 
 
     <LinearLayout

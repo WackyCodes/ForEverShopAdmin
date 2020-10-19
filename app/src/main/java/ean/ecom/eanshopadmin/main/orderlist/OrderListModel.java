@@ -56,7 +56,7 @@ public class OrderListModel {
     private String outForDeliveryOTP; // new
 
     //  Order Item List...
-    private List<OrderProductItemModel> orderProductItemsList;
+    private List<OrderProductsModel> orderProductItemsList;
 
     public OrderListModel() {
     }
@@ -253,11 +253,11 @@ public class OrderListModel {
         this.deliveredByMobile = deliveredByMobile;
     }
 
-    public List <OrderProductItemModel> getOrderProductItemsList() {
+    public List <OrderProductsModel> getOrderProductItemsList() {
         return orderProductItemsList;
     }
 
-    public void setOrderProductItemsList(List <OrderProductItemModel> orderProductItemsList) {
+    public void setOrderProductItemsList(List <OrderProductsModel> orderProductItemsList) {
         this.orderProductItemsList = orderProductItemsList;
     }
 

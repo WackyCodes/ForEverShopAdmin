@@ -32,6 +32,7 @@ import ean.ecom.eanshopadmin.database.DBQuery;
 import ean.ecom.eanshopadmin.main.orderlist.OrderListAdaptor;
 import ean.ecom.eanshopadmin.main.orderlist.OrderListModel;
 import ean.ecom.eanshopadmin.main.orderlist.OrderProductItemModel;
+import ean.ecom.eanshopadmin.main.orderlist.OrderProductsModel;
 import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderTabAdaptor;
 import ean.ecom.eanshopadmin.main.orderlist.neworder.OrderViewPagerFragment;
 import ean.ecom.eanshopadmin.other.DialogsClass;
@@ -110,11 +111,13 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
     private TextView deliveryBoyProfileBtn; // delivery_boy_view_profile
 
     private Toolbar toolbar;
+    private OrderProductsModel orderProductsModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_order_view );
+        orderProductsModel = new OrderProductsModel();
 
         //--------
         orderID = getIntent().getStringExtra( "ORDER_ID" );
@@ -480,19 +483,20 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
 
     //----------------------- Action Button Query --------------------------------------------------
     // Accept Order Click Listener...
-    private void setAcceptOrderBtn(int index){
+    private void setAcceptOrderBtn(int index ){
         if (!dialog.isShowing()){
             dialog.show();
         }
+        orderProductsModel.setData( (Map <String, Object>) newOrderList.get( index ).getOrderProductItemsList().get( 0 ) );
         // Create Map For Notify User...
         Map <String, Object> notifyMap = new HashMap <>();
         notifyMap.put( "index", StaticMethods.getRandomIndex() );
         notifyMap.put( "notify_type", 1 );
         notifyMap.put( "notify_id", StaticMethods.getFiveDigitRandom() );
         notifyMap.put( "notify_click_id", newOrderList.get( index ).getOrderID() );
-        notifyMap.put( "notify_image",  newOrderList.get( index ).getOrderProductItemsList().get( 0 ).getProductImage() );
+        notifyMap.put( "notify_image",  orderProductsModel.getProductImage() );
         notifyMap.put( "notify_title", "Your Order preparing to pack" );
-        notifyMap.put( "notify_body",  newOrderList.get( index ).getOrderProductItemsList().get( 0 ).getProductName() );
+        notifyMap.put( "notify_body", orderProductsModel.getProductName() );
         notifyMap.put( "notify_date", StaticMethods.getCrrDate() );
         notifyMap.put( "notify_time", StaticMethods.getCrrTime() );
         notifyMap.put( "notify_is_read", false );
@@ -546,7 +550,7 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         if (!dialog.isShowing()){
             dialog.show();
         }
-
+        orderProductsModel.setData( (Map <String, Object>) preparingOrderList.get( index ).getOrderProductItemsList().get( 0 ) );
         Map <String, Object> updateMap = new HashMap <>();
         updateMap.put( "delivery_status", "PACKED" );
         preparingOrderList.get( index ).setDeliveryStatus( "PACKED" );
@@ -558,9 +562,9 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         notifyMap.put( "notify_type", 1 );
         notifyMap.put( "notify_id", StaticMethods.getFiveDigitRandom() );
         notifyMap.put( "notify_click_id", preparingOrderList.get( index ).getOrderID() );
-        notifyMap.put( "notify_image",  preparingOrderList.get( index ).getOrderProductItemsList().get( 0 ).getProductImage() );
+        notifyMap.put( "notify_image",  orderProductsModel.getProductImage() );
         notifyMap.put( "notify_title", "Your Order has been packed! Waiting for delivery..." );
-        notifyMap.put( "notify_body",  preparingOrderList.get( index ).getOrderProductItemsList().get( 0 ).getProductName() );
+        notifyMap.put( "notify_body",  orderProductsModel.getProductName() );
         notifyMap.put( "notify_date", StaticMethods.getCrrDate() );
         notifyMap.put( "notify_time", StaticMethods.getCrrTime() );
         notifyMap.put( "notify_is_read", false );

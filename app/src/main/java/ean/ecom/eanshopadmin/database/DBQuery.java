@@ -36,6 +36,7 @@ import ean.ecom.eanshopadmin.home.HomeListModel;
 import ean.ecom.eanshopadmin.main.orderlist.OrderListFragment;
 import ean.ecom.eanshopadmin.main.orderlist.OrderListModel;
 import ean.ecom.eanshopadmin.main.orderlist.OrderProductItemModel;
+import ean.ecom.eanshopadmin.main.orderlist.OrderProductsModel;
 import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderFragment;
 import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderTabAdaptor;
 import ean.ecom.eanshopadmin.model.BannerModel;
@@ -97,7 +98,7 @@ public class DBQuery {
      // Order List...
     public static List <OrderListModel> orderListModelList = new ArrayList <>();
     private static OrderListModel orderListModel;
-    private static List<OrderProductItemModel> orderSubList;
+    private static List<OrderProductsModel> orderSubList;
 
     // new Order List...
     public static List <OrderListModel> newOrderList = new ArrayList <>();
@@ -448,19 +449,18 @@ public class DBQuery {
 
                                 orderListModel.setDeliverySchedule( documentSnapshot.get( "delivery_schedule_time" ).toString() );
 
-                                long no_of_products = (long)documentSnapshot.get( "no_of_products" );
+//                                long no_of_products = (long)documentSnapshot.get( "no_of_products" );
 
-                                orderSubList = new ArrayList <>();
-
-                                for (long ind = 0; ind < no_of_products; ind++){
-                                    orderSubList.add( new OrderProductItemModel(
-                                            documentSnapshot.get( "product_id_"+ind ).toString(),
-                                            documentSnapshot.get( "product_image_"+ind ).toString(),
-                                            documentSnapshot.get( "product_name_"+ind ).toString(),
-                                            documentSnapshot.get( "product_price_"+ind ).toString(),
-                                            documentSnapshot.get( "product_qty_"+ind ).toString()
-                                    ) );
-                                }
+//                                for (long ind = 0; ind < no_of_products; ind++){
+//                                    orderSubList.add( new OrderProductItemModel(
+//                                            documentSnapshot.get( "product_id_"+ind ).toString(),
+//                                            documentSnapshot.get( "product_image_"+ind ).toString(),
+//                                            documentSnapshot.get( "product_name_"+ind ).toString(),
+//                                            documentSnapshot.get( "product_price_"+ind ).toString(),
+//                                            documentSnapshot.get( "product_qty_"+ind ).toString()
+//                                    ) );
+//                                }
+                                orderSubList =  (ArrayList <OrderProductsModel>) documentSnapshot.getData().get( "products_list" );
 
                                 orderListModel.setOrderProductItemsList( orderSubList );
 
@@ -543,19 +543,33 @@ public class DBQuery {
 
                                     orderListModel.setDeliverySchedule( documentSnapshot.get( "delivery_schedule_time" ).toString() );
 
-                                    long no_of_products = (long)documentSnapshot.get( "no_of_products" );
+//                                    long no_of_products = (long)documentSnapshot.get( "no_of_products" );
 
-                                    orderSubList = new ArrayList <>();
-
-                                    for (long ind = 0; ind < no_of_products; ind++){
-                                        orderSubList.add( new OrderProductItemModel(
+                                   /* for (long ind = 0; ind < no_of_products; ind++){
+                                        OrderProductItemModel orderProductItemModel = new OrderProductItemModel(
                                                 documentSnapshot.get( "product_id_"+ind ).toString(),
                                                 documentSnapshot.get( "product_image_"+ind ).toString(),
                                                 documentSnapshot.get( "product_name_"+ind ).toString(),
                                                 documentSnapshot.get( "product_price_"+ind ).toString(),
                                                 documentSnapshot.get( "product_qty_"+ind ).toString()
-                                        ) );
-                                    }
+                                        );
+
+                                        if (documentSnapshot.get( "product_mrp_"+ind ) != null){
+                                            orderProductItemModel.setProductMRP(  documentSnapshot.get( "product_mrp_"+ind ).toString() );
+                                        }else{
+                                            orderProductItemModel.setProductMRP( "" );
+                                        }
+
+                                        if (documentSnapshot.get( "product_weight_"+ind ) != null){
+                                            orderProductItemModel.setProductWeight(  documentSnapshot.get( "product_weight_"+ind ).toString() );
+                                        }else{
+                                            orderProductItemModel.setProductWeight( "NONE" );
+                                        }
+
+                                        orderSubList.add( orderProductItemModel );
+                                    } */
+
+                                    orderSubList =  (ArrayList <OrderProductsModel>) documentSnapshot.getData().get( "products_list" );
 
                                     orderListModel.setOrderProductItemsList( orderSubList );
 
@@ -662,19 +676,9 @@ public class DBQuery {
                                         orderListModel.setDeliveryID( null );
                                     }
 
-                                    long no_of_products = (long)documentSnapshot.get( "no_of_products" );
+//                                    long no_of_products = (long)documentSnapshot.get( "no_of_products" );
 
-                                    orderSubList = new ArrayList <>();
-
-                                    for (long ind = 0; ind < no_of_products; ind++){
-                                        orderSubList.add( new OrderProductItemModel(
-                                                documentSnapshot.get( "product_id_"+ind ).toString(),
-                                                documentSnapshot.get( "product_image_"+ind ).toString(),
-                                                documentSnapshot.get( "product_name_"+ind ).toString(),
-                                                documentSnapshot.get( "product_price_"+ind ).toString(),
-                                                documentSnapshot.get( "product_qty_"+ind ).toString()
-                                        ) );
-                                    }
+                                    orderSubList =  (ArrayList <OrderProductsModel>) documentSnapshot.getData().get( "products_list" );
 
                                     orderListModel.setOrderProductItemsList( orderSubList );
 
