@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
+import java.util.Map;
 
 import ean.ecom.eanshopadmin.R;
 import ean.ecom.eanshopadmin.main.orderlist.OrderProductItemModel;
@@ -76,7 +77,8 @@ public class OrderViewListAdaptor extends RecyclerView.Adapter<OrderViewListAdap
         }
 
         private void setData(int position){
-            OrderProductsModel model = orderViewListItemModelList.get( position );
+            OrderProductsModel model = new OrderProductsModel();
+            model.setData( (Map <String, Object>)  orderViewListItemModelList.get( position ) );
 
             Glide.with( itemView.getContext() ).load( model.getProductImage() ).apply( new RequestOptions().placeholder( R.drawable.ic_photo_black_24dp ) ).into( pImage );
 
@@ -85,7 +87,13 @@ public class OrderViewListAdaptor extends RecyclerView.Adapter<OrderViewListAdap
             pMRP.setText( "Rs." + model.getProductMrpPrice() + "/-" );
 
             pQTY.setText( "QTY : "+ model.getProductQty() );
-//            pVariant.setText( "Variant : " + model.getProductWeight() );
+
+            if (model.getProductWeight().equals( "NONE" ) || model.getProductWeight().equals( "NONE-NONE" )){
+                pVariant.setVisibility( View.INVISIBLE );
+            }else{
+                pVariant.setVisibility( View.VISIBLE );
+                pVariant.setText( model.getProductWeight() );
+            }
 
         }
 

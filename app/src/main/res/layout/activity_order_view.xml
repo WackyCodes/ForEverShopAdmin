@@ -340,7 +340,8 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="@+id/order_status_text_view"
                 app:layout_constraintStart_toStartOf="@+id/order_status_text_view"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:gravity="center_horizontal" />
 
             <TextView
                 android:id="@+id/order_status_text_view"
@@ -358,7 +359,8 @@
                 android:textSize="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/order_status_icon"
-                app:layout_constraintTop_toBottomOf="@+id/sampletext1" />
+                app:layout_constraintTop_toBottomOf="@+id/sampletext1"
+                android:gravity="center_horizontal" />
 
             <!--            Action Button  -->
 
@@ -420,7 +422,8 @@
                     android:inputType="number"
                     android:textAlignment="center"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="14dp" />
+                    android:textSize="14dp"
+                    android:gravity="center_horizontal" />
 
                 <TextView
                     android:id="@+id/out_for_delivery_text_btn"
@@ -471,7 +474,8 @@
                     android:text="Searching for delivery boy..."
                     android:textAlignment="center"
                     android:textColor="@color/colorBlack"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:gravity="center_horizontal" />
             </LinearLayout>
             <!--            Delivery by information Layout -->
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -493,7 +497,8 @@
                     android:textAlignment="center"
                     android:textSize="12sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:gravity="center_horizontal" />
 
                 <TextView
                     android:id="@+id/sample3"
@@ -508,7 +513,8 @@
                     android:textAlignment="center"
                     android:textSize="12sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/sample2" />
+                    app:layout_constraintTop_toBottomOf="@+id/sample2"
+                    android:gravity="center_horizontal" />
 
                 <TextView
                     android:id="@+id/delivery_by_name_text_view"
@@ -524,7 +530,8 @@
                     app:layout_constraintBottom_toBottomOf="@+id/sample2"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/sample2"
-                    app:layout_constraintTop_toTopOf="@+id/sample2" />
+                    app:layout_constraintTop_toTopOf="@+id/sample2"
+                    android:gravity="center_horizontal" />
 
                 <TextView
                     android:id="@+id/delivery_boy_status"
@@ -539,7 +546,8 @@
                     android:textColor="@color/colorDarkViolet"
                     app:layout_constraintBottom_toBottomOf="@+id/sample3"
                     app:layout_constraintStart_toStartOf="@+id/delivery_by_name_text_view"
-                    app:layout_constraintTop_toTopOf="@+id/sample3" />
+                    app:layout_constraintTop_toTopOf="@+id/sample3"
+                    android:gravity="center_horizontal" />
 
                 <TextView
                     android:id="@+id/delivery_boy_view_profile"
@@ -555,7 +563,8 @@
                     android:textSize="12dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/sample3" />
+                    app:layout_constraintTop_toBottomOf="@+id/sample3"
+                    android:gravity="center_horizontal" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

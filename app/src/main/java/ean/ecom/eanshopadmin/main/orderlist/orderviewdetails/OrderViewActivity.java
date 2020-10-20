@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -179,6 +180,15 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         layoutManager.setOrientation( RecyclerView.VERTICAL );
         orderListRecycler.setLayoutManager( layoutManager );
 
+        // On Button Clicked...!
+        onButtonClicked();
+
+        // Get Sample Index and Set Data...
+        ListIndex = getListIndex(orderID);
+
+    }
+
+    private void onButtonClicked(){
         // Accept Order Click Btn...
         acceptOrderBtn.setOnClickListener( new View.OnClickListener() {
             @Override
@@ -187,7 +197,7 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
                 int list_index = getListIndex( orderID );
                 if (list_index < 0 || list_index > newOrderList.size()){
                     dialog.dismiss();
-                    showToast( OrderViewActivity.this, "Order Item Not found!" );
+                    showToast(  "Order Item Not found!" );
                 }else{
                     setAcceptOrderBtn( list_index );
                     // Change List type...
@@ -204,7 +214,7 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
                 int list_index = getListIndex( orderID );
                 if (list_index < 0 || list_index > preparingOrderList.size()){
                     dialog.dismiss();
-                    showToast( OrderViewActivity.this, "Order Item Not found!" );
+                    showToast(  "Order Item Not found!" );
 
                 }else{
                     setPackingTextBtn( list_index );
@@ -228,12 +238,9 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
 
                     if (list_index < 0 || list_index > readyToDeliveredList.size()){
                         dialog.dismiss();
-                        showToast( OrderViewActivity.this, "Order Item Not found!" );
+                        showToast(  "Order Item Not found!" );
                     }else{
                         setOutForDeliveryBtn(  deliveryOtpEditText.getText().toString() , list_index );
-                        // Change List type...
-                        LIST_TYPE = ORDER_LIST_OUT_FOR_DELIVERY;
-                        setOrderStatusLayout();
                     }
                 }
             }
@@ -246,8 +253,13 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
             }
         } );
 
-        // Get Sample Index and Set Data...
-        ListIndex = getListIndex(orderID);
+        // Delivery Boy Profile View Btn...
+        deliveryBoyProfileBtn.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showToast(  "Details not Found!" );
+            }
+        } );
 
     }
 
@@ -377,6 +389,8 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
                 setOrderStatusTextIcon("Packed...", R.drawable.ic_card_packed_travel_black_24dp, R.color.colorBlue );
                 break;
             case ORDER_LIST_OUT_FOR_DELIVERY:
+                // Update In Local Model//
+                updateOrderStatusInModel("PICKED");
                 setOrderStatusTextIcon("Way On Delivery", R.drawable.ic_local_shipping_black_24dp, R.color.colorPrimary );
                 break;
             case ORDER_LIST_SUCCESS:
@@ -424,7 +438,7 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         deliveryBoyName.setText( orderListModel.getDeliveredByName() );
         if (LIST_TYPE == ORDER_LIST_OUT_FOR_DELIVERY  ){
             deliveryBoyStatus.setText( "On the Way" );
-        }else if(LIST_TYPE != ORDER_LIST_SUCCESS){
+        }else if(LIST_TYPE == ORDER_LIST_SUCCESS){
             deliveryBoyStatus.setText( "Delivered" );
         }else{
             deliveryBoyStatus.setText( "Upcoming..." );
@@ -456,10 +470,9 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
 
     private void updateOrderStatusInModel(String updateStatus){
         orderListModel.setDeliveryStatus( updateStatus );
-
     }
 
-    //----------------------- Override Methods
+    //----------------------- Override Methods...
     @Override
     public void onDeliveryBoyFound(Map<String, Object> deliveryBoyInfo) {
         orderListModel.setDeliveredByAuthID( deliveryBoyInfo.get( "delivery_by_uid" ).toString() );
@@ -478,7 +491,24 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
 
     @Override
     public void onUpdateOrderStatus(int updateCode) {
+        dismissDialog();
+        LIST_TYPE = updateCode;
+        setOrderStatusLayout();
+    }
 
+    @Override
+    public void dismissDialog() {
+        dialog.dismiss();
+    }
+
+    @Override
+    public void showDialog() {
+        dialog.show();
+    }
+
+    @Override
+    public void showToast(String msg) {
+        Toast.makeText( this, msg, Toast.LENGTH_SHORT ).show();
     }
 
     //----------------------- Action Button Query --------------------------------------------------
@@ -601,21 +631,22 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
                 if (task.isSuccessful()){
                     String otp = task.getResult().get( "verify_otp" ).toString();
                     if (otp.equals( verifyOtp )){
-                        // TODO: Out For Delivery...
-                        showToast(  OrderViewActivity.this, "Verified." );
-                        dialog.dismiss();
+                        showToast(   "Successfully matched! Please give products to the delivery boy!" );
+                        //  : UPDATE in the Order List...
+                        Map <String, Object> updateMap  = new HashMap <>();
+                        updateMap.put( "delivery_status", "PICKED" );
+                        updateQuery.onUpdateStatusQuery( OrderViewActivity.this, orderID, updateMap );
+                        // Dismiss dialog after update on Order...
 
-                        // Update In Local Model//
-//                        updateOrderStatusInModel("PACKED");
                     }else{
                         deliveryOtpEditText.setError( "Not Matched!" );
                         dialog.dismiss();
-                        showToast( OrderViewActivity.this, "Please Enter Correct OTP!" );
+                        showToast(  "Incorrect! Ask Correct OTP from delivery boy and Try again..." );
                     }
 
                 }else{
                     dialog.dismiss();
-                    showToast( OrderViewActivity.this, "Something Went Wrong! Error : "+ task.getException().getMessage() );
+                    showToast(  "Something Went Wrong! Error : "+ task.getException().getMessage() );
                 }
             }
         } );

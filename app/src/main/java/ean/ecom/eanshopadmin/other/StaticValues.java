@@ -120,7 +120,7 @@ public class StaticValues {
     public static final int ORDER_LIST_OUT_FOR_DELIVERY = 4;
     public static final int ORDER_LIST_SUCCESS = 5;
 
-    // Update Product ... Local Use
+    // Update Product ... Local Use...
     public static final int UPDATE_DESCRIPTION = 10;
     public static final int UPDATE_STOCKS = 11;
     public static final int UPDATE_NAME = 12;

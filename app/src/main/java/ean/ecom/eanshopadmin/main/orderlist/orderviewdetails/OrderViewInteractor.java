@@ -19,9 +19,12 @@ public interface OrderViewInteractor {
 
     void onDeliveryBoyFound( Map<String, Object> deliveryBoyInfo );
     void onUpdateOrderStatus( int updateCode );
+    void dismissDialog();
+    void showDialog();
+    void showToast(String msg);
 
     interface OrderStatusUpdator{
-        void onUpdateStatusQuery(OrderViewInteractor orderStatusUpdator, Map<String, Object> updateMap);
+        void onUpdateStatusQuery(OrderViewInteractor orderStatusUpdator, String orderID, Map<String, Object> updateMap);
         void onFindDeliveryBoyQuery(OrderViewInteractor orderStatusUpdator, String orderID);
     }
 
