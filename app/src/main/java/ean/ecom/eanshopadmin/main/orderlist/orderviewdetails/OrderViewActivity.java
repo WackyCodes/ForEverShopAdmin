@@ -482,18 +482,32 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
     //----------------------- Override Methods...
     @Override
     public void onDeliveryBoyFound(Map<String, Object> deliveryBoyInfo) {
-        orderListModel.setDeliveredByAuthID( deliveryBoyInfo.get( "delivery_by_uid" ).toString() );
-        orderListModel.setDeliveredByMobile( deliveryBoyInfo.get( "delivery_by_mobile" ).toString() );
-        orderListModel.setDeliveredByName( deliveryBoyInfo.get( "delivery_by_name" ).toString() );
-        orderListModel.setDeliveryID( deliveryBoyInfo.get( "delivery_id" ).toString() );
+        if (deliveryBoyInfo != null){
+            orderListModel.setDeliveredByAuthID( deliveryBoyInfo.get( "delivery_by_uid" ).toString() );
+            orderListModel.setDeliveredByMobile( deliveryBoyInfo.get( "delivery_by_mobile" ).toString() );
+            orderListModel.setDeliveredByName( deliveryBoyInfo.get( "delivery_by_name" ).toString() );
+            orderListModel.setDeliveryID( deliveryBoyInfo.get( "delivery_id" ).toString() );
 
-        if (searchingDeliveryBoyLayout.getVisibility() == View.VISIBLE){
-            deliveryBoyViewLayout.setVisibility( View.VISIBLE );
-            searchingDeliveryBoyLayout.setVisibility( View.GONE );
+            if (searchingDeliveryBoyLayout.getVisibility() == View.VISIBLE){
+                deliveryBoyViewLayout.setVisibility( View.VISIBLE );
+                searchingDeliveryBoyLayout.setVisibility( View.GONE );
+            }else{
+                deliveryBoyViewLayout.setVisibility( View.VISIBLE );
+            }
+            setDeliveryData();
         }else{
-            deliveryBoyViewLayout.setVisibility( View.VISIBLE );
+            orderListModel.setDeliveredByAuthID( null );
+            orderListModel.setDeliveredByMobile( null );
+            orderListModel.setDeliveredByName( null );
+            orderListModel.setDeliveryID( null );
+            if (deliveryBoyViewLayout.getVisibility() == View.VISIBLE){
+                deliveryBoyViewLayout.setVisibility( View.GONE );
+                searchingDeliveryBoyLayout.setVisibility( View.VISIBLE );
+            }else{
+                searchingDeliveryBoyLayout.setVisibility( View.VISIBLE );
+            }
         }
-        setDeliveryData();
+
     }
 
     @Override

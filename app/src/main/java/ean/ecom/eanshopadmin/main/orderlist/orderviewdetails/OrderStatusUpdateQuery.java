@@ -97,6 +97,8 @@ public class OrderStatusUpdateQuery implements OrderViewInteractor.OrderStatusUp
                                 }
 
                                 orderStatusUpdator.onDeliveryBoyFound( deliveryBoyInfo );
+                            }else{
+                                orderStatusUpdator.onDeliveryBoyFound( null );
                             }
                         }
 
