@@ -6,6 +6,7 @@ package ean.ecom.eanshopadmin.main.orderlist;
  * https://linktr.ee/wackycodes
  */
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -15,8 +16,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -31,17 +34,22 @@ import java.util.Map;
 
 import ean.ecom.eanshopadmin.R;
 import ean.ecom.eanshopadmin.database.DBQuery;
+import ean.ecom.eanshopadmin.database.OrderUpdateQuery;
 import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderFragment;
 import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderTabAdaptor;
 import ean.ecom.eanshopadmin.main.orderlist.orderviewdetails.OrderViewActivity;
+import ean.ecom.eanshopadmin.notification.UserNotificationModel;
 import ean.ecom.eanshopadmin.other.StaticMethods;
 
 import static ean.ecom.eanshopadmin.other.StaticMethods.showToast;
 import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_ACCEPTED;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_CHECK;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_NEW_ORDER;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_PREPARING;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_READY_TO_DELIVER;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_PACKED;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_PICKED;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_ID;
 
 /**
@@ -176,7 +184,7 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
 
     }
 
-    public class NewOrderListViewHolder extends RecyclerView.ViewHolder{
+    public class NewOrderListViewHolder extends RecyclerView.ViewHolder implements OrderUpdateListener{
         private TextView orderId;
         private TextView productName;
         private TextView orderItemsAmount;
@@ -194,6 +202,9 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
         private EditText outForDeliveryPinEt;
         private TextView outForDeliveryBtn;
         //
+
+        private OrderUpdateQuery orderUpdateQuery;
+        private Dialog dialog;
 
         public NewOrderListViewHolder(@NonNull View itemView) {
             super( itemView );
@@ -216,9 +227,12 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
 
         }
 
-        private void setData(final String orderID, String pName, String oItemsAmounts, String oStatus, String oDate, String oTime, int oTotalItems, String pImage, final int index ){
+        private void setData(final String orderID, String pName, String oItemsAmounts, String oStatus
+                , String oDate, String oTime, int oTotalItems, String pImage, final int index ){
             final OrderProductsModel orderProductsModel = new OrderProductsModel();
             orderProductsModel.setData( (Map <String, Object>)  orderListModelList.get( index ).getOrderProductItemsList().get( 0 ) );
+            orderUpdateQuery = new OrderUpdateQuery();
+            dialog = new Dialog( itemView.getContext() );
             // Decide based On List Type...
             switch (listType){
                 case ORDER_LIST_NEW_ORDER:
@@ -293,56 +307,26 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
         }
 
         private void setAcceptOrderBtn(int index, OrderProductsModel orderProductsModel){
-            // Create Map For Notify User...
+            showDialog();
+            // -------------------------
+            Map <String, Object> updateMap = new HashMap <>();
+            updateMap.put( "delivery_status", ORDER_ACCEPTED );
+            orderListModelList.get( index ).setDeliveryStatus( ORDER_ACCEPTED );
+//            DBQuery.updateOrderStatus( null, orderListModelList.get( index ) ,updateMap ); // TODO : UPDATE
 
-            Map <String, Object> notifyMap = new HashMap <>();
-            notifyMap.put( "index", StaticMethods.getRandomIndex() );
-            notifyMap.put( "notify_type", 1 );
-            notifyMap.put( "notify_id", StaticMethods.getFiveDigitRandom() );
-            notifyMap.put( "notify_click_id", orderListModelList.get( index ).getOrderID() );
-            notifyMap.put( "notify_image",  orderProductsModel.getProductImage() );
-            notifyMap.put( "notify_title", "Your Order preparing to pack" );
-            notifyMap.put( "notify_body",  orderProductsModel.getProductName() );
-            notifyMap.put( "notify_date", StaticMethods.getCrrDate() );
-            notifyMap.put( "notify_time", StaticMethods.getCrrTime() );
-            notifyMap.put( "notify_is_read", false );
-            // Notify User...
-            DBQuery.sentNotificationToUser(  orderListModelList.get( index ).getCustAuthID(), notifyMap );
+            orderUpdateQuery.updateOrderStatus( this, orderListModelList.get( index ), updateMap, index );
 
-//           Query To Find Delivery Boy... After that Update On Order Document...
-            queryToDeliveryBoy(index);
+            // For Notify User...
+            sendNotificationToUser( index, orderProductsModel, "Your Order preparing to pack" );
 
         }
 
         private void setPackingTextBtn(int index, OrderProductsModel orderProductsModel){
+            showDialog();
+            // For Notify User...
+            sendNotificationToUser( index, orderProductsModel,  "Your Order has been packed! Waiting for delivery..." );
 
-            Map <String, Object> updateMap = new HashMap <>();
-            updateMap.put( "delivery_status", "PACKED" );
-            orderListModelList.get( index ).setDeliveryStatus( "PACKED" );
-            DBQuery.updateOrderStatus( null, orderListModelList.get( index ) ,updateMap );
-
-            // Create Map For Notify User...
-            Map <String, Object> notifyMap = new HashMap <>();
-            notifyMap.put( "index", StaticMethods.getRandomIndex() );
-            notifyMap.put( "notify_type", 1 );
-            notifyMap.put( "notify_id", StaticMethods.getFiveDigitRandom() );
-            notifyMap.put( "notify_click_id", orderListModelList.get( index ).getOrderID() );
-            notifyMap.put( "notify_image", orderProductsModel.getProductImage() );
-            notifyMap.put( "notify_title", "Your Order has been packed! Waiting for delivery..." );
-            notifyMap.put( "notify_body",  orderProductsModel.getProductName() );
-            notifyMap.put( "notify_date", StaticMethods.getCrrDate() );
-            notifyMap.put( "notify_time", StaticMethods.getCrrTime() );
-            notifyMap.put( "notify_is_read", false );
-            // Notify User...
-            DBQuery.sentNotificationToUser( orderListModelList.get( index ).getCustAuthID(), notifyMap );
-
-            orderListModelList.remove( index );
-            // Show the No Order Text.. If List size = 0;
-            if (orderListModelList.size() == 0){
-                NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_PREPARING, View.VISIBLE );
-            }
-            // Notify Data Changed...
-            OrderListAdaptor.this.notifyDataSetChanged();
+            queryToDeliveryBoy( index );
 
         }
 
@@ -353,6 +337,7 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
         }
 
         private void queryToDeliveryBoy(int index){
+
             final String vOTP = StaticMethods.getOTPDigitRandom(); // 4 Digit...
             orderListModelList.get( index ).setOutForDeliveryOTP( vOTP );
 
@@ -360,7 +345,7 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
 
             Map <String, Object> deliveryMap = new HashMap <>();
             deliveryMap.put( "order_id", orderListModel.getOrderID() );
-            deliveryMap.put( "delivery_status", "ACCEPTED" );
+            deliveryMap.put( "delivery_status", ORDER_ACCEPTED );
             deliveryMap.put( "verify_otp", vOTP );
             deliveryMap.put( "accepted_date", StaticMethods.getCrrDate() );
             deliveryMap.put( "accepted_time", StaticMethods.getCrrTime() );
@@ -375,15 +360,10 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
             deliveryMap.put( "shop_geo_point", ADMIN_DATA_MODEL.getShopGeoPoint() );
             deliveryMap.put( "shipping_geo_point", orderListModel.getShippingGeoPoint() );
 
-            DBQuery.setDeliveryDocument( null, deliveryMap, orderListModelList.get( index ));
+            // set document in delivery section and then we update in order document...
+//            DBQuery.setDeliveryDocument( null, deliveryMap, orderListModelList.get( index ));
 
-            orderListModelList.remove( index );
-            // Show the No Order Text.. If List size = 0;
-            if (orderListModelList.size() == 0){
-                NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_NEW_ORDER, View.VISIBLE );
-            }
-            // Notify Data Changed...
-            OrderListAdaptor.this.notifyDataSetChanged();
+            orderUpdateQuery.setDeliveryDocument( this, deliveryMap, orderListModelList.get( index ), index );
 
         }
 
@@ -400,7 +380,7 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
                                 String otp = task.getResult().get( "verify_otp" ).toString();
                                 if (otp.equals( verifyOtp )){
                                     // TODO: Out For Delivery...
-                                    showToast(  itemView.getContext(), "Otp Matched!" );
+                                    showToast( "Otp Matched!" );
 
                                 }else{
                                     outForDeliveryPinEt.setError( "Not Matched!" );
@@ -414,6 +394,85 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
 
         }
 
+        private void sendNotificationToUser( int index, OrderProductsModel orderProductsModel, String title){
+            // Create Map For Notify User...
+            UserNotificationModel notificationModel = new UserNotificationModel();
+            notificationModel.setNotify_type( 1 );
+            notificationModel.setNotify_id( StaticMethods.getFiveDigitRandom()  );
+            notificationModel.setNotify_click_id(  orderListModelList.get( index ).getOrderID()  );
+            notificationModel.setNotify_image( orderProductsModel.getProductImage()  );
+            notificationModel.setNotify_title( title );
+            notificationModel.setNotify_body( orderProductsModel.getProductName() );
+            // Notify User...
+            DBQuery.sentNotificationToUser(  orderListModelList.get( index ).getCustAuthID(), notificationModel.getMap() );
+        }
+
+        @Override
+        public void onOrderUpdateSuccess(String updateValue, int index) {
+            dismissDialog();
+            if (updateValue.toUpperCase().equals( ORDER_ACCEPTED )){ // Preparing...
+                // ------------ notify...
+                orderListModelList.remove( index );
+                // Show the No Order Text.. If List size = 0;
+                if (orderListModelList.size() == 0){
+                    NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_NEW_ORDER, View.VISIBLE );
+                }
+
+            } else  if (updateValue.toUpperCase().equals( ORDER_PACKED )){ // Ready to Delivery...
+                // remove...
+                orderListModelList.remove( index );
+                // Show the No Order Text.. If List size = 0;
+                if (orderListModelList.size() == 0){
+                    NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_PREPARING, View.VISIBLE );
+                }
+
+            } else  if (updateValue.toUpperCase().equals( ORDER_PICKED )){ // Out For Delivery...
+                // By Default Done...
+
+            }
+            // Notify Data Changed...
+            OrderListAdaptor.this.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onOrderUpdateFailed(String updateValue,@Nullable OrderListModel orderListModel,@Nullable Map<String, Object> updateMap, int index) {
+            dismissDialog();
+            if (updateValue.toUpperCase().equals( ORDER_ACCEPTED )){ // Preparing...
+                showToast( "Failed to update... Check Your internet connection!" );
+            } else  if (updateValue.toUpperCase().equals( ORDER_PACKED )){ // Ready to Delivery...
+                showDialog();
+                showToast( "Please Wait... Check Your internet connection!" );
+                orderUpdateQuery.updateOrderStatus( this, orderListModel, updateMap, index );
+            } else  if (updateValue.toUpperCase().equals( ORDER_PICKED )){ // Out For Delivery...
+                // By Default Done...
+                showToast( "Failed to update... Check Your internet connection!" );
+            }
+        }
+
+        @Override
+        public void onUpdateDeliveryFailed() {
+            dismissDialog();
+            showToast( "Failed to update ! Please Check Your internet connection and try again!" );
+        }
+
+        @Override
+        public void dismissDialog() {
+            if (dialog.isShowing()){
+                dialog.dismiss();
+            }
+        }
+
+        @Override
+        public void showDialog() {
+            if (!dialog.isShowing()){
+                dialog.show();
+            }
+        }
+
+        @Override
+        public void showToast(String msg) {
+            Toast.makeText( itemView.getContext(), msg, Toast.LENGTH_SHORT ).show();
+        }
     }
 
     /**  Order Status

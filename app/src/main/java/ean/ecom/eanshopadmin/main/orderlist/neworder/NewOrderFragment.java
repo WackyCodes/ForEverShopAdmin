@@ -75,10 +75,10 @@ public class NewOrderFragment extends Fragment {
 
     @Override
     public void onResume() {
-        super.onResume();
         if (newOrderTabAdaptor!=null){
             newOrderTabAdaptor.notifyDataSetChanged();
         }
+        super.onResume();
     }
 
     /**  Order Status

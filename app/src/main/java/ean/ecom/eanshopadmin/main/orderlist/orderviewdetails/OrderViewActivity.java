@@ -1,6 +1,7 @@
 package ean.ecom.eanshopadmin.main.orderlist.orderviewdetails;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -30,12 +31,15 @@ import java.util.Map;
 
 import ean.ecom.eanshopadmin.R;
 import ean.ecom.eanshopadmin.database.DBQuery;
+import ean.ecom.eanshopadmin.database.OrderUpdateQuery;
 import ean.ecom.eanshopadmin.main.orderlist.OrderListAdaptor;
 import ean.ecom.eanshopadmin.main.orderlist.OrderListModel;
 import ean.ecom.eanshopadmin.main.orderlist.OrderProductItemModel;
 import ean.ecom.eanshopadmin.main.orderlist.OrderProductsModel;
+import ean.ecom.eanshopadmin.main.orderlist.OrderUpdateListener;
 import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderTabAdaptor;
 import ean.ecom.eanshopadmin.main.orderlist.neworder.OrderViewPagerFragment;
+import ean.ecom.eanshopadmin.notification.UserNotificationModel;
 import ean.ecom.eanshopadmin.other.DialogsClass;
 import ean.ecom.eanshopadmin.other.StaticMethods;
 
@@ -45,11 +49,14 @@ import static ean.ecom.eanshopadmin.database.DBQuery.preparingOrderList;
 import static ean.ecom.eanshopadmin.database.DBQuery.readyToDeliveredList;
 import static ean.ecom.eanshopadmin.other.StaticMethods.showToast;
 import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_ACCEPTED;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_NEW_ORDER;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_OUT_FOR_DELIVERY;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_PREPARING;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_READY_TO_DELIVER;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_SUCCESS;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_PACKED;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_PICKED;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_ID;
 
 /*
@@ -58,12 +65,12 @@ import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_ID;
  * https://linktr.ee/wackycodes
  */
 
-public class OrderViewActivity extends AppCompatActivity implements OrderViewInteractor {
+public class OrderViewActivity extends AppCompatActivity implements OrderViewInteractor, OrderUpdateListener {
 
     private List <OrderListModel> orderListModelList = new ArrayList <>();
     private OrderListModel orderListModel;
     private OrderStatusUpdateQuery updateQuery = new OrderStatusUpdateQuery();
-
+    private OrderUpdateQuery orderUpdateQuery = new OrderUpdateQuery();
 
     private int LIST_TYPE = -1;
     private int ListIndex = -1;
@@ -497,6 +504,68 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
     }
 
     @Override
+    public void onOrderUpdateSuccess(String updateValue, int index) {
+        dismissDialog();
+        if (updateValue.toUpperCase().equals( ORDER_ACCEPTED )){ // Preparing...
+            // Remove...
+            newOrderList.remove( index );
+
+            // Update In Local Model//
+            updateOrderStatusInModel( ORDER_ACCEPTED );
+
+            // Show the No Order Text.. If List size = 0;
+            if (newOrderList.size() == 0){
+                NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_NEW_ORDER, View.VISIBLE );
+            }
+            // Notify Data Changed...
+            if (OrderViewPagerFragment.orderViewPagerListAdaptor != null){
+                OrderViewPagerFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
+            }
+
+        } else  if (updateValue.toUpperCase().equals( ORDER_PACKED )){ // Ready to Delivery...
+            preparingOrderList.remove( index );
+            // Update In Local Model//
+            updateOrderStatusInModel( ORDER_PACKED );
+
+            // Show the No Order Text.. If List size = 0;
+            if (preparingOrderList.size() == 0){
+                NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_PREPARING, View.VISIBLE );
+            }
+            // Notify Data Changed...
+
+            if (OrderViewPagerFragment.orderViewPagerListAdaptor != null){
+                OrderViewPagerFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
+            }
+
+        } else  if (updateValue.toUpperCase().equals( ORDER_PICKED )){ // Out For Delivery...
+            // By Default Done...
+
+        }
+
+    }
+
+    @Override
+    public void onOrderUpdateFailed(String updateValue, @Nullable OrderListModel orderListModel, @Nullable Map <String, Object> updateMap, int index) {
+        dismissDialog();
+        if (updateValue.toUpperCase().equals( ORDER_ACCEPTED )){ // Preparing...
+            showToast( "Failed to update... Check Your internet connection!" );
+        } else  if (updateValue.toUpperCase().equals( ORDER_PACKED )){ // Ready to Delivery...
+            showDialog();
+            showToast( "Please Wait... Check Your internet connection!" );
+            orderUpdateQuery.updateOrderStatus( this, orderListModel, updateMap, index );
+        } else  if (updateValue.toUpperCase().equals( ORDER_PICKED )){ // Out For Delivery...
+            // By Default Done...
+            showToast( "Failed to update... Check Your internet connection!" );
+        }
+    }
+
+    @Override
+    public void onUpdateDeliveryFailed() {
+        dismissDialog();
+        showToast( "Failed to update ! Please Check Your internet connection and try again!" );
+    }
+
+    @Override
     public void dismissDialog() {
         dialog.dismiss();
     }
@@ -514,34 +583,38 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
     //----------------------- Action Button Query --------------------------------------------------
     // Accept Order Click Listener...
     private void setAcceptOrderBtn(int index ){
-        if (!dialog.isShowing()){
-            dialog.show();
-        }
-        orderProductsModel.setData( (Map <String, Object>) newOrderList.get( index ).getOrderProductItemsList().get( 0 ) );
-        // Create Map For Notify User...
-        Map <String, Object> notifyMap = new HashMap <>();
-        notifyMap.put( "index", StaticMethods.getRandomIndex() );
-        notifyMap.put( "notify_type", 1 );
-        notifyMap.put( "notify_id", StaticMethods.getFiveDigitRandom() );
-        notifyMap.put( "notify_click_id", newOrderList.get( index ).getOrderID() );
-        notifyMap.put( "notify_image",  orderProductsModel.getProductImage() );
-        notifyMap.put( "notify_title", "Your Order preparing to pack" );
-        notifyMap.put( "notify_body", orderProductsModel.getProductName() );
-        notifyMap.put( "notify_date", StaticMethods.getCrrDate() );
-        notifyMap.put( "notify_time", StaticMethods.getCrrTime() );
-        notifyMap.put( "notify_is_read", false );
-        // Notify User...
-        DBQuery.sentNotificationToUser( newOrderList.get( index ).getCustAuthID(), notifyMap );
+        showDialog();
 
-//           Query To Find Delivery Boy... After that Update On Order Document...
-        queryToDeliveryBoy(index);
+        // -------------------------
+        Map <String, Object> updateMap = new HashMap <>();
+        updateMap.put( "delivery_status", ORDER_ACCEPTED );
+        newOrderList.get( index ).setDeliveryStatus( ORDER_ACCEPTED );
+//        DBQuery.updateOrderStatus( dialog, newOrderList.get( index ) ,updateMap ); // TODO : UPDATE
+
+        orderUpdateQuery.updateOrderStatus( this, newOrderList.get( index ) ,updateMap, index );
+
+        orderProductsModel.setData( (Map <String, Object>) newOrderList.get( index ).getOrderProductItemsList().get( 0 ) );
+        // For Notify User...
+        sendNotificationToUser( index, orderProductsModel, "Your Order preparing to pack" );
 
     }
+    // set Packing Done Btn Click Listener...
+    private void setPackingTextBtn(int index){
+        showDialog();
+        orderProductsModel.setData( (Map <String, Object>) preparingOrderList.get( index ).getOrderProductItemsList().get( 0 ) );
+
+        // Query to Find Delivery Boy....
+        queryToDeliveryBoy( index );
+        // Notify User...
+        sendNotificationToUser( index, orderProductsModel,  "Your Order has been packed! Waiting for delivery..." );
+
+    }
+
     private void queryToDeliveryBoy(int index){
         final String vOTP = StaticMethods.getOTPDigitRandom(); // 4 Digit...
         newOrderList.get( index ).setOutForDeliveryOTP( vOTP );
 
-        OrderListModel orderListModel = newOrderList.get( index );
+        OrderListModel orderListModel = preparingOrderList.get( index );
 
         Map <String, Object> deliveryMap = new HashMap <>();
         deliveryMap.put( "order_id", orderListModel.getOrderID() );
@@ -558,58 +631,10 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         deliveryMap.put( "shipping_address", orderListModel.getShippingAddress() );
         deliveryMap.put( "shipping_pin", orderListModel.getShippingPinCode() );
 
-        DBQuery.setDeliveryDocument( dialog, deliveryMap, newOrderList.get( index ));
+//        DBQuery.setDeliveryDocument( dialog, deliveryMap, newOrderList.get( index ));
 
-        newOrderList.remove( index );
+        orderUpdateQuery.setDeliveryDocument( this,  deliveryMap, newOrderList.get( index ), index );
 
-        // Show the No Order Text.. If List size = 0;
-//        if (newOrderList.size() == 0){
-//            NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_NEW_ORDER, View.VISIBLE );
-//        }
-        // Notify Data Changed...
-        /**
-        if (OrderViewPagerFragment.orderViewPagerListAdaptor != null){
-            OrderViewPagerFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
-        } */
-        // Update In Local Model//
-        updateOrderStatusInModel("ACCEPTED");
-    }
-
-    // set Packing Done Btn Click Listener...
-    private void setPackingTextBtn(int index){
-        if (!dialog.isShowing()){
-            dialog.show();
-        }
-        orderProductsModel.setData( (Map <String, Object>) preparingOrderList.get( index ).getOrderProductItemsList().get( 0 ) );
-        Map <String, Object> updateMap = new HashMap <>();
-        updateMap.put( "delivery_status", "PACKED" );
-        preparingOrderList.get( index ).setDeliveryStatus( "PACKED" );
-        DBQuery.updateOrderStatus( dialog, preparingOrderList.get( index ) ,updateMap );
-
-        // Create Map For Notify User...
-        Map <String, Object> notifyMap = new HashMap <>();
-        notifyMap.put( "index", StaticMethods.getRandomIndex() );
-        notifyMap.put( "notify_type", 1 );
-        notifyMap.put( "notify_id", StaticMethods.getFiveDigitRandom() );
-        notifyMap.put( "notify_click_id", preparingOrderList.get( index ).getOrderID() );
-        notifyMap.put( "notify_image",  orderProductsModel.getProductImage() );
-        notifyMap.put( "notify_title", "Your Order has been packed! Waiting for delivery..." );
-        notifyMap.put( "notify_body",  orderProductsModel.getProductName() );
-        notifyMap.put( "notify_date", StaticMethods.getCrrDate() );
-        notifyMap.put( "notify_time", StaticMethods.getCrrTime() );
-        notifyMap.put( "notify_is_read", false );
-        // Notify User...
-        DBQuery.sentNotificationToUser( preparingOrderList.get( index ).getCustAuthID(), notifyMap );
-
-        preparingOrderList.remove( index );
-        // Show the No Order Text.. If List size = 0;
-//        if (preparingOrderList.size() == 0){
-//            NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_PREPARING, View.VISIBLE );
-//        }
-        // Notify Data Changed...
-
-        // Update In Local Model//
-        updateOrderStatusInModel("PACKED");
     }
 
     // Out For Delivery Action...
@@ -618,6 +643,20 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
             dialog.show();
         }
         getDeliveryOtp( readyToDeliveredList.get( index ).getDeliveryID(), otpPin );
+    }
+
+
+    private void sendNotificationToUser( int index, OrderProductsModel orderProductsModel, String title){
+        // Create Map For Notify User...
+        UserNotificationModel notificationModel = new UserNotificationModel();
+        notificationModel.setNotify_type( 1 );
+        notificationModel.setNotify_id( StaticMethods.getFiveDigitRandom()  );
+        notificationModel.setNotify_click_id(  orderListModelList.get( index ).getOrderID()  );
+        notificationModel.setNotify_image( orderProductsModel.getProductImage()  );
+        notificationModel.setNotify_title( title );
+        notificationModel.setNotify_body( orderProductsModel.getProductName() );
+        // Notify User...
+        DBQuery.sentNotificationToUser(  orderListModelList.get( index ).getCustAuthID(), notificationModel.getMap() );
     }
 
     private void getDeliveryOtp(String deliveryId, final String verifyOtp){

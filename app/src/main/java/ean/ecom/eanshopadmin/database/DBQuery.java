@@ -51,8 +51,11 @@ import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.GRID_PRODUCTS_LAYOUT_CONTAINER;
 import static ean.ecom.eanshopadmin.other.StaticValues.HORIZONTAL_PRODUCTS_LAYOUT_CONTAINER;
 import static ean.ecom.eanshopadmin.other.StaticValues.NOT_VERIFIED;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_ACCEPTED;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_PREPARING;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_READY_TO_DELIVER;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_PACKED;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_PICKED;
 import static ean.ecom.eanshopadmin.other.StaticValues.REQUEST_TO_NOTIFY_NEW_ORDER;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_HOME_BANNER_SLIDER_CONTAINER;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_HOME_CAT_LIST_CONTAINER;
@@ -699,42 +702,6 @@ public class DBQuery {
                 } );
     }
     // ------------------------  New Order Query ----------------------------
-
-    //  Update Order Status on the database.. ------------------------
-    public static void updateOrderStatus(@Nullable final Dialog dialog, final OrderListModel orderListModel, final Map<String, Object> updateMap){
-        getShopCollectionRef( "ORDERS" )
-                .document( orderListModel.getOrderID() )
-                .update( updateMap )
-                .addOnCompleteListener( new OnCompleteListener <Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task <Void> task) {
-                        if (task.isSuccessful()){
-                            // TODO: Update in Local List...
-                            String statusCode = updateMap.get( "delivery_status" ).toString();
-                            if (statusCode.toUpperCase().equals( "ACCEPTED" )){ // Preparing...
-                                preparingOrderList.add( orderListModel );
-                                NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_PREPARING, View.GONE );
-
-                            } else  if (statusCode.toUpperCase().equals( "PACKED" )){ // Ready to Delivery...
-                                readyToDeliveredList.add( orderListModel );
-                                NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_READY_TO_DELIVER, View.GONE );
-
-                            } else  if (statusCode.toUpperCase().equals( "PROCESS" )){ // Out For Delivery...
-//                                readyToDeliveredList.remove( orderListModel );
-                                // By Default Done...
-                                if (readyToDeliveredList.size()==0)
-                                    NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_READY_TO_DELIVER, View.VISIBLE );
-                            }
-
-                        }else{
-                            // Failed...
-                        }
-                        if ( dialog!= null ){
-                            dialog.dismiss();
-                        }
-                    }
-                } );
-    }
     /**  Order Status
      *          1. WAITING - ( For Accept )
      *          2. ACCEPTED - ( Preparing )
@@ -761,38 +728,6 @@ public class DBQuery {
                     public void onComplete(@NonNull Task <Void> task) {
                         // Success!
                         // Cancel..!
-                    }
-                } );
-
-    }
-
-    // Query to Delivery Boy...  ------------------------
-    public static void setDeliveryDocument(@Nullable final Dialog dialog, Map<String, Object> deliveryMap, final OrderListModel orderListModel ){
-
-//        deliveryMap.put( "shop_geo_point", ADMIN_DATA_MODEL.getShopGeoPoint() );
-//        deliveryMap.put( "shipping_geo_point", orderListModel.getShippingGeoPoint() );
-
-        firebaseFirestore.collection( "DELIVERY" )
-                .document( ADMIN_DATA_MODEL.getShopCityCode() )
-                .collection( "DELIVERY" )
-                .add( deliveryMap )
-                .addOnCompleteListener( new OnCompleteListener <DocumentReference>() {
-                    @Override
-                    public void onComplete(@NonNull Task <DocumentReference> task) {
-                        if (task.isSuccessful()){
-                           String deliveryID = task.getResult().getId();
-                            // Now we have to update Delivery Details in the Order Document...
-
-                            Map <String, Object> updateMap = new HashMap <>();
-                            updateMap.put( "delivery_status", "ACCEPTED" );
-                            updateMap.put( "delivery_id", deliveryID );
-                            orderListModel.setDeliveryID( deliveryID );
-                            orderListModel.setDeliveryStatus( "ACCEPTED" );
-                            DBQuery.updateOrderStatus( dialog, orderListModel ,updateMap );
-
-                        }else{
-
-                        }
                     }
                 } );
 

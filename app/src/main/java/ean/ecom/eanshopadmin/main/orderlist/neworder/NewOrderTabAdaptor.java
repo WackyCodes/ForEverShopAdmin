@@ -95,32 +95,35 @@ public class NewOrderTabAdaptor extends FragmentPagerAdapter {
 
 
     public static void setNoOrderText(int FragmentType, int visibility ){
-        // Show the No Order Text.. If List size = 0;
-        if ( NewOrderFragment.newOrderTabAdaptor != null){
-            switch (FragmentType){
-                case ORDER_LIST_NEW_ORDER:
-                    NewOrderFragment.newOrderTabAdaptor.newOrderFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
-                    if (NewOrderFragment.newOrderTabAdaptor.newOrderFragment.noOrderText != null){
-                        NewOrderFragment.newOrderTabAdaptor.newOrderFragment.noOrderText.setVisibility( visibility );
-                    }
-                    break;
-                case ORDER_LIST_PREPARING:
-                    NewOrderFragment.newOrderTabAdaptor.preparingFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
-                    if (NewOrderFragment.newOrderTabAdaptor.preparingFragment.noOrderText != null){
-                        NewOrderFragment.newOrderTabAdaptor.preparingFragment.noOrderText.setVisibility( visibility );
-                    }
-                    break;
-                case ORDER_LIST_READY_TO_DELIVER:
-                    NewOrderFragment.newOrderTabAdaptor.readyToDeliverFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
-                    if (NewOrderFragment.newOrderTabAdaptor.readyToDeliverFragment.noOrderText != null){
-                        NewOrderFragment.newOrderTabAdaptor.readyToDeliverFragment.noOrderText.setVisibility( visibility );
-                    }
-                    break;
-                default:
-                    break;
+        try{
+            // Show the No Order Text.. If List size = 0;
+            if ( NewOrderFragment.newOrderTabAdaptor != null){
+                switch (FragmentType){
+                    case ORDER_LIST_NEW_ORDER:
+                        NewOrderFragment.newOrderTabAdaptor.newOrderFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
+                        if (NewOrderFragment.newOrderTabAdaptor.newOrderFragment.noOrderText != null){
+                            NewOrderFragment.newOrderTabAdaptor.newOrderFragment.noOrderText.setVisibility( visibility );
+                        }
+                        break;
+                    case ORDER_LIST_PREPARING:
+                        NewOrderFragment.newOrderTabAdaptor.preparingFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
+                        if (NewOrderFragment.newOrderTabAdaptor.preparingFragment.noOrderText != null){
+                            NewOrderFragment.newOrderTabAdaptor.preparingFragment.noOrderText.setVisibility( visibility );
+                        }
+                        break;
+                    case ORDER_LIST_READY_TO_DELIVER:
+                        NewOrderFragment.newOrderTabAdaptor.readyToDeliverFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
+                        if (NewOrderFragment.newOrderTabAdaptor.readyToDeliverFragment.noOrderText != null){
+                            NewOrderFragment.newOrderTabAdaptor.readyToDeliverFragment.noOrderText.setVisibility( visibility );
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-
     }
 
 

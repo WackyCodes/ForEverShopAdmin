@@ -120,6 +120,18 @@ public class StaticValues {
     public static final int ORDER_LIST_OUT_FOR_DELIVERY = 4;
     public static final int ORDER_LIST_SUCCESS = 5;
 
+    // Use For Local And Store...
+    public static final String ORDER_WAITING = "WAITING"; // ( For Accept )
+    public static final String ORDER_ACCEPTED = "ACCEPTED"; // ( Preparing )
+    public static final String ORDER_PACKED = "PACKED"; // ( Waiting for Delivery ) READY_TO_DELIVERY
+    public static final String ORDER_PROCESS = "PROCESS";  /** ( When Delivery Boy found )-- ( Not Use in Main Order List...) */
+    public static final String ORDER_PICKED = "PICKED"; // ( On Delivery ) OUT_FOR_DELIVERY
+    public static final String ORDER_SUCCESS = "SUCCESS"; // Success Full Delivered..!
+    public static final String ORDER_CANCELLED = "CANCELLED"; // When Order has been cancelled by user...
+    public static final String ORDER_FAILED = "FAILED";  //  when PayMode Online and payment has been failed...
+    public static final String ORDER_PENDING = "PENDING";  //  when Payment is Pending...
+
+
     // Update Product ... Local Use...
     public static final int UPDATE_DESCRIPTION = 10;
     public static final int UPDATE_STOCKS = 11;
