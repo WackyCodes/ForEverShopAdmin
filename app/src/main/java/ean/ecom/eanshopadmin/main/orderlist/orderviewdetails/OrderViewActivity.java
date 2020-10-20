@@ -595,7 +595,7 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
 
         orderProductsModel.setData( (Map <String, Object>) newOrderList.get( index ).getOrderProductItemsList().get( 0 ) );
         // For Notify User...
-        sendNotificationToUser( index, orderProductsModel, "Your Order preparing to pack" );
+        sendNotificationToUser( index, orderProductsModel, newOrderList,"Your Order preparing to pack" );
 
     }
     // set Packing Done Btn Click Listener...
@@ -606,13 +606,13 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         // Query to Find Delivery Boy....
         queryToDeliveryBoy( index );
         // Notify User...
-        sendNotificationToUser( index, orderProductsModel,  "Your Order has been packed! Waiting for delivery..." );
+        sendNotificationToUser( index, orderProductsModel,  preparingOrderList,"Your Order has been packed! Waiting for delivery..." );
 
     }
 
     private void queryToDeliveryBoy(int index){
         final String vOTP = StaticMethods.getOTPDigitRandom(); // 4 Digit...
-        newOrderList.get( index ).setOutForDeliveryOTP( vOTP );
+        preparingOrderList.get( index ).setOutForDeliveryOTP( vOTP );
 
         OrderListModel orderListModel = preparingOrderList.get( index );
 
@@ -630,10 +630,12 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         deliveryMap.put( "shop_pin", ADMIN_DATA_MODEL.getShopAreaCode() );
         deliveryMap.put( "shipping_address", orderListModel.getShippingAddress() );
         deliveryMap.put( "shipping_pin", orderListModel.getShippingPinCode() );
+        deliveryMap.put( "shop_geo_point", ADMIN_DATA_MODEL.getShopGeoPoint() );
+        deliveryMap.put( "shipping_geo_point", orderListModel.getShippingGeoPoint() );
 
 //        DBQuery.setDeliveryDocument( dialog, deliveryMap, newOrderList.get( index ));
 
-        orderUpdateQuery.setDeliveryDocument( this,  deliveryMap, newOrderList.get( index ), index );
+        orderUpdateQuery.setDeliveryDocument( this,  deliveryMap, preparingOrderList.get( index ), index );
 
     }
 
@@ -646,7 +648,7 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
     }
 
 
-    private void sendNotificationToUser( int index, OrderProductsModel orderProductsModel, String title){
+    private void sendNotificationToUser( int index, OrderProductsModel orderProductsModel, List<OrderListModel> orderListModelList, String title){
         // Create Map For Notify User...
         UserNotificationModel notificationModel = new UserNotificationModel();
         notificationModel.setNotify_type( 1 );
