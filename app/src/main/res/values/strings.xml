@@ -61,6 +61,8 @@
         <item>Dozen</item>
         <item>Pound</item>
         <item>Watt</item>
+        <item>CM</item>
+        <item>Inches</item>
         <item>Other</item>
     </string-array>
 

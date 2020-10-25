@@ -21,7 +21,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+import ean.ecom.eanshopadmin.database.DBQuery;
+import ean.ecom.eanshopadmin.other.StaticValues;
+
 import static ean.ecom.eanshopadmin.database.AdminQuery.getShopCollectionRef;
+import static ean.ecom.eanshopadmin.database.DBQuery.firebaseFirestore;
+import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_OUT_FOR_DELIVERY;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_SUCCESS;
 
@@ -43,25 +48,6 @@ public class OrderStatusUpdateQuery implements OrderViewInteractor.OrderStatusUp
     public static final int ORDER_LIST_SUCCESS = 5;
      */
 
-    @Override
-    public void onUpdateStatusQuery(final OrderViewInteractor orderStatusUpdator, String orderID, Map <String, Object> updateMap) {
-        getShopCollectionRef( "ORDERS" )
-                .document( orderID )
-                .update( updateMap )
-                .addOnCompleteListener( new OnCompleteListener <Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task <Void> task) {
-                        if (task.isSuccessful()){
-                            orderStatusUpdator.onUpdateOrderStatus( ORDER_LIST_OUT_FOR_DELIVERY );
-                        }else{
-                            orderStatusUpdator.dismissDialog();
-                            orderStatusUpdator.showToast( "Failed... Please try again!" );
-                        }
-                    }
-                } );
-
-
-    }
 
     @Override
     public void onFindDeliveryBoyQuery(final OrderViewInteractor orderStatusUpdator, String orderID) {
@@ -105,6 +91,7 @@ public class OrderStatusUpdateQuery implements OrderViewInteractor.OrderStatusUp
                     }
                 } );
     }
+
 
 
 }

@@ -10,6 +10,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -24,9 +27,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
 
+import static ean.ecom.eanshopadmin.database.DBQuery.firebaseFirestore;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_ID;
 
 public class StaticMethods {
@@ -455,6 +460,36 @@ public class StaticMethods {
         }
 
         return true;
+    }
+
+
+    public static class SendUserNotification implements Runnable{
+        private String notifyID;
+        private String userUID;
+        private Map <String, Object> notifyMap;
+
+        public SendUserNotification(String notifyID, String userUID, Map <String, Object> notifyMap) {
+            this.notifyID = notifyID;
+            this.userUID = userUID;
+            this.notifyMap = notifyMap;
+        }
+
+        @Override
+        public void run() {
+            firebaseFirestore.collection( "USERS" )
+                    .document( userUID )
+                    .collection( "NOTIFICATIONS" )
+                    .document( notifyID )
+                    .set( notifyMap )
+                    .addOnCompleteListener( new OnCompleteListener <Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task <Void> task) {
+                            // Success!
+                            // Cancel..!
+                        }
+                    } );
+        }
+
     }
 
 

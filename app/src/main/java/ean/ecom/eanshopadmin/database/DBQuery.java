@@ -715,23 +715,7 @@ public class DBQuery {
      */
 
     // Send Notification to User.... ------------------------
-    public static void sentNotificationToUser( @NonNull String userUID, Map<String, Object> notifyMap ){
-
-        String notify_id = notifyMap.get( "notify_id" ).toString();
-        firebaseFirestore.collection( "USERS" )
-                .document( userUID )
-                .collection( "NOTIFICATIONS" )
-                .document( notify_id )
-                .set( notifyMap )
-                .addOnCompleteListener( new OnCompleteListener <Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task <Void> task) {
-                        // Success!
-                        // Cancel..!
-                    }
-                } );
-
-    }
+    // Use thread from StaticMethods...
 
     //...
     public void getDeliveryList(){

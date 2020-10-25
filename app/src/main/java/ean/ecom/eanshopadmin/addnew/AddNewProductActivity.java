@@ -319,7 +319,7 @@ public class AddNewProductActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView <?> parent, View view, int position, long id) {
                 if (position > 0){
                     qtyTypeText = parent.getItemAtPosition( position ).toString();
-                    if (position == 9){
+                    if (position == 11){
                         newProVersionWeight.setText( "NONE" );
                         qtyTypeText = "NONE";
                     }else if( !TextUtils.isEmpty( newProVersionWeight.getText().toString() )){

@@ -41,6 +41,7 @@ import ean.ecom.eanshopadmin.main.orderlist.orderviewdetails.OrderViewActivity;
 import ean.ecom.eanshopadmin.notification.UserNotificationModel;
 import ean.ecom.eanshopadmin.other.StaticMethods;
 
+import static ean.ecom.eanshopadmin.database.DBQuery.readyToDeliveredList;
 import static ean.ecom.eanshopadmin.other.StaticMethods.showToast;
 import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_ACCEPTED;
@@ -205,6 +206,7 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
 
         private OrderUpdateQuery orderUpdateQuery;
         private Dialog dialog;
+        private final OrderProductsModel orderProductsModel = new OrderProductsModel();
 
         public NewOrderListViewHolder(@NonNull View itemView) {
             super( itemView );
@@ -229,8 +231,9 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
 
         private void setData(final String orderID, String pName, String oItemsAmounts, String oStatus
                 , String oDate, String oTime, int oTotalItems, String pImage, final int index ){
-            final OrderProductsModel orderProductsModel = new OrderProductsModel();
+            // setData...
             orderProductsModel.setData( (Map <String, Object>)  orderListModelList.get( index ).getOrderProductItemsList().get( 0 ) );
+
             orderUpdateQuery = new OrderUpdateQuery();
             dialog = new Dialog( itemView.getContext() );
             // Decide based On List Type...
@@ -280,14 +283,14 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
             acceptOrderBtn.setOnClickListener( new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    setAcceptOrderBtn( index, orderProductsModel );
+                    setAcceptOrderBtn( index );
                 }
             } );
             // Packing Order Action...
             packingTextBtn.setOnClickListener( new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    setPackingTextBtn( index, orderProductsModel );
+                    setPackingTextBtn( index );
                 }
             } );
             // Out For Delivery Action...
@@ -296,17 +299,21 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
                 public void onClick(View view) {
                     if (TextUtils.isEmpty( outForDeliveryPinEt.getText().toString() )){
                         outForDeliveryPinEt.setError( "Required!" );
-                    }else if(outForDeliveryPinEt.getText().toString().length() < 4){
+                    }
+                    else if(outForDeliveryPinEt.getText().toString().length() < 4){
                         outForDeliveryPinEt.setError( "Wrong Pin!" );
                     }else{
-                        setOutForDeliveryBtn(outForDeliveryPinEt.getText().toString(), index);
+                        showDialog();
+                   //     getDeliveryOtp( orderListModelList.get( index ).getDeliveryID(), otpPin, orderProductsModel );
+                        orderUpdateQuery.onCheckOTPQuery( NewOrderListViewHolder.this, index,
+                                orderListModelList.get( index ).getDeliveryID(), outForDeliveryPinEt.getText().toString()  );
                     }
                 }
             } );
 
         }
 
-        private void setAcceptOrderBtn(int index, OrderProductsModel orderProductsModel){
+        private void setAcceptOrderBtn(int index){
             showDialog();
             // -------------------------
             Map <String, Object> updateMap = new HashMap <>();
@@ -317,22 +324,16 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
             orderUpdateQuery.updateOrderStatus( this, orderListModelList.get( index ), updateMap, index );
 
             // For Notify User...
-            sendNotificationToUser( index, orderProductsModel, "Your Order preparing to pack" );
+            sendNotificationToUser( index, "Your Order preparing to pack" );
 
         }
 
-        private void setPackingTextBtn(int index, OrderProductsModel orderProductsModel){
+        private void setPackingTextBtn(int index){
             showDialog();
             // For Notify User...
-            sendNotificationToUser( index, orderProductsModel,  "Your Order has been packed! Waiting for delivery..." );
+            sendNotificationToUser( index,  "Your Order has been packed! Waiting for delivery..." );
 
             queryToDeliveryBoy( index );
-
-        }
-
-        private void setOutForDeliveryBtn(String otpPin, int index){
-
-            getDeliveryOtp( orderListModelList.get( index ).getDeliveryID(), otpPin );
 
         }
 
@@ -367,44 +368,25 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
 
         }
 
-        private void getDeliveryOtp(String deliveryId, final String verifyOtp){
-            DBQuery.firebaseFirestore.collection( "DELIVERY" )
-                    .document( ADMIN_DATA_MODEL.getShopCityCode() )
-                    .collection( "DELIVERY" )
-                    .document( deliveryId )
+        private void sendNotificationToUser( int index, String title){
+            try{
+                // Create Map For Notify User...
+                String notifyId = StaticMethods.getFiveDigitRandom();
+                UserNotificationModel notificationModel = new UserNotificationModel();
+                notificationModel.setNotify_type( 1 );
+                notificationModel.setNotify_id( notifyId );
+                notificationModel.setNotify_click_id(  orderListModelList.get( index ).getOrderID()  );
+                notificationModel.setNotify_image( orderProductsModel.getProductImage()  );
+                notificationModel.setNotify_title( title );
+                notificationModel.setNotify_body( orderProductsModel.getProductName() );
+                // Notify User...
+//            DBQuery.sentNotificationToUser(  orderListModelList.get( index ).getCustAuthID(), notificationModel.getMap() );
 
-                    .get( ).addOnCompleteListener( new OnCompleteListener <DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task <DocumentSnapshot> task) {
-                            if (task.isSuccessful()){
-                                String otp = task.getResult().get( "verify_otp" ).toString();
-                                if (otp.equals( verifyOtp )){
-                                    // TODO: Out For Delivery...
-                                    showToast( "Otp Matched!" );
-
-                                }else{
-                                    outForDeliveryPinEt.setError( "Not Matched!" );
-                                }
-
-                            }else{
-
-                            }
-                        }
-                    } );
-
-        }
-
-        private void sendNotificationToUser( int index, OrderProductsModel orderProductsModel, String title){
-            // Create Map For Notify User...
-            UserNotificationModel notificationModel = new UserNotificationModel();
-            notificationModel.setNotify_type( 1 );
-            notificationModel.setNotify_id( StaticMethods.getFiveDigitRandom()  );
-            notificationModel.setNotify_click_id(  orderListModelList.get( index ).getOrderID()  );
-            notificationModel.setNotify_image( orderProductsModel.getProductImage()  );
-            notificationModel.setNotify_title( title );
-            notificationModel.setNotify_body( orderProductsModel.getProductName() );
-            // Notify User...
-            DBQuery.sentNotificationToUser(  orderListModelList.get( index ).getCustAuthID(), notificationModel.getMap() );
+                Thread notifyThread = new Thread( new StaticMethods.SendUserNotification( notifyId, orderListModelList.get( index ).getCustAuthID(), notificationModel.getMap()));
+                notifyThread.start();
+            }catch (Exception e){ // Out of bound in the list...
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -428,7 +410,8 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
 
             } else  if (updateValue.toUpperCase().equals( ORDER_PICKED )){ // Out For Delivery...
                 // By Default Done...
-
+                showToast( "Successful, Out for Delivery..!" );
+                dismissDialog();
             }
             // Notify Data Changed...
             OrderListAdaptor.this.notifyDataSetChanged();
@@ -453,6 +436,41 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
         public void onUpdateDeliveryFailed() {
             dismissDialog();
             showToast( "Failed to update ! Please Check Your internet connection and try again!" );
+        }
+
+        @Override
+        public void otpVerificationResponse(int responseCode, @Nullable String responseMessage) {
+            switch (responseCode){
+                case 1: // VERIFIED
+                    int temIndex = Integer.parseInt( responseMessage );
+                    showToast(   "Successfully verified! Please give products to the delivery boy!" );
+                    // Thread : Send Notification To user
+                    sendNotificationToUser( temIndex, "Your Order has been out for delivery!" );
+
+                    //  : UPDATE in the Order List...
+                    Map <String, Object> updateMap  = new HashMap <>();
+                    updateMap.put( "delivery_status", ORDER_PICKED );
+                    // Update In Delivery Document...
+                    orderUpdateQuery.updateDeliveryDocument(NewOrderListViewHolder.this
+                            , orderListModelList.get( temIndex ).getOrderID()
+                            , ADMIN_DATA_MODEL.getShopCityCode()
+                            , readyToDeliveredList.get( temIndex ).getDeliveryID(), updateMap );
+
+//                    dismissDialog();
+                    break;
+                case 2: // NOT VERIFIED
+                    showToast( "Not Matched! Please try again!" );
+                    dismissDialog();
+                    break;
+                case 0: // FAILED
+                case 3: // EXCEPTION
+                    showToast( "Failed : " + responseMessage );
+                    dismissDialog();
+                    break;
+                default:
+                    dismissDialog();
+                    break;
+            }
         }
 
         @Override

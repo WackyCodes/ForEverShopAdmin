@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.Map;
 import ean.ecom.eanshopadmin.main.orderlist.OrderListModel;
 import ean.ecom.eanshopadmin.main.orderlist.OrderUpdateListener;
 import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderTabAdaptor;
+import ean.ecom.eanshopadmin.main.orderlist.orderviewdetails.OrderViewInteractor;
 
 import static ean.ecom.eanshopadmin.database.AdminQuery.getShopCollectionRef;
 import static ean.ecom.eanshopadmin.database.DBQuery.firebaseFirestore;
@@ -23,6 +25,7 @@ import static ean.ecom.eanshopadmin.database.DBQuery.preparingOrderList;
 import static ean.ecom.eanshopadmin.database.DBQuery.readyToDeliveredList;
 import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_ACCEPTED;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_OUT_FOR_DELIVERY;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_PREPARING;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_READY_TO_DELIVER;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_PACKED;
@@ -82,18 +85,26 @@ public class OrderUpdateQuery {
                                 preparingOrderList.add( orderListModel );
                                 NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_PREPARING, View.GONE );
 
-                            } else  if (statusCode.toUpperCase().equals( ORDER_PACKED )){ // Ready to Delivery...
+                            }
+                            else  if (statusCode.toUpperCase().equals( ORDER_PACKED )){ // Ready to Delivery...
                                 readyToDeliveredList.add( orderListModel );
                                 NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_READY_TO_DELIVER, View.GONE );
-
-                            } else  if (statusCode.toUpperCase().equals( ORDER_PICKED )){ // Out For Delivery...
-//                                readyToDeliveredList.remove( orderListModel );
+                            }
+                            else  if (statusCode.toUpperCase().equals( ORDER_PICKED )){ // Out For Delivery...
+                                // Update readyToDeliveredList
+                                for ( OrderListModel model : readyToDeliveredList){
+                                    if (model.getOrderID().equals( orderListModel.getOrderID() )){
+                                        readyToDeliveredList.remove( model );
+                                        break;
+                                    }
+                                }
                                 // By Default Done...
                                 if (readyToDeliveredList.size()==0)
                                     NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_READY_TO_DELIVER, View.VISIBLE );
                             }
                             listener.onOrderUpdateSuccess( statusCode, index );
-                        }else{
+                        }
+                        else{
                             // Failed...
                             if (statusCode.toUpperCase().equals( ORDER_PACKED )){
                                 listener.onOrderUpdateFailed( statusCode, orderListModel, updateMap, index );
@@ -117,6 +128,82 @@ public class OrderUpdateQuery {
      *          8. PENDING - when Payment is Pending...
      *
      */
+
+    public void onCheckOTPQuery(final OrderUpdateListener listener, final int index, String deliveryId, final String verifyOtp) {
+        firebaseFirestore.collection( "DELIVERY" )
+                .document( ADMIN_DATA_MODEL.getShopCityCode() )
+                .collection( "DELIVERY" )
+                .document( deliveryId )
+                .get()
+                .addOnCompleteListener( new OnCompleteListener <DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task <DocumentSnapshot> task) {
+                        if (task.isSuccessful()){
+                            try{
+                                if (task.getResult().get( "verify_otp" ).toString().equals( verifyOtp )){
+                                    listener.otpVerificationResponse( 1, String.valueOf( index ) ); // Success
+                                }else{
+                                    listener.otpVerificationResponse( 2, "Not Matched!" ); // Not verified...
+                                }
+                            }catch (Exception e){
+                                listener.otpVerificationResponse( 3, e.getMessage() ); // Exception..
+                            }
+
+                        }else{
+                            listener.otpVerificationResponse( 0, task.getException().getMessage() ); // Failed...
+                        }
+                    }
+                } );
+    }
+
+
+
+    public void updateDeliveryDocument(final OrderUpdateListener listener, final String orderID, String cityCode, String deliveryID , final Map <String, Object> updateMap){
+        // Update in Delivery Document...
+        firebaseFirestore.collection( "DELIVERY" )
+                .document( cityCode ).collection( "DELIVERY" )
+                .document( deliveryID )
+                .update( updateMap )
+                .addOnCompleteListener( new OnCompleteListener <Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task <Void> task) {
+                        if (task.isSuccessful()){
+//                            onUpdateStatusQuery( listener, orderID, updateMap);
+                            OrderListModel orderListModel = new OrderListModel();
+                            orderListModel.setOrderID( orderID );
+                            updateOrderStatus( listener, orderListModel ,updateMap, -1 );
+                        }else{
+                            listener.dismissDialog();
+                            listener.showToast( "Failed... Please try again!" );
+                        }
+                    }
+                } );
+
+
+    }
+
+    public void onUpdateStatusQuery(final OrderUpdateListener listener, final String orderID, final Map <String, Object> updateMap) {
+        try{
+            getShopCollectionRef( "ORDERS" )
+                    .document( orderID )
+                    .update( updateMap )
+                    .addOnCompleteListener( new OnCompleteListener <Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task <Void> task) {
+                            if (task.isSuccessful()){
+                                // Thread: Send Notification to User... -> It's added After OTP verification..
+                            }else{
+                                listener.dismissDialog();
+//                                onUpdateStatusQuery( listener, orderID, updateMap);
+                                listener.showToast( "Failed...! Check your internet connection..!" );
+                            }
+                        }
+                    } );
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
 
 
 }

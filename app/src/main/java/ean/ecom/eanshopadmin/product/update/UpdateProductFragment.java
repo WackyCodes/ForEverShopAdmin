@@ -249,7 +249,7 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
             public void onItemSelected(AdapterView <?> parent, View view, int position, long id) {
                 if (position > 0){
                     weightType = parent.getItemAtPosition( position ).toString();
-                    if (position == 9){
+                    if (position == 11){
                         uWeight.setText( "NONE" );
                         weightType = "NONE";
                     }else if( !TextUtils.isEmpty( uWeight.getText().toString() )){

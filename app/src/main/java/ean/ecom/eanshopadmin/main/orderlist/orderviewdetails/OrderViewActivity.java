@@ -42,6 +42,7 @@ import ean.ecom.eanshopadmin.main.orderlist.neworder.OrderViewPagerFragment;
 import ean.ecom.eanshopadmin.notification.UserNotificationModel;
 import ean.ecom.eanshopadmin.other.DialogsClass;
 import ean.ecom.eanshopadmin.other.StaticMethods;
+import ean.ecom.eanshopadmin.other.StaticValues;
 
 import static ean.ecom.eanshopadmin.database.DBQuery.newOrderList;
 import static ean.ecom.eanshopadmin.database.DBQuery.orderListModelList;
@@ -73,7 +74,6 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
     private OrderUpdateQuery orderUpdateQuery = new OrderUpdateQuery();
 
     private int LIST_TYPE = -1;
-    private int ListIndex = -1;
     private String orderID = null;
     private Dialog dialog;
 
@@ -191,7 +191,7 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         onButtonClicked();
 
         // Get Sample Index and Set Data...
-        ListIndex = getListIndex(orderID);
+         getListIndex(orderID); // Assign the index //
 
     }
 
@@ -302,42 +302,39 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         int index = -1;
         switch (LIST_TYPE){
             case ORDER_LIST_NEW_ORDER:
-                index = 0;
                 for ( OrderListModel orderListModel : newOrderList ){
                     if (orderListModel.getOrderID().equals( orderID )){
                         if (this.orderListModel == null){
                             this.orderListModel = orderListModel;
                             setActivityData();
                         }
+                        index = newOrderList.indexOf( orderListModel );
                         break;
                     }
-                    index ++;
                 }
                 return index;
             case ORDER_LIST_PREPARING:
-                index = 0;
                 for ( OrderListModel orderListModel : preparingOrderList ){
                     if (orderListModel.getOrderID().equals( orderID )){
                         if (this.orderListModel == null){
                             this.orderListModel = orderListModel;
                             setActivityData();
                         }
+                        index = preparingOrderList.indexOf( orderListModel );
                         break;
                     }
-                    index ++;
                 }
                 return index;
             case ORDER_LIST_READY_TO_DELIVER:
-                index = 0;
                 for ( OrderListModel orderListModel : readyToDeliveredList ){
                     if (orderListModel.getOrderID().equals( orderID )){
                         if (this.orderListModel == null){
                             this.orderListModel = orderListModel;
                             setActivityData();
                         }
+                        index = readyToDeliveredList.indexOf( orderListModel );
                         break;
                     }
-                    index ++;
                 }
                 return index;
             default:
@@ -399,6 +396,8 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
                 // Update In Local Model//
                 updateOrderStatusInModel("PICKED");
                 setOrderStatusTextIcon("Way On Delivery", R.drawable.ic_local_shipping_black_24dp, R.color.colorPrimary );
+                // For Notify User...
+                // update delivery list : Automatic Update after List Update..
                 break;
             case ORDER_LIST_SUCCESS:
                 setOrderStatusTextIcon("Delivered Successfully!", R.drawable.ic_check_circle_black_24dp, R.color.colorGreen );
@@ -511,13 +510,6 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
     }
 
     @Override
-    public void onUpdateOrderStatus(int updateCode) {
-        dismissDialog();
-        LIST_TYPE = updateCode;
-        setOrderStatusLayout();
-    }
-
-    @Override
     public void onOrderUpdateSuccess(String updateValue, int index) {
         dismissDialog();
         if (updateValue.toUpperCase().equals( ORDER_ACCEPTED )){ // Preparing...
@@ -536,7 +528,8 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
                 OrderViewPagerFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
             }
 
-        } else  if (updateValue.toUpperCase().equals( ORDER_PACKED )){ // Ready to Delivery...
+        }
+        else  if (updateValue.toUpperCase().equals( ORDER_PACKED )){ // Ready to Delivery...
             preparingOrderList.remove( index );
             // Update In Local Model//
             updateOrderStatusInModel( ORDER_PACKED );
@@ -551,9 +544,12 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
                 OrderViewPagerFragment.orderViewPagerListAdaptor.notifyDataSetChanged();
             }
 
-        } else  if (updateValue.toUpperCase().equals( ORDER_PICKED )){ // Out For Delivery...
+        }
+        else if (updateValue.toUpperCase().equals( ORDER_PICKED )){ // Out For Delivery...
             // By Default Done...
-
+            dismissDialog();
+            LIST_TYPE = ORDER_LIST_OUT_FOR_DELIVERY;
+            setOrderStatusLayout();
         }
 
     }
@@ -577,6 +573,40 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
     public void onUpdateDeliveryFailed() {
         dismissDialog();
         showToast( "Failed to update ! Please Check Your internet connection and try again!" );
+    }
+
+    @Override
+    public void otpVerificationResponse(int responseCode, @Nullable String responseMessage) {
+        switch (responseCode){
+            case 1: // VERIFIED
+                int temIndex = Integer.parseInt( responseMessage );
+                showToast(   "Successfully verified! Please give products to the delivery boy!" );
+                orderProductsModel.setData( (Map <String, Object>) readyToDeliveredList.get( temIndex ).getOrderProductItemsList().get( 0 ) );
+                //  : UPDATE in the Order List...
+                Map <String, Object> updateMap  = new HashMap <>();
+                updateMap.put( "delivery_status", ORDER_PICKED );
+                // Update In Delivery Document...
+                orderUpdateQuery.updateDeliveryDocument(OrderViewActivity.this, orderID, ADMIN_DATA_MODEL.getShopCityCode(),
+                        readyToDeliveredList.get( temIndex ).getDeliveryID(), updateMap );
+                // Update In Shop Order document... After Update in document...
+                // Thread : Send Notification To user
+                sendNotificationToUser( temIndex, orderProductsModel, readyToDeliveredList,"Your Order has been out for delivery!" );
+//                dismissDialog();
+                break;
+            case 2: // NOT VERIFIED
+                showToast( "Please try again!" );
+                deliveryOtpEditText.setError( "Not Matched!" );
+                dismissDialog();
+                break;
+            case 0: // FAILED
+            case 3: // EXCEPTION
+                showToast( "Failed : " + responseMessage );
+                dismissDialog();
+                break;
+            default:
+                dismissDialog();
+                break;
+        }
     }
 
     @Override
@@ -655,57 +685,27 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
 
     // Out For Delivery Action...
     private void setOutForDeliveryBtn(String otpPin, int index){
-        if (!dialog.isShowing()){
-            dialog.show();
-        }
-        getDeliveryOtp( readyToDeliveredList.get( index ).getDeliveryID(), otpPin );
+        showDialog();
+//        Call Methods..
+        orderUpdateQuery.onCheckOTPQuery( this, index, readyToDeliveredList.get( index ).getDeliveryID(), otpPin  );
     }
 
 
     private void sendNotificationToUser( int index, OrderProductsModel orderProductsModel, List<OrderListModel> orderListModelList, String title){
         // Create Map For Notify User...
+        String notifyId =  StaticMethods.getFiveDigitRandom();
         UserNotificationModel notificationModel = new UserNotificationModel();
         notificationModel.setNotify_type( 1 );
-        notificationModel.setNotify_id( StaticMethods.getFiveDigitRandom()  );
+        notificationModel.setNotify_id( notifyId );
         notificationModel.setNotify_click_id(  orderListModelList.get( index ).getOrderID()  );
         notificationModel.setNotify_image( orderProductsModel.getProductImage()  );
         notificationModel.setNotify_title( title );
         notificationModel.setNotify_body( orderProductsModel.getProductName() );
         // Notify User...
-        DBQuery.sentNotificationToUser(  orderListModelList.get( index ).getCustAuthID(), notificationModel.getMap() );
-    }
+//        DBQuery.sentNotificationToUser(  orderListModelList.get( index ).getCustAuthID(), notificationModel.getMap() );
 
-    private void getDeliveryOtp(String deliveryId, final String verifyOtp){
-        DBQuery.firebaseFirestore.collection( "DELIVERY" )
-                .document( ADMIN_DATA_MODEL.getShopCityCode() )
-                .collection( "DELIVERY" )
-                .document( deliveryId )
-                .get( ).addOnCompleteListener( new OnCompleteListener <DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task <DocumentSnapshot> task) {
-                if (task.isSuccessful()){
-                    String otp = task.getResult().get( "verify_otp" ).toString();
-                    if (otp.equals( verifyOtp )){
-                        showToast(   "Successfully matched! Please give products to the delivery boy!" );
-                        //  : UPDATE in the Order List...
-                        Map <String, Object> updateMap  = new HashMap <>();
-                        updateMap.put( "delivery_status", "PICKED" );
-                        updateQuery.onUpdateStatusQuery( OrderViewActivity.this, orderID, updateMap );
-                        // Dismiss dialog after update on Order...
-
-                    }else{
-                        deliveryOtpEditText.setError( "Not Matched!" );
-                        dialog.dismiss();
-                        showToast(  "Incorrect! Ask Correct OTP from delivery boy and Try again..." );
-                    }
-
-                }else{
-                    dialog.dismiss();
-                    showToast(  "Something Went Wrong! Error : "+ task.getException().getMessage() );
-                }
-            }
-        } );
-
+        Thread notifyThread = new Thread( new StaticMethods.SendUserNotification( notifyId, orderListModelList.get( index ).getCustAuthID(), notificationModel.getMap()));
+        notifyThread.start();
     }
 
 
