@@ -28,6 +28,7 @@ import static ean.ecom.eanshopadmin.database.DBQuery.currentUser;
 import static ean.ecom.eanshopadmin.database.DBQuery.firebaseAuth;
 import static ean.ecom.eanshopadmin.database.DBQuery.firebaseFirestore;
 import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
+import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_ID;
 import static ean.ecom.eanshopadmin.other.StaticValues.STORAGE_PERMISSION;
 

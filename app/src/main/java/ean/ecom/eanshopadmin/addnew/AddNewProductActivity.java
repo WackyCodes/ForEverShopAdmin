@@ -60,7 +60,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import ean.ecom.eanshopadmin.R;
 import ean.ecom.eanshopadmin.home.HomeFragment;
@@ -72,7 +71,7 @@ import ean.ecom.eanshopadmin.product.ProductSubModel;
 import ean.ecom.eanshopadmin.product.update.specification.AddSpecificationModel;
 
 import static ean.ecom.eanshopadmin.database.DBQuery.homeCatListModelList;
-import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
+import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.GALLERY_CODE;
 import static ean.ecom.eanshopadmin.other.StaticValues.PRODUCT_LACTO_EGG;
 import static ean.ecom.eanshopadmin.other.StaticValues.PRODUCT_LACTO_NON_VEG;
@@ -319,7 +318,7 @@ public class AddNewProductActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView <?> parent, View view, int position, long id) {
                 if (position > 0){
                     qtyTypeText = parent.getItemAtPosition( position ).toString();
-                    if (position == 11){
+                    if (position == 12){
                         newProVersionWeight.setText( "NONE" );
                         qtyTypeText = "NONE";
                     }else if( !TextUtils.isEmpty( newProVersionWeight.getText().toString() )){
@@ -498,16 +497,18 @@ public class AddNewProductActivity extends AppCompatActivity {
                 return false;
             }
 
-            if (StaticMethods.isValidWeight( newProVersionWeight, this ) && qtyTypeText!=null){
+//            if (StaticMethods.isValidWeight( newProVersionWeight, this ) && qtyTypeText!=null){
+//                return true;
+//            }else{
+//                return false;
+//            }
+
+            if (isNotEmptyEditText(newProVersionWeight) &&  qtyTypeText!=null){ // Finally....
                 return true;
             }else{
+                DialogsClass.alertDialog( this, null, "Select Quantity Type..!" ).show();
                 return false;
             }
-
-//            if (isNotEmptyEditText(newProVersionWeight)){ // Finally....
-//                return true;
-//            }else
-//                return false;
 
         }
         else{
@@ -530,9 +531,9 @@ public class AddNewProductActivity extends AppCompatActivity {
         tString.replaceAll( "[^a-zA-Z0-9]", "" );
 
         if (tagString == null){
-            tString = ADMIN_DATA_MODEL.getShopName().toLowerCase().replaceAll( " ", ", " ) + ", " + tString.toLowerCase().replaceAll( " ", ", " );
+            tString = SHOP_DATA_MODEL.getShop_name().toLowerCase().replaceAll( " ", ", " ) + ", " + tString.toLowerCase().replaceAll( " ", ", " );
         }else{
-            tString = tagString + ", "+  ADMIN_DATA_MODEL.getShopName().toLowerCase().replaceAll( " ", ", " ) + ", "
+            tString = tagString + ", "+  SHOP_DATA_MODEL.getShop_name().toLowerCase().replaceAll( " ", ", " ) + ", "
                     + tString.toLowerCase().replaceAll( " ", ", " );
         }
 
@@ -1132,13 +1133,18 @@ public class AddNewProductActivity extends AppCompatActivity {
         updateMap.put( "p_name_"+verNo, newProdShortName.getText().toString() );
         updateMap.put( "p_selling_price_"+verNo,  newProSellingPrice.getText().toString().trim()  );
         updateMap.put( "p_mrp_price_"+verNo, newProMrpRate.getText().toString().trim() );
-        updateMap.put( "p_weight_"+verNo, newProVersionWeight.getText().toString() + "-" +qtyTypeText );
+
         updateMap.put( "p_stocks_"+verNo, newProStockAvailable.getText().toString() );
         updateMap.put( "p_offer_"+verNo, offerText.getText().toString() );
         updateMap.put( "p_off_per_"+verNo, newProPerDiscount.getText().toString() );
         updateMap.put( "p_off_rupee_"+verNo, newProRsDiscount.getText().toString() );
         updateMap.put( "p_extra_amount_"+verNo, "" );
 
+        if (qtyTypeText.equals( "NONE" )){
+            updateMap.put( "p_weight_"+verNo, qtyTypeText );
+        }else{
+            updateMap.put( "p_weight_"+verNo, newProVersionWeight.getText().toString() + "-" +qtyTypeText );
+        }
         // Description and Specifications...
         updateMap.put( "p_description_"+verNo, newProDescription.getText().toString() );
         updateMap.put( "p_specification_"+verNo, new ArrayList<AddSpecificationModel>()  );

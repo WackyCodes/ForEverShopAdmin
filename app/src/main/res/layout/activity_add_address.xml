@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".main.shop.AddAddressActivity">
+
+    <ImageView
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:elevation="4dp"
+        android:padding="2dp"
+        android:translationZ="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_edit_black_24dp"
+        app:tint="@color/colorPrimary" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!--        <com.google.android.gms.maps.MapView-->
+        <!--            android:id="@+id/add_map_view"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="0dp"-->
+        <!--            android:layout_weight="40" />-->
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_weight="50"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+            <ImageView
+                android:id="@+id/back_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:background="@drawable/back_rectangle_layout"
+                app:srcCompat="@drawable/ic_arrow_back_black_24dp"
+                android:translationZ="4dp"
+                android:elevation="4dp"
+                android:padding="2dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/colorPrimary" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/colorWhite"
+                android:orientation="horizontal"
+                android:translationZ="1dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <CheckBox
+                    android:id="@+id/checkBox_auto_pick_location"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimary"
+                    android:checked="true"
+                    android:buttonTint="@color/colorPrimary"
+                    android:text="Auto Pick Marker"/>
+
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Tip : Drag the marker at your location."
+                    android:textColor="@color/colorBlack"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/map_frame_layout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" >
+
+            </FrameLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ScrollView
+            android:id="@+id/scroll_add_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="50">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorWhite"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="18dp"
+                    android:layout_marginLeft="18dp"
+                    android:padding="4dp"
+                    android:text="Full Address :"
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/add_h_no"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/back_1dp_border_4dp_radius"
+                    android:drawableTint="@color/colorPrimaryDark"
+                    android:ems="10"
+                    android:gravity="start"
+                    android:hint="Shop No./ Flat No./ Building Name *"
+                    android:inputType="text"
+                    android:lines="1"
+                    android:padding="8dp"
+                    android:singleLine="true"
+                    android:textColor="@color/colorSecondary"
+                    android:textColorHint="@color/colorGray" />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/add_colony_village"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/back_1dp_border_4dp_radius"
+                        android:ems="10"
+                        android:hint="Colony/Area *"
+                        android:inputType="text"
+                        android:lines="1"
+                        android:padding="8dp"
+                        android:singleLine="true"
+                        android:textColor="@color/colorSecondary" />
+
+                    <EditText
+                        android:id="@+id/add_pin_code"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/back_1dp_border_4dp_radius"
+                        android:ems="10"
+                        android:hint="Pin Code *"
+                        android:inputType="number"
+                        android:lines="1"
+                        android:maxLength="6"
+                        android:padding="8dp"
+                        android:singleLine="true"
+                        android:textColor="@color/colorSecondary" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/back_1dp_border_4dp_radius"
+                    android:drawableTint="@color/colorPrimaryDark"
+                    android:orientation="horizontal"
+                    android:padding="8dp"
+                    android:textColorHint="@color/colorGray"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:padding="4dp"
+                        android:text="Select State :"
+                        android:textColor="@color/colorPrimary" />
+
+                    <Spinner
+                        android:id="@+id/add_street_spinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/colorSecondary"
+                        android:padding="4dp" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/back_1dp_border_4dp_radius"
+                    android:drawableTint="@color/colorPrimaryDark"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center"
+                    android:padding="8dp"
+                    android:textColorHint="@color/colorGray">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_gravity="center_vertical"
+                        android:padding="4dp"
+                        android:text="City Name :"
+                        android:textColor="@color/colorPrimary" />
+
+                    <EditText
+                        android:id="@+id/add_city_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:background="@color/colorNoColor"
+                        android:padding="2dp"
+                        android:ems="10"
+                        android:hint="Enter City *"
+                        android:inputType="text"
+                        android:lines="1"
+                        android:singleLine="true"
+                        android:textColor="@color/colorSecondary" />
+
+
+                    <Spinner
+                        android:visibility="gone"
+                        android:id="@+id/add_city_spinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/colorSecondary"
+                        android:padding="4dp" />
+
+
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/add_landmark"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/back_1dp_border_4dp_radius"
+                    android:ems="10"
+                    android:hint="Landmark (Optional) "
+                    android:inputType="text"
+                    android:lines="1"
+                    android:padding="8dp"
+                    android:singleLine="true"
+                    android:textColor="@color/colorSecondary" />
+
+                <Button
+                    android:id="@+id/add_save_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:backgroundTint="@color/colorPrimaryDark"
+                    android:text="Save"
+                    android:textColor="@color/colorWhite" />
+
+            </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

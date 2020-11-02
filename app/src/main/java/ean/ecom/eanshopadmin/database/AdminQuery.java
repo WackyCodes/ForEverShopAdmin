@@ -27,6 +27,7 @@ import ean.ecom.eanshopadmin.other.DialogsClass;
 import static ean.ecom.eanshopadmin.MainActivity.badgeNotifyCount;
 import static ean.ecom.eanshopadmin.database.DBQuery.firebaseFirestore;
 import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
+import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.REQUEST_TO_NOTIFICATION;
 
 public class AdminQuery {
@@ -70,13 +71,13 @@ public class AdminQuery {
     }
 
     private static CollectionReference getUserCollectionRef(@NonNull String collectionName){
-        return firebaseFirestore.collection( "SHOPS" ).document( ADMIN_DATA_MODEL.getShopID()  )
+        return firebaseFirestore.collection( "SHOPS" ).document( SHOP_DATA_MODEL.getShop_id()  )
                 .collection( "ADMINS" ).document( ADMIN_DATA_MODEL.getAdminMobile()  )
                 .collection( collectionName );
     }
 
     public static CollectionReference getShopCollectionRef(@NonNull String collection){
-        return firebaseFirestore.collection( "SHOPS" ).document( ADMIN_DATA_MODEL.getShopID() )
+        return firebaseFirestore.collection( "SHOPS" ).document( SHOP_DATA_MODEL.getShop_id() )
                 .collection( collection );
     }
 

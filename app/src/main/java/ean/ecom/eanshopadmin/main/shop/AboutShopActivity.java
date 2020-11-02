@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,7 +34,7 @@ import ean.ecom.eanshopadmin.R;
 import ean.ecom.eanshopadmin.other.DialogsClass;
 import ean.ecom.eanshopadmin.other.StaticValues;
 
-import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
+import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_TYPE_EGG;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_TYPE_NON_VEG;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_TYPE_NO_SHOW;
@@ -137,6 +138,13 @@ public class AboutShopActivity extends AppCompatActivity implements UpdateShop.A
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        // set shop Data..
+        setShopData();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (isUpdateAllowed){
             getMenuInflater().inflate( R.menu.shop_edit_menu_options,menu);
@@ -177,8 +185,8 @@ public class AboutShopActivity extends AppCompatActivity implements UpdateShop.A
             return true;
         }else
         if (id == R.id.menu_update_shop_address){
-            setShopUpdateFrameLayout(new UpdateShopFragment(
-                    this, new UpdateShopQuery(), UPDATE_SHOP_ADDRESS ) );
+            Intent addressIntent = new Intent(AboutShopActivity.this, AddAddressActivity.class);
+            startActivity( addressIntent );
             return true;
         }else
         if (id == R.id.menu_update_shop_helpline){
@@ -208,24 +216,25 @@ public class AboutShopActivity extends AppCompatActivity implements UpdateShop.A
 
     private void setShopData(){
         // Set Logo Image...
-        Glide.with( this ).load( ADMIN_DATA_MODEL.getShopLogo() ).apply(
+        Glide.with( this ).load( SHOP_DATA_MODEL.getShop_logo() ).apply(
                 new RequestOptions().circleCrop().placeholder( R.drawable.ic_photo_black_24dp ) )
                 .into( shopLogo );
 
         // Set shop Image...
-        Glide.with( this ).load( ADMIN_DATA_MODEL.getShopImage() ).apply(
+        Glide.with( this ).load( SHOP_DATA_MODEL.getShop_image() ).apply(
                 new RequestOptions().placeholder( R.drawable.ic_photo_black_24dp ) )
                 .into( shopBgImage );
 
         // Verify Shop
-        if (ADMIN_DATA_MODEL.getVerifyCode() == StaticValues.VERIFIED){
+        if (SHOP_DATA_MODEL.getVerify_code() != null)
+        if (Integer.parseInt( SHOP_DATA_MODEL.getVerify_code()  )== StaticValues.VERIFIED){
             verifyImageTag.setImageResource( R.drawable.ic_verified_user_black_24dp );
         }else{
             verifyImageTag.setImageResource( R.drawable.ic_fiber_new_black_24dp );
         }
 
         // Set Shop Rating...
-        shopRatingText.setText( ADMIN_DATA_MODEL.getShopRatingStars() );
+        shopRatingText.setText( SHOP_DATA_MODEL.getShop_rating() );
 
         // Veg Non Veg...
         setVegNonLay();
@@ -234,25 +243,25 @@ public class AboutShopActivity extends AppCompatActivity implements UpdateShop.A
         setShopOpenCloseText();
 
         // shopOpenCloseTimeText
-        shopOpenCloseTimeText.setText( ADMIN_DATA_MODEL.getShopOpenTime() + "-" + ADMIN_DATA_MODEL.getShopCloseTime() );
+        shopOpenCloseTimeText.setText( SHOP_DATA_MODEL.getShop_open_time() + "-" + SHOP_DATA_MODEL.getShop_close_time() );
 
         // shopIDText
-        shopIDText.setText( ADMIN_DATA_MODEL.getShopID() );
+        shopIDText.setText( SHOP_DATA_MODEL.getShop_id() );
 
         // shopNameText
-        shopNameText.setText( ADMIN_DATA_MODEL.getShopName() );
+        shopNameText.setText( SHOP_DATA_MODEL.getShop_name() );
 
         // shopAddressText
-        shopAddressText.setText( ADMIN_DATA_MODEL.getShopAddress() );
+        shopAddressText.setText( SHOP_DATA_MODEL.getShop_address() );
 
         // shopTypeCatText
-        shopTypeCatText.setText( ADMIN_DATA_MODEL.getShopCategory() );
+        shopTypeCatText.setText( SHOP_DATA_MODEL.getShop_category_name() );
 
         // shopTagLine
-        shopTagLine.setText( ADMIN_DATA_MODEL.getShopTagLine() );
+        shopTagLine.setText( SHOP_DATA_MODEL.getShop_tag_line() );
 
         // set Helpline num..
-        shopHelpLineText.setText( "+91 " + ADMIN_DATA_MODEL.getShopHelpLine() );
+        shopHelpLineText.setText( "+91 " + SHOP_DATA_MODEL.getShop_help_line() );
         // Set Days Schedule...
         setShopDaysSchedule();
         // set Update Allow...
@@ -261,40 +270,41 @@ public class AboutShopActivity extends AppCompatActivity implements UpdateShop.A
 
     // Veg Non Veg...
     private void setVegNonLay(){
-        switch (ADMIN_DATA_MODEL.getShopVegNonCode() ){
-            case SHOP_TYPE_VEG:
-                shopVegLayout.setVisibility( View.VISIBLE );
-                shopNonVegLayout.setVisibility( View.GONE );
-                shopEggTypeLayout.setVisibility( View.GONE );
-                break;
-            case SHOP_TYPE_NON_VEG:
-                shopVegLayout.setVisibility( View.GONE );
-                shopNonVegLayout.setVisibility( View.VISIBLE );
-                shopEggTypeLayout.setVisibility( View.GONE );
-                break;
-            case SHOP_TYPE_VEG_NON:
-                shopVegLayout.setVisibility( View.VISIBLE );
-                shopNonVegLayout.setVisibility( View.VISIBLE );
-                shopEggTypeLayout.setVisibility( View.GONE );
-                break;
-            case SHOP_TYPE_EGG:
-                shopVegLayout.setVisibility( View.GONE );
-                shopNonVegLayout.setVisibility( View.GONE );
-                shopEggTypeLayout.setVisibility( View.VISIBLE );
-                break;
-            case SHOP_TYPE_NO_SHOW:
-                shopVegLayout.setVisibility( View.GONE );
-                shopNonVegLayout.setVisibility( View.GONE );
-                shopEggTypeLayout.setVisibility( View.GONE );
-                break;
-            default:
-                break;
-        }
+        if (SHOP_DATA_MODEL.getShop_veg_non_type() != null)
+            switch (Integer.parseInt( SHOP_DATA_MODEL.getShop_veg_non_type() )){
+                case SHOP_TYPE_VEG:
+                    shopVegLayout.setVisibility( View.VISIBLE );
+                    shopNonVegLayout.setVisibility( View.GONE );
+                    shopEggTypeLayout.setVisibility( View.GONE );
+                    break;
+                case SHOP_TYPE_NON_VEG:
+                    shopVegLayout.setVisibility( View.GONE );
+                    shopNonVegLayout.setVisibility( View.VISIBLE );
+                    shopEggTypeLayout.setVisibility( View.GONE );
+                    break;
+                case SHOP_TYPE_VEG_NON:
+                    shopVegLayout.setVisibility( View.VISIBLE );
+                    shopNonVegLayout.setVisibility( View.VISIBLE );
+                    shopEggTypeLayout.setVisibility( View.GONE );
+                    break;
+                case SHOP_TYPE_EGG:
+                    shopVegLayout.setVisibility( View.GONE );
+                    shopNonVegLayout.setVisibility( View.GONE );
+                    shopEggTypeLayout.setVisibility( View.VISIBLE );
+                    break;
+                case SHOP_TYPE_NO_SHOW:
+                    shopVegLayout.setVisibility( View.GONE );
+                    shopNonVegLayout.setVisibility( View.GONE );
+                    shopEggTypeLayout.setVisibility( View.GONE );
+                    break;
+                default:
+                    break;
+            }
     }
     // Set Open And Close Time...
     private void setShopOpenCloseText( ){
         // Set Open And Close Time...
-        if (ADMIN_DATA_MODEL.isOpen()){
+        if (SHOP_DATA_MODEL.isIs_open()){
             shopOpenCloseText.setText( "OPEN" );
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 shopOpenCloseText.setBackgroundTintList( ColorStateList.valueOf( getResources().getColor( R.color.colorGreen ) ) );
@@ -317,10 +327,13 @@ public class AboutShopActivity extends AppCompatActivity implements UpdateShop.A
     }
     // set Shop Days Schedule..
     private void setShopDaysSchedule(){
+        if (SHOP_DATA_MODEL.getShop_days_schedule() == null){
+            return;
+        }
         String offDays = null;
         int tempDayIndex = 0;
         String[] daysArray = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
-        for (Boolean isOpen : ADMIN_DATA_MODEL.getShopDaysSchedule()){
+        for (Boolean isOpen : SHOP_DATA_MODEL.getShop_days_schedule()){
             if (!isOpen){
                 if (offDays != null){
                     offDays = offDays + ", " + daysArray[tempDayIndex];
@@ -351,7 +364,7 @@ public class AboutShopActivity extends AppCompatActivity implements UpdateShop.A
                     Map<String, Object> updateMap = new HashMap <>();
                     updateMap.put( "is_open", b );
                     new UpdateShopQuery().onUpdateShopRequest( dialog, AboutShopActivity.this, UPDATE_SHOP_OPEN_CLOSE, updateMap );
-                    ADMIN_DATA_MODEL.setOpen( b );
+                    SHOP_DATA_MODEL.setIs_open( b );
                 }
             }
         } );
@@ -382,29 +395,29 @@ public class AboutShopActivity extends AppCompatActivity implements UpdateShop.A
 
         switch (requestCode){
             case UPDATE_SHOP_LOGO:
-                Glide.with( this ).load( ADMIN_DATA_MODEL.getShopLogo() ).apply(
+                Glide.with( this ).load( SHOP_DATA_MODEL.getShop_logo() ).apply(
                         new RequestOptions().circleCrop().placeholder( R.drawable.ic_photo_black_24dp ) )
                         .into( shopLogo );
                 break;
             case UPDATE_SHOP_IMAGE:
-                Glide.with( this ).load( ADMIN_DATA_MODEL.getShopImage() ).apply(
+                Glide.with( this ).load( SHOP_DATA_MODEL.getShop_image() ).apply(
                         new RequestOptions().placeholder( R.drawable.ic_photo_black_24dp ) )
                         .into( shopBgImage );
                 break;
             case UPDATE_SHOP_TAG_LINE:
-                shopTagLine.setText( ADMIN_DATA_MODEL.getShopTagLine() );
+                shopTagLine.setText( SHOP_DATA_MODEL.getShop_tag_line() );
                 break;
             case UPDATE_SHOP_ADDRESS:
-                shopAddressText.setText( ADMIN_DATA_MODEL.getShopAddress() );
+                shopAddressText.setText( SHOP_DATA_MODEL.getShop_address() );
                 break;
             case UPDATE_SHOP_HELPLINE:
-                shopHelpLineText.setText( "+91 " + ADMIN_DATA_MODEL.getShopHelpLine() );
+                shopHelpLineText.setText( "+91 " + SHOP_DATA_MODEL.getShop_help_line() );
                 break;
             case UPDATE_SHOP_NAME:
-                shopNameText.setText( ADMIN_DATA_MODEL.getShopName() );
+                shopNameText.setText( SHOP_DATA_MODEL.getShop_name() );
                 break;
             case UPDATE_SHOP_TIME_SCHEDULE:
-                shopOpenCloseTimeText.setText( ADMIN_DATA_MODEL.getShopOpenTime() + "-" + ADMIN_DATA_MODEL.getShopCloseTime() );
+                shopOpenCloseTimeText.setText( SHOP_DATA_MODEL.getShop_open_time() + "-" + SHOP_DATA_MODEL.getShop_close_time() );
                 break;
             case UPDATE_SHOP_DAY_SCHEDULE:
                 setShopDaysSchedule();

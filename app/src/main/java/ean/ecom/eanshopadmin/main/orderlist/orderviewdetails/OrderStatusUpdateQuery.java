@@ -7,11 +7,8 @@ package ean.ecom.eanshopadmin.main.orderlist.orderviewdetails;
  */
 
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -21,14 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-import ean.ecom.eanshopadmin.database.DBQuery;
-import ean.ecom.eanshopadmin.other.StaticValues;
-
 import static ean.ecom.eanshopadmin.database.AdminQuery.getShopCollectionRef;
-import static ean.ecom.eanshopadmin.database.DBQuery.firebaseFirestore;
-import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
-import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_OUT_FOR_DELIVERY;
-import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_SUCCESS;
 
 /**
  * Created by Shailendra (WackyCodes) on 15/09/2020 18:06

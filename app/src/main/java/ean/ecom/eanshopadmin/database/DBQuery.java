@@ -13,7 +13,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -26,19 +25,16 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ean.ecom.eanshopadmin.admin.ShopDataModelClass;
 import ean.ecom.eanshopadmin.home.HomeCatListModel;
 import ean.ecom.eanshopadmin.home.HomeFragment;
 import ean.ecom.eanshopadmin.home.HomeListModel;
 import ean.ecom.eanshopadmin.main.orderlist.OrderListFragment;
 import ean.ecom.eanshopadmin.main.orderlist.OrderListModel;
-import ean.ecom.eanshopadmin.main.orderlist.OrderProductItemModel;
 import ean.ecom.eanshopadmin.main.orderlist.OrderProductsModel;
-import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderFragment;
-import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderTabAdaptor;
 import ean.ecom.eanshopadmin.model.BannerModel;
 import ean.ecom.eanshopadmin.other.DialogsClass;
 import ean.ecom.eanshopadmin.other.StaticMethods;
@@ -47,15 +43,12 @@ import ean.ecom.eanshopadmin.product.ProductModel;
 import static ean.ecom.eanshopadmin.MainActivity.badgeOrderCount;
 import static ean.ecom.eanshopadmin.MainActivity.mainActivity;
 import static ean.ecom.eanshopadmin.other.StaticMethods.showToast;
-import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
+import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.GRID_PRODUCTS_LAYOUT_CONTAINER;
 import static ean.ecom.eanshopadmin.other.StaticValues.HORIZONTAL_PRODUCTS_LAYOUT_CONTAINER;
 import static ean.ecom.eanshopadmin.other.StaticValues.NOT_VERIFIED;
-import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_ACCEPTED;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_PREPARING;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_READY_TO_DELIVER;
-import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_PACKED;
-import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_PICKED;
 import static ean.ecom.eanshopadmin.other.StaticValues.REQUEST_TO_NOTIFY_NEW_ORDER;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_HOME_BANNER_SLIDER_CONTAINER;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_HOME_CAT_LIST_CONTAINER;
@@ -146,104 +139,21 @@ public class DBQuery {
     // Get Shop Data...
     public static void getShopData(final String shopID){
         firebaseFirestore.collection( "SHOPS" ).document( shopID )
-                .get().addOnCompleteListener( new OnCompleteListener <DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task <DocumentSnapshot> task) {
-                if (task.isSuccessful()){
-                    DocumentSnapshot documentSnapshot = task.getResult();
+                .get().addOnCompleteListener( task -> {
+                    if (task.isSuccessful()){
+                        DocumentSnapshot documentSnapshot = task.getResult();
 
-                    Boolean available_service = documentSnapshot.getBoolean( "available_service" );
-                    Boolean is_open = documentSnapshot.getBoolean( "is_open" );
-                    String shop_address = documentSnapshot.get( "shop_address" ).toString();
-                    String shop_area_code = documentSnapshot.get( "shop_area_code" ).toString();
-                    int verify_type = NOT_VERIFIED;
-//                    String shop_area_name = documentSnapshot.get( "shop_area_name" ).toString();
-//                    String shop_cat_main = documentSnapshot.get( "shop_cat_main" ).toString();
-                    String shop_category_name = documentSnapshot.get( "shop_category_name" ).toString();
+                        // Add All the shop Data into model...
+                        SHOP_DATA_MODEL = documentSnapshot.toObject( ShopDataModelClass.class );
 
-                    // shop_categories
-
-                    String shop_city_code = documentSnapshot.get( "shop_city_code" ).toString();
-                    String shop_city_name = documentSnapshot.get( "shop_city_name" ).toString();
-//                    String shop_close_msg = documentSnapshot.get( "shop_close_msg" ).toString();
-//                    String shop_id = documentSnapshot.get( "shop_id" ).toString();
-                    String shop_landmark = documentSnapshot.get( "shop_landmark" ).toString();
-                    String shop_logo = documentSnapshot.get( "shop_logo" ).toString();
-                    String shop_name = documentSnapshot.get( "shop_name" ).toString();
-                    String shop_tag_line = "";
-                    if (documentSnapshot.get( "shop_tag_line" )!=null){
-                        shop_tag_line = documentSnapshot.get( "shop_tag_line" ).toString(); //shop_tag_line
+                        if (mainActivity != null){
+                            mainActivity.getSupportActionBar().setTitle( SHOP_DATA_MODEL.getShop_name() );
+                        }
                     }
-                    String shop_help_line;
-                    if (documentSnapshot.get( "shop_help_line" )!=null){
-                        shop_help_line = documentSnapshot.get( "shop_help_line" ).toString(); //
-                    }else{
-                        shop_help_line = documentSnapshot.get( "shop_owner_mobile" ).toString();
+                    else{
+                        // Failed...
                     }
-
-                    String shop_owner_address = documentSnapshot.get( "shop_owner_address" ).toString();
-                    String shop_owner_name = documentSnapshot.get( "shop_owner_name" ).toString();
-                    String shop_owner_mobile = documentSnapshot.get( "shop_owner_mobile" ).toString();
-                    String shop_owner_email = documentSnapshot.get( "shop_owner_email" ).toString();
-                    String shop_veg_non_type = documentSnapshot.get( "shop_veg_non_type" ).toString();
-                    String shop_image = documentSnapshot.get( "shop_image" ).toString();
-                    String shop_rating = documentSnapshot.get( "shop_rating" ).toString();
-                    String shop_open_time;
-                    String shop_close_time;
-
-                    if ( documentSnapshot.get( "shop_open_time" )!=null && documentSnapshot.get( "shop_close_time" ) != null ){
-                        shop_open_time = documentSnapshot.get( "shop_open_time" ).toString();
-                        shop_close_time = documentSnapshot.get( "shop_close_time" ).toString();
-                    }else{
-                        shop_open_time = "AM";
-                        shop_close_time = "PM";
-                    }
-
-                    // shop_days_schedule
-                    List<Boolean> shop_days_schedule = new ArrayList <>();
-                    if (documentSnapshot.get("shop_days_schedule")!=null){
-                        shop_days_schedule = (List <Boolean>) documentSnapshot.get("shop_days_schedule");
-                    }
-
-                    // tags...
-
-                    ADMIN_DATA_MODEL.setShopID( shopID );
-                    ADMIN_DATA_MODEL.setShopName( shop_name );
-                    ADMIN_DATA_MODEL.setVerifyCode( verify_type );
-                    ADMIN_DATA_MODEL.setServiceAvailable( available_service );
-                    ADMIN_DATA_MODEL.setOpen( is_open );
-                    ADMIN_DATA_MODEL.setShopHelpLine( shop_help_line );
-                    ADMIN_DATA_MODEL.setShopAddress( shop_address );
-                    ADMIN_DATA_MODEL.setShopAreaCode( shop_area_code );
-                    ADMIN_DATA_MODEL.setShopCategory( shop_category_name );
-                    ADMIN_DATA_MODEL.setShopCity( shop_city_name );
-                    ADMIN_DATA_MODEL.setShopCityCode( shop_city_code );
-//                    shopHomeActivityModel.setShopCloseTime( shop_close_msg );
-                    ADMIN_DATA_MODEL.setShopLandMark( shop_landmark );
-                    ADMIN_DATA_MODEL.setShopLogo( shop_logo );
-                    ADMIN_DATA_MODEL.setShopTagLine( shop_tag_line );
-                    ADMIN_DATA_MODEL.setShopDaysSchedule( shop_days_schedule );
-
-                    ADMIN_DATA_MODEL.setShopOwnerAddress( shop_owner_address );
-                    ADMIN_DATA_MODEL.setShopOwnerName( shop_owner_name );
-                    ADMIN_DATA_MODEL.setShopOwnerMobile( shop_owner_mobile );
-                    ADMIN_DATA_MODEL.setShopOwnerEmail( shop_owner_email );
-                    ADMIN_DATA_MODEL.setShopVegNonCode( Integer.parseInt( shop_veg_non_type ) );
-                    ADMIN_DATA_MODEL.setShopImage( shop_image );
-                    ADMIN_DATA_MODEL.setShopRatingStars( shop_rating );
-                    ADMIN_DATA_MODEL.setShopOpenTime( shop_open_time );
-                    ADMIN_DATA_MODEL.setShopCloseTime( shop_close_time );
-
-                    if (mainActivity != null){
-                        mainActivity.getSupportActionBar().setTitle( ADMIN_DATA_MODEL.getShopName() );
-                    }
-
-                }
-                else{
-                    // Failed...
-                }
-            }
-        } );
+                } );
 
     }
 
@@ -721,7 +631,7 @@ public class DBQuery {
     public void getDeliveryList(){
         // To get New Delivery List...
         firebaseFirestore.collection( "DELIVERY" )
-                .document( ADMIN_DATA_MODEL.getShopCity() )
+                .document( SHOP_DATA_MODEL.getShop_city_name() )
                 .collection( "DELIVERY" )
                 .whereEqualTo( "SAMPOL", "SAMPOL" )
                 .get()

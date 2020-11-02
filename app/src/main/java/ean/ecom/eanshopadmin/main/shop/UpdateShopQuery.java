@@ -17,10 +17,8 @@ import com.google.firebase.storage.UploadTask;
 
 import java.util.Map;
 
-import ean.ecom.eanshopadmin.main.shop.UpdateShop;
-
 import static ean.ecom.eanshopadmin.database.DBQuery.firebaseFirestore;
-import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
+import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_ID;
 
 /*
@@ -131,7 +129,7 @@ public class UpdateShopQuery implements UpdateShop.OnImageRequest , UpdateShop {
     private void requestToUpdateHomeList(@Nullable final Dialog dialog, @Nullable final AddImageListener updateRequestListener,
                                          @Nullable final OnImageRequestComplete onImageRequestComplete, final int requestCode, final Map <String, Object> updateMap ){
         // One More Query Needed here...
-        firebaseFirestore.collection( "HOME_PAGE" ).document( ADMIN_DATA_MODEL.getShopCityCode() )
+        firebaseFirestore.collection( "HOME_PAGE" ).document( SHOP_DATA_MODEL.getShop_city_code() )
                 .collection( "SHOPS" ).document( SHOP_ID )
                 .update( updateMap )
                 .addOnCompleteListener( new OnCompleteListener <Void>() {

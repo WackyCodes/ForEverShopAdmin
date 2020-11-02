@@ -46,12 +46,11 @@ import java.util.List;
 import java.util.Map;
 
 import ean.ecom.eanshopadmin.R;
-import ean.ecom.eanshopadmin.main.shop.UpdateShop;
 import ean.ecom.eanshopadmin.other.DialogsClass;
 
 import static android.app.Activity.RESULT_OK;
 import static ean.ecom.eanshopadmin.database.DBQuery.storageReference;
-import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
+import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.GALLERY_CODE;
 import static ean.ecom.eanshopadmin.other.StaticValues.READ_EXTERNAL_MEMORY_CODE;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_ID;
@@ -194,10 +193,10 @@ public class UpdateShopFragment extends Fragment implements UpdateShop.OnImageRe
                 updateShopTitle.setText( "Update Tag Line" );
                 setLayoutVisibility(2);
                 break;
-            case UPDATE_SHOP_ADDRESS:
-                updateShopTitle.setText( "Update Shop Address" );
-                setLayoutVisibility(2);
-                break;
+//            case UPDATE_SHOP_ADDRESS:
+//                updateShopTitle.setText( "Update Shop Address" );
+//                setLayoutVisibility(2);
+//                break;
             case UPDATE_SHOP_HELPLINE:
                 updateShopTitle.setText( "Update helpline number" );
                 updateShopEditText.setInputType( InputType.TYPE_CLASS_NUMBER );
@@ -282,11 +281,11 @@ public class UpdateShopFragment extends Fragment implements UpdateShop.OnImageRe
                     onUploadShopInfo( "shop_tag_line" );
                 }
                 break;
-            case UPDATE_SHOP_ADDRESS:
-                if (isValidEditText( updateShopEditText )){
-                    onUploadShopInfo( "shop_address" );
-                }
-                break;
+//            case UPDATE_SHOP_ADDRESS:
+//                if (isValidEditText( updateShopEditText )){
+//                    onUploadShopInfo( "shop_address" );
+//                }
+//                break;
             case UPDATE_SHOP_HELPLINE:
                 if (isValidEditText( updateShopEditText )){
                     onUploadShopInfo( "shop_help_line" );
@@ -393,7 +392,7 @@ public class UpdateShopFragment extends Fragment implements UpdateShop.OnImageRe
         updateMap.put( "shop_days_schedule", dayScheduleList );
         onImageRequest.onUpdateShopOnDatabase( this,  updateMap );
         // Update in Local...
-        ADMIN_DATA_MODEL.setShopDaysSchedule( dayScheduleList );
+        SHOP_DATA_MODEL.setShop_days_schedule( dayScheduleList );
     }
 
     // shop Time Schedule Action  button..
@@ -463,11 +462,11 @@ public class UpdateShopFragment extends Fragment implements UpdateShop.OnImageRe
 
             if (requestCode == UPDATE_SHOP_LOGO){
                 updateMap.put( "shop_logo", uploadLink );
-                ADMIN_DATA_MODEL.setShopLogo( uploadLink);
+                SHOP_DATA_MODEL.setShop_logo( uploadLink);
             }else
             if(requestCode == UPDATE_SHOP_IMAGE){
                 updateMap.put( "shop_image", uploadLink );
-                ADMIN_DATA_MODEL.setShopImage( uploadLink);
+                SHOP_DATA_MODEL.setShop_image( uploadLink);
             }
             onImageRequest.onUpdateShopOnDatabase( this,  updateMap );
         }else{
@@ -482,23 +481,23 @@ public class UpdateShopFragment extends Fragment implements UpdateShop.OnImageRe
         if (isSuccess){
             switch (requestCode){
                 case UPDATE_SHOP_TAG_LINE:
-                    ADMIN_DATA_MODEL.setShopTagLine( updateShopEditText.getText().toString());
+                    SHOP_DATA_MODEL.setShop_tag_line( updateShopEditText.getText().toString());
                     break;
                 case UPDATE_SHOP_ADDRESS:
-                    ADMIN_DATA_MODEL.setShopAddress( updateShopEditText.getText().toString());
+                    SHOP_DATA_MODEL.setShop_address( updateShopEditText.getText().toString());
                     break;
                 case UPDATE_SHOP_HELPLINE:
-                    ADMIN_DATA_MODEL.setShopHelpLine( updateShopEditText.getText().toString());
+                    SHOP_DATA_MODEL.setShop_help_line( updateShopEditText.getText().toString());
                     break;
                 case UPDATE_SHOP_NAME:
-                    ADMIN_DATA_MODEL.setShopName( updateShopEditText.getText().toString());
+                    SHOP_DATA_MODEL.setShop_name( updateShopEditText.getText().toString());
                     break;
                 case UPDATE_SHOP_VEG_NON_CODE:
-                    ADMIN_DATA_MODEL.setShopVegNonCode( shopVgNonCode );
+                    SHOP_DATA_MODEL.setShop_veg_non_type( String.valueOf( shopVgNonCode ) );
                     break;
                 case UPDATE_SHOP_TIME_SCHEDULE:
-                    ADMIN_DATA_MODEL.setShopOpenTime( fromOpenTime.getText().toString() );
-                    ADMIN_DATA_MODEL.setShopCloseTime( toCloseTime.getText().toString() );
+                    SHOP_DATA_MODEL.setShop_open_time( fromOpenTime.getText().toString() );
+                    SHOP_DATA_MODEL.setShop_close_time( toCloseTime.getText().toString() );
                     break;
                 default:
                     break;

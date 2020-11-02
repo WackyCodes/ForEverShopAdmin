@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -21,8 +20,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.text.method.TransformationMethod;
-import android.transition.Visibility;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +41,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import ean.ecom.eanshopadmin.MainActivity;
 import ean.ecom.eanshopadmin.R;
@@ -59,6 +55,7 @@ import static ean.ecom.eanshopadmin.database.DBQuery.firebaseFirestore;
 import static ean.ecom.eanshopadmin.launching.AuthActivity.authActivity;
 import static ean.ecom.eanshopadmin.other.StaticMethods.showToast;
 import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
+import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_ID;
 
 public class SignInFragment extends Fragment {

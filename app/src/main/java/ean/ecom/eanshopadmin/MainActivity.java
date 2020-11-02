@@ -37,7 +37,6 @@ import ean.ecom.eanshopadmin.home.HomeCatListModel;
 import ean.ecom.eanshopadmin.home.HomeListModel;
 import ean.ecom.eanshopadmin.launching.AuthActivity;
 import ean.ecom.eanshopadmin.main.MainFragment;
-import ean.ecom.eanshopadmin.notification.NotificationFragment;
 import ean.ecom.eanshopadmin.other.DialogsClass;
 import ean.ecom.eanshopadmin.other.StaticMethods;
 
@@ -50,6 +49,7 @@ import static ean.ecom.eanshopadmin.database.DBQuery.orderListModelList;
 import static ean.ecom.eanshopadmin.database.DBQuery.preparingOrderList;
 import static ean.ecom.eanshopadmin.database.DBQuery.readyToDeliveredList;
 import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
+import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.CURRENT_CITY_NAME;
 import static ean.ecom.eanshopadmin.other.StaticValues.REQUEST_TO_NOTIFICATION;
 import static ean.ecom.eanshopadmin.other.StaticValues.REQUEST_TO_NOTIFY_NEW_ORDER;
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar( toolbar );
         try {
             getSupportActionBar().setDisplayShowTitleEnabled( true );
-            getSupportActionBar().setTitle( ADMIN_DATA_MODEL.getShopName() );
+            getSupportActionBar().setTitle( SHOP_DATA_MODEL.getShop_name() );
             getSupportActionBar().setSubtitle( SHOP_ID );
         }catch (NullPointerException ignored){ }
 
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         drawerName.setText( ADMIN_DATA_MODEL.getAdminName() ); // Admin Name...
         drawerEmail.setText( ADMIN_DATA_MODEL.getAdminEmail() ); // Admin Email...
-        drawerCityName.setText( ADMIN_DATA_MODEL.getShopAddress() ); // Shop Address...
+        drawerCityName.setText( SHOP_DATA_MODEL.getShop_address() ); // Shop Address...
 
         // Assign...
         toolCityName = findViewById( R.id.tool_user_city );

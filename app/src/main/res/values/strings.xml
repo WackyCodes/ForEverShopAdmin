@@ -1,8 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">AN ShopAdmin</string>
+    <string name="app_name">My Shop</string>
     <string name="app_version" tools:ignore="TypographyDashes">ev-1-01</string>
-    <string name="welcome_text">Welcome to <b>eAN Mart</b></string>
-    <string name="thank_you_order">Thank you for order from <i><b>eAN Mart</b></i> </string>
+    <string name="welcome_text">Welcome to <b>4Ever Mall</b></string>
+    <string name="thank_you_order">Thank you for order from <i><b>4Ever Mall</b></i> </string>
 
     <string name="sample_heading">sample heading</string>
     <string name="sample_name">Sample Mobile Name</string>
@@ -24,8 +24,8 @@
     <string name="out_for_delivery"><![CDATA[OUT FOR DELIVERY >]]></string>
 
     <!--    Notification Channel -->
-    <string name="channel_name">eAN Shop Admin</string>
-    <string name="channel_description">eAN Shop Admin</string>
+    <string name="channel_name">My Shop</string>
+    <string name="channel_description">4Ever Mall shop Admin</string>
 
     <string-array name="banner_type">
         <item>Banner Type</item>
@@ -63,6 +63,7 @@
         <item>Watt</item>
         <item>CM</item>
         <item>Inches</item>
+        <item>size</item>
         <item>Other</item>
     </string-array>
 

@@ -150,12 +150,14 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
                 dialog.show();
                 switch (requestType){
                     case UPDATE_WEIGHT:
-                        if (StaticMethods.isValidWeight( uWeight, getContext() ) && weightType!=null){
+                        if ( weightType!=null && !TextUtils.isEmpty( uWeight.getText().toString() ) ){
                             updateWeight();
                         }else{
                             dialog.dismiss();
                             if (weightType == null){
                                 showToast( "Please Select weight Type" );
+                            }else{
+                                uWeight.setError( "Required!" );
                             }
                         }
                         break;
@@ -249,7 +251,7 @@ public class UpdateProductFragment extends Fragment implements UpdateData.Update
             public void onItemSelected(AdapterView <?> parent, View view, int position, long id) {
                 if (position > 0){
                     weightType = parent.getItemAtPosition( position ).toString();
-                    if (position == 11){
+                    if (position == 12){
                         uWeight.setText( "NONE" );
                         weightType = "NONE";
                     }else if( !TextUtils.isEmpty( uWeight.getText().toString() )){

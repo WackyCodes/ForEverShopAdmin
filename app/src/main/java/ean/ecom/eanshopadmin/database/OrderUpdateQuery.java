@@ -1,10 +1,8 @@
 package ean.ecom.eanshopadmin.database;
 
-import android.app.Dialog;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -17,15 +15,13 @@ import java.util.Map;
 import ean.ecom.eanshopadmin.main.orderlist.OrderListModel;
 import ean.ecom.eanshopadmin.main.orderlist.OrderUpdateListener;
 import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderTabAdaptor;
-import ean.ecom.eanshopadmin.main.orderlist.orderviewdetails.OrderViewInteractor;
 
 import static ean.ecom.eanshopadmin.database.AdminQuery.getShopCollectionRef;
 import static ean.ecom.eanshopadmin.database.DBQuery.firebaseFirestore;
 import static ean.ecom.eanshopadmin.database.DBQuery.preparingOrderList;
 import static ean.ecom.eanshopadmin.database.DBQuery.readyToDeliveredList;
-import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
+import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_ACCEPTED;
-import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_OUT_FOR_DELIVERY;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_PREPARING;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_READY_TO_DELIVER;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_PACKED;
@@ -45,7 +41,7 @@ public class OrderUpdateQuery {
 //        deliveryMap.put( "shipping_geo_point", orderListModel.getShippingGeoPoint() );
 
         firebaseFirestore.collection( "DELIVERY" )
-                .document( ADMIN_DATA_MODEL.getShopCityCode() )
+                .document( SHOP_DATA_MODEL.getShop_city_code() )
                 .collection( "DELIVERY" )
                 .add( deliveryMap )
                 .addOnCompleteListener( new OnCompleteListener <DocumentReference>() {
@@ -131,7 +127,7 @@ public class OrderUpdateQuery {
 
     public void onCheckOTPQuery(final OrderUpdateListener listener, final int index, String deliveryId, final String verifyOtp) {
         firebaseFirestore.collection( "DELIVERY" )
-                .document( ADMIN_DATA_MODEL.getShopCityCode() )
+                .document( SHOP_DATA_MODEL.getShop_city_code() )
                 .collection( "DELIVERY" )
                 .document( deliveryId )
                 .get()

@@ -34,6 +34,7 @@ import static ean.ecom.eanshopadmin.database.DBQuery.firebaseFirestore;
 import static ean.ecom.eanshopadmin.launching.AuthActivity.authActivity;
 import static ean.ecom.eanshopadmin.other.StaticMethods.showToast;
 import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
+import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_HOME_CAT_LIST_CONTAINER;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_ID;
 
@@ -183,7 +184,7 @@ public class ShopSetUpFragment extends Fragment {
         updateMap.put( "shop_owner_mobile", shopHelpline.getText().toString() );
         updateMap.put( "shop_owner_email", shopEmail.getText().toString() );
         // add into DataModel...
-        ADMIN_DATA_MODEL.setShopAddress( shopAddress.getText().toString() );
+        SHOP_DATA_MODEL.setShop_address( shopAddress.getText().toString() );
 
         firebaseFirestore
                 .collection( "SHOPS" ).document( SHOP_ID )

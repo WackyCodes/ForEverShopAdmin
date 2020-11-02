@@ -3,19 +3,22 @@ package ean.ecom.eanshopadmin.other;
 import android.content.ClipboardManager;
 
 import ean.ecom.eanshopadmin.admin.AdminDataModel;
+import ean.ecom.eanshopadmin.admin.ShopDataModelClass;
 
 public class StaticValues {
 
 
-    public static String APP_VERSION = "em-1-01"; // ev-1-01
+    public static String APP_VERSION = "a_shop_1_209_01";
     public static final String CHANNEL_ID = "e_an_shop_admin";
 
     public static final String DEFAULT_CITY_NAME = "BHOPAL";
     public static String CURRENT_CITY_NAME = "BHOPAL";
     public static String CURRENT_CITY_CODE = "BHOPAL";
+    public static ShopDataModelClass SHOP_DATA_MODEL = new ShopDataModelClass();
     public static final AdminDataModel ADMIN_DATA_MODEL = new AdminDataModel();
 
-    public static String SHOP_ID =  ADMIN_DATA_MODEL.getShopID();
+    public static String SHOP_ID =  SHOP_DATA_MODEL.getShop_id();
+
     public static final int VERIFIED = 1;
     public static final int NOT_VERIFIED = 0;
 

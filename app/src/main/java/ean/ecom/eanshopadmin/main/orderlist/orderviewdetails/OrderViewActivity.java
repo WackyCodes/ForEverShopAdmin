@@ -20,21 +20,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import ean.ecom.eanshopadmin.R;
-import ean.ecom.eanshopadmin.database.DBQuery;
 import ean.ecom.eanshopadmin.database.OrderUpdateQuery;
-import ean.ecom.eanshopadmin.main.orderlist.OrderListAdaptor;
 import ean.ecom.eanshopadmin.main.orderlist.OrderListModel;
-import ean.ecom.eanshopadmin.main.orderlist.OrderProductItemModel;
 import ean.ecom.eanshopadmin.main.orderlist.OrderProductsModel;
 import ean.ecom.eanshopadmin.main.orderlist.OrderUpdateListener;
 import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderTabAdaptor;
@@ -42,14 +35,19 @@ import ean.ecom.eanshopadmin.main.orderlist.neworder.OrderViewPagerFragment;
 import ean.ecom.eanshopadmin.notification.UserNotificationModel;
 import ean.ecom.eanshopadmin.other.DialogsClass;
 import ean.ecom.eanshopadmin.other.StaticMethods;
-import ean.ecom.eanshopadmin.other.StaticValues;
 
 import static ean.ecom.eanshopadmin.database.DBQuery.newOrderList;
-import static ean.ecom.eanshopadmin.database.DBQuery.orderListModelList;
 import static ean.ecom.eanshopadmin.database.DBQuery.preparingOrderList;
 import static ean.ecom.eanshopadmin.database.DBQuery.readyToDeliveredList;
 import static ean.ecom.eanshopadmin.other.StaticMethods.showToast;
-import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_CANCELLED;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_FAILED;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_CHECK;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_PENDING;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_PROCESS;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_SUCCESS;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_WAITING;
+import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_ACCEPTED;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_NEW_ORDER;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_OUT_FOR_DELIVERY;
@@ -75,6 +73,7 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
 
     private int LIST_TYPE = -1;
     private String orderID = null;
+    private String orderStatus = null;
     private Dialog dialog;
 
 
@@ -130,6 +129,11 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         //--------
         orderID = getIntent().getStringExtra( "ORDER_ID" );
         LIST_TYPE = getIntent().getIntExtra( "ORDER_STATUS", -1 );
+
+        if (LIST_TYPE == ORDER_LIST_CHECK){
+            orderStatus = getIntent().getStringExtra( "ORDER_STATUS_STRING" );
+        }
+
         dialog = DialogsClass.getDialog( this );
         //---------------------------------------------------------------------------------
         orderDate = findViewById( R.id.order_date );
@@ -187,6 +191,7 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         layoutManager.setOrientation( RecyclerView.VERTICAL );
         orderListRecycler.setLayoutManager( layoutManager );
 
+        getOrderListType( orderStatus );
         // On Button Clicked...!
         onButtonClicked();
 
@@ -337,7 +342,19 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
                     }
                 }
                 return index;
+            case ORDER_LIST_OUT_FOR_DELIVERY:
+            case ORDER_LIST_SUCCESS:
             default:
+                for ( OrderListModel orderListModel : orderListModelList ){
+                    if (orderListModel.getOrderID().equals( orderID )){
+                        if (this.orderListModel == null){
+                            this.orderListModel = orderListModel;
+                            setActivityData();
+                        }
+                        index = orderListModelList.indexOf( orderListModel );
+                    break;
+                      }
+                    }
                 return index;
         }
     }
@@ -586,7 +603,7 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
                 Map <String, Object> updateMap  = new HashMap <>();
                 updateMap.put( "delivery_status", ORDER_PICKED );
                 // Update In Delivery Document...
-                orderUpdateQuery.updateDeliveryDocument(OrderViewActivity.this, orderID, ADMIN_DATA_MODEL.getShopCityCode(),
+                orderUpdateQuery.updateDeliveryDocument(OrderViewActivity.this, orderID, SHOP_DATA_MODEL.getShop_city_code(),
                         readyToDeliveredList.get( temIndex ).getDeliveryID(), updateMap );
                 // Update In Shop Order document... After Update in document...
                 // Thread : Send Notification To user
@@ -667,14 +684,14 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         deliveryMap.put( "accepted_date", StaticMethods.getCrrDate() );
         deliveryMap.put( "accepted_time", StaticMethods.getCrrTime() );
         deliveryMap.put( "shop_id", SHOP_ID );
-        deliveryMap.put( "shop_name", ADMIN_DATA_MODEL.getShopName() );
-        deliveryMap.put( "shop_logo", ADMIN_DATA_MODEL.getShopLogo() );
-        deliveryMap.put( "shop_address", ADMIN_DATA_MODEL.getShopAddress() );
-        deliveryMap.put( "shop_helpline", ADMIN_DATA_MODEL.getShopHelpLine() );
-        deliveryMap.put( "shop_pin", ADMIN_DATA_MODEL.getShopAreaCode() );
+        deliveryMap.put( "shop_name", SHOP_DATA_MODEL.getShop_name() );
+        deliveryMap.put( "shop_logo", SHOP_DATA_MODEL.getShop_logo() );
+        deliveryMap.put( "shop_address", SHOP_DATA_MODEL.getShop_address() );
+        deliveryMap.put( "shop_helpline", SHOP_DATA_MODEL.getShop_help_line() );
+        deliveryMap.put( "shop_pin", SHOP_DATA_MODEL.getShop_area_code() );
         deliveryMap.put( "shipping_address", orderListModel.getShippingAddress() );
         deliveryMap.put( "shipping_pin", orderListModel.getShippingPinCode() );
-        deliveryMap.put( "shop_geo_point", ADMIN_DATA_MODEL.getShopGeoPoint() );
+        deliveryMap.put( "shop_geo_point", SHOP_DATA_MODEL.getShop_geo_point() );
         deliveryMap.put( "shipping_geo_point", orderListModel.getShippingGeoPoint() );
 
 //        DBQuery.setDeliveryDocument( dialog, deliveryMap, newOrderList.get( index ));
@@ -708,6 +725,32 @@ public class OrderViewActivity extends AppCompatActivity implements OrderViewInt
         notifyThread.start();
     }
 
+
+    private void getOrderListType( String oStatus){
+        if (oStatus.equals( ORDER_WAITING )){
+            LIST_TYPE = ORDER_LIST_NEW_ORDER;
+        }else if (oStatus.equals( ORDER_ACCEPTED )){
+            LIST_TYPE = ORDER_LIST_PREPARING;
+        }else if (oStatus.equals( ORDER_PACKED )){
+            LIST_TYPE = ORDER_LIST_READY_TO_DELIVER;
+        }else if (oStatus.equals( ORDER_SUCCESS )){ // NO ACTION
+            LIST_TYPE = ORDER_LIST_SUCCESS;
+        }else{ // NO ACTION
+            LIST_TYPE = ORDER_LIST_OUT_FOR_DELIVERY;
+        }
+//        if (oStatus.equals( ORDER_PICKED )){ // NO ACTION
+//
+//        }else if (oStatus.equals( ORDER_CANCELLED )){ // NO ACTION
+//
+//        }else if (oStatus.equals( ORDER_FAILED )){ // NO ACTION
+//
+//        }else if (oStatus.equals( ORDER_PENDING )){ // NO ACTION
+//
+//        }else if (oStatus.equals( ORDER_PROCESS )){ // Not Use in Order document...
+//
+//        }
+
+    }
 
 
 }

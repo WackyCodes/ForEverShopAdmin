@@ -24,18 +24,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import ean.ecom.eanshopadmin.R;
-import ean.ecom.eanshopadmin.database.DBQuery;
 import ean.ecom.eanshopadmin.database.OrderUpdateQuery;
-import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderFragment;
 import ean.ecom.eanshopadmin.main.orderlist.neworder.NewOrderTabAdaptor;
 import ean.ecom.eanshopadmin.main.orderlist.orderviewdetails.OrderViewActivity;
 import ean.ecom.eanshopadmin.notification.UserNotificationModel;
@@ -43,7 +38,13 @@ import ean.ecom.eanshopadmin.other.StaticMethods;
 
 import static ean.ecom.eanshopadmin.database.DBQuery.readyToDeliveredList;
 import static ean.ecom.eanshopadmin.other.StaticMethods.showToast;
-import static ean.ecom.eanshopadmin.other.StaticValues.ADMIN_DATA_MODEL;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_CANCELLED;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_FAILED;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_PENDING;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_PROCESS;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_SUCCESS;
+import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_WAITING;
+import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_ACCEPTED;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_CHECK;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_LIST_NEW_ORDER;
@@ -171,17 +172,16 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
                 @Override
                 public void onClick(View view) {
 //                    showToast(itemView.getContext(), "Code Not Found!");
-
-//                    Intent orderViewIntent = new Intent( itemView.getContext(), OrderViewActivity.class );
-//                    orderViewIntent.putExtra( "ORDER_ID" , orderID );
-//                    orderViewIntent.putExtra( "ORDER_STATUS" , listType);
-//                    itemView.getContext().startActivity( orderViewIntent );
-//                    orderID = getIntent().getStringExtra( "ORDER_ID" );
-//                    LIST_TYPE = getIntent().getIntExtra( "ORDER_STATUS", -1 );
+                    Intent orderViewIntent = new Intent( itemView.getContext(), OrderViewActivity.class );
+                    orderViewIntent.putExtra( "ORDER_ID" , orderID );
+                    orderViewIntent.putExtra( "ORDER_STATUS" , ORDER_LIST_CHECK);
+                    orderViewIntent.putExtra( "ORDER_STATUS_STRING" , oStatus);
+                    itemView.getContext().startActivity( orderViewIntent );
                 }
             } );
 
         }
+
 
     }
 
@@ -268,15 +268,12 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
             orderTime.setText( "Order " + StaticMethods.getTimeFromNow( oDate, oTime +":00" ) );
             totalItems.setText( String.valueOf( oTotalItems ) );
 
-            itemView.setOnClickListener( new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+            itemView.setOnClickListener( view -> {
 //                    showToast(itemView.getContext(), "Code Not Found!");
-                    Intent orderViewIntent = new Intent( itemView.getContext(), OrderViewActivity.class );
-                    orderViewIntent.putExtra( "ORDER_ID" , orderID );
-                    orderViewIntent.putExtra( "ORDER_STATUS" , listType);
-                    itemView.getContext().startActivity( orderViewIntent );
-                }
+                Intent orderViewIntent = new Intent( itemView.getContext(), OrderViewActivity.class );
+                orderViewIntent.putExtra( "ORDER_ID" , orderID );
+                orderViewIntent.putExtra( "ORDER_STATUS" , listType);
+                itemView.getContext().startActivity( orderViewIntent );
             } );
 
             // Accept Order Action...
@@ -351,14 +348,14 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
             deliveryMap.put( "accepted_date", StaticMethods.getCrrDate() );
             deliveryMap.put( "accepted_time", StaticMethods.getCrrTime() );
             deliveryMap.put( "shop_id", SHOP_ID );
-            deliveryMap.put( "shop_name", ADMIN_DATA_MODEL.getShopName() );
-            deliveryMap.put( "shop_logo", ADMIN_DATA_MODEL.getShopLogo() );
-            deliveryMap.put( "shop_address", ADMIN_DATA_MODEL.getShopAddress() );
-            deliveryMap.put( "shop_helpline", ADMIN_DATA_MODEL.getShopHelpLine() );
-            deliveryMap.put( "shop_pin", ADMIN_DATA_MODEL.getShopAreaCode() );
+            deliveryMap.put( "shop_name", SHOP_DATA_MODEL.getShop_name() );
+            deliveryMap.put( "shop_logo", SHOP_DATA_MODEL.getShop_logo() );
+            deliveryMap.put( "shop_address", SHOP_DATA_MODEL.getShop_address() );
+            deliveryMap.put( "shop_helpline", SHOP_DATA_MODEL.getShop_help_line() );
+            deliveryMap.put( "shop_pin", SHOP_DATA_MODEL.getShop_area_code() );
             deliveryMap.put( "shipping_address", orderListModel.getShippingAddress() );
             deliveryMap.put( "shipping_pin", orderListModel.getShippingPinCode() );
-            deliveryMap.put( "shop_geo_point", ADMIN_DATA_MODEL.getShopGeoPoint() );
+            deliveryMap.put( "shop_geo_point", SHOP_DATA_MODEL.getShop_geo_point() );
             deliveryMap.put( "shipping_geo_point", orderListModel.getShippingGeoPoint() );
 
             // set document in delivery section and then we update in order document...
@@ -453,7 +450,7 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
                     // Update In Delivery Document...
                     orderUpdateQuery.updateDeliveryDocument(NewOrderListViewHolder.this
                             , orderListModelList.get( temIndex ).getOrderID()
-                            , ADMIN_DATA_MODEL.getShopCityCode()
+                            , SHOP_DATA_MODEL.getShop_city_code()
                             , readyToDeliveredList.get( temIndex ).getDeliveryID(), updateMap );
 
 //                    dismissDialog();
