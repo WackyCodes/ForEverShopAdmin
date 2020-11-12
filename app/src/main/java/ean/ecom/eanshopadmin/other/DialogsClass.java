@@ -68,6 +68,15 @@ public class DialogsClass {
         // ---- Progress Dialog...
     }
 
+    public static Dialog NoInternetDialog(Context c){
+        Dialog progressDialog = new Dialog( c );
+        progressDialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
+        progressDialog.setContentView( R.layout.no_internet_dialog );
+        progressDialog.setCancelable( false );
+        progressDialog.getWindow().setLayout( ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT );
+        return progressDialog;
+    }
+
     public static AlertDialog.Builder alertDialog(Context c, @Nullable String title, @NonNull String body) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(c);
         if (title!=null)

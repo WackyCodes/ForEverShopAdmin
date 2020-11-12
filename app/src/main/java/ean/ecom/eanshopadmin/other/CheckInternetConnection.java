@@ -1,12 +1,25 @@
 package ean.ecom.eanshopadmin.other;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Toast;
 
-import static ean.ecom.eanshopadmin.other.DialogsClass.alertDialog;
+import ean.ecom.eanshopadmin.R;
 
-public class CheckInternetConnection {
+
+public class CheckInternetConnection implements OnInternetConnectListener.OnCheckingListener {
+
+    private OnInternetConnectListener listener;
+
+    public CheckInternetConnection(OnInternetConnectListener listener) {
+        this.listener = listener;
+    }
 
     private static boolean isConnected(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -22,12 +35,52 @@ public class CheckInternetConnection {
 
     public static boolean isInternetConnected(Context context){
         if(!isConnected(context)){
-            alertDialog(context, "No Internet Connection !",
-                    "Check Your Internet Connection.\nYou need to have Mobile Data or wifi..." ).show();
-            return false;
+            AlertDialog.Builder dialog = DialogsClass.alertDialog( context, "No Internet Connection!", null );
+            dialog.show();
+//            try{
+//                do{
+//                    if (!dialog.isShowing()){
+//                        dialog.show();
+//                    }
+//                    if (isConnected( context )){
+//                        dialog.dismiss();
+//                    }
+//                }while (!isConnected( context ));
+//            }
+//            catch (Exception e){
+//                e.printStackTrace();
+//            }
+
+            if (isConnected( context )){
+                return true;
+            }else {
+                return false;
+            }
         }
-        else
-            return true;
+        else{
+           return true;
+        }
+    }
+
+    public static void isInternetConnected(Context context,  OnInternetConnectListener listener){
+        if(!isConnected(context)){
+            listener.onInternetResponse( false );
+        }
+        else{
+            listener.onInternetResponse( true );
+        }
+    }
+
+
+    @Override
+    public void onConnected(OnInternetConnectListener listener) {
+//        Thread newThread = new Thread(new MyInternet( ));
+//        newThread.start();
+    }
+
+    @Override
+    public void onDisconnected(OnInternetConnectListener listener) {
+
     }
 
     /*

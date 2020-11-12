@@ -356,11 +356,18 @@ public class DBQuery {
                                 orderListModel.setShippingAddress( documentSnapshot.get( "order_delivery_address" ).toString() );
                                 orderListModel.setShippingPinCode( documentSnapshot.get( "order_delivery_pin" ).toString() );
 
-                                orderListModel.setOrderDate( documentSnapshot.get( "order_date" ).toString() );
-                                orderListModel.setOrderDay( documentSnapshot.get( "order_day" ).toString() );
-                                orderListModel.setOrderTime( documentSnapshot.get( "order_time" ).toString() );
+//                                orderListModel.setOrderDate( documentSnapshot.get( "order_date" ).toString() );
+//                                orderListModel.setOrderDay( documentSnapshot.get( "order_day" ).toString() );
+//                                orderListModel.setOrderTime( documentSnapshot.get( "order_time" ).toString() );
+                                if (documentSnapshot.get( "shipping_geo_point" )!= null){
+                                    orderListModel.setShippingGeoPoint(documentSnapshot.getGeoPoint( "shipping_geo_point" ));
+                                }
+                                if (documentSnapshot.get( "order_timestamp" ) != null){
+                                    orderListModel.setOrder_timestamp( documentSnapshot.getTimestamp( "order_timestamp" ) );
+                                }
 
-                                orderListModel.setDeliverySchedule( documentSnapshot.get( "delivery_schedule_time" ).toString() );
+                                // Not Required! Null pointer handle if you want to use in future...
+//                                orderListModel.setDeliverySchedule( documentSnapshot.get( "delivery_schedule_time" ).toString() );
 
 //                                long no_of_products = (long)documentSnapshot.get( "no_of_products" );
 
@@ -450,48 +457,24 @@ public class DBQuery {
                                     orderListModel.setShippingAddress( documentSnapshot.get( "order_delivery_address" ).toString() );
                                     orderListModel.setShippingPinCode( documentSnapshot.get( "order_delivery_pin" ).toString() );
 
-                                    orderListModel.setOrderDate( documentSnapshot.get( "order_date" ).toString() );
-                                    orderListModel.setOrderDay( documentSnapshot.get( "order_day" ).toString() );
-                                    orderListModel.setOrderTime( documentSnapshot.get( "order_time" ).toString() );
+//                                    orderListModel.setOrderDate( documentSnapshot.get( "order_date" ).toString() );
+//                                    orderListModel.setOrderDay( documentSnapshot.get( "order_day" ).toString() );
+//                                    orderListModel.setOrderTime( documentSnapshot.get( "order_time" ).toString() );
+                                    if (documentSnapshot.get( "shipping_geo_point" )!= null){
+                                        orderListModel.setShippingGeoPoint(documentSnapshot.getGeoPoint( "shipping_geo_point" ));
+                                    }
 
-                                    orderListModel.setDeliverySchedule( documentSnapshot.get( "delivery_schedule_time" ).toString() );
+                                    if (documentSnapshot.get( "order_timestamp" ) != null){
+                                        orderListModel.setOrder_timestamp( documentSnapshot.getTimestamp( "order_timestamp" ) );
+                                    }
 
-//                                    long no_of_products = (long)documentSnapshot.get( "no_of_products" );
-
-                                   /* for (long ind = 0; ind < no_of_products; ind++){
-                                        OrderProductItemModel orderProductItemModel = new OrderProductItemModel(
-                                                documentSnapshot.get( "product_id_"+ind ).toString(),
-                                                documentSnapshot.get( "product_image_"+ind ).toString(),
-                                                documentSnapshot.get( "product_name_"+ind ).toString(),
-                                                documentSnapshot.get( "product_price_"+ind ).toString(),
-                                                documentSnapshot.get( "product_qty_"+ind ).toString()
-                                        );
-
-                                        if (documentSnapshot.get( "product_mrp_"+ind ) != null){
-                                            orderProductItemModel.setProductMRP(  documentSnapshot.get( "product_mrp_"+ind ).toString() );
-                                        }else{
-                                            orderProductItemModel.setProductMRP( "" );
-                                        }
-
-                                        if (documentSnapshot.get( "product_weight_"+ind ) != null){
-                                            orderProductItemModel.setProductWeight(  documentSnapshot.get( "product_weight_"+ind ).toString() );
-                                        }else{
-                                            orderProductItemModel.setProductWeight( "NONE" );
-                                        }
-
-                                        orderSubList.add( orderProductItemModel );
-                                    } */
+                                    // Not Required! Null pointer handle if you want to use in future...
+//                                    orderListModel.setDeliverySchedule( documentSnapshot.get( "delivery_schedule_time" ).toString() );
 
                                     orderSubList =  (ArrayList <OrderProductsModel>) documentSnapshot.getData().get( "products_list" );
 
                                     orderListModel.setOrderProductItemsList( orderSubList );
 
-//                                    newOrderList.add( orderListModel );
-                                    // add Model in the new Order List...
-//                                    if (!newOrderList.contains( orderListModel )){
-//                                        newOrderList.add( orderListModel );
-//                                        cartCount++;
-//                                    }
                                     boolean isExist = false;
                                     for (OrderListModel tempModel : newOrderList){
                                         if (tempModel.getOrderID().equals( orderListModel.getOrderID() )){
@@ -507,14 +490,15 @@ public class DBQuery {
 
                                 }
 
-                                if (badgeOrderCount != null)
-                                    if (newOrderList.size()>0){
-                                        badgeOrderCount.setVisibility( View.VISIBLE );
-                                        badgeOrderCount.setText( newOrderList.size() + "" );
-                                    }else{
-                                        badgeOrderCount.setVisibility( View.GONE );
-                                    }
                             }
+                            if (badgeOrderCount != null)
+                                if (newOrderList.size()>0){
+                                    badgeOrderCount.setVisibility( View.VISIBLE );
+                                    badgeOrderCount.setText( newOrderList.size() + "" );
+                                }else{
+                                    badgeOrderCount.setVisibility( View.GONE );
+                                }
+
                             if ( context!=null && cartCount > 0){
                                 DialogsClass.setAlarmOnNotification( context, "New Order",
                                         "You have "+ cartCount +" new Orders!", REQUEST_TO_NOTIFY_NEW_ORDER );
@@ -577,11 +561,18 @@ public class DBQuery {
                                     orderListModel.setShippingAddress( documentSnapshot.get( "order_delivery_address" ).toString() );
                                     orderListModel.setShippingPinCode( documentSnapshot.get( "order_delivery_pin" ).toString() );
 
-                                    orderListModel.setOrderDate( documentSnapshot.get( "order_date" ).toString() );
-                                    orderListModel.setOrderDay( documentSnapshot.get( "order_day" ).toString() );
-                                    orderListModel.setOrderTime( documentSnapshot.get( "order_time" ).toString() );
+//                                    orderListModel.setOrderDate( documentSnapshot.get( "order_date" ).toString() );
+//                                    orderListModel.setOrderDay( documentSnapshot.get( "order_day" ).toString() );
+//                                    orderListModel.setOrderTime( documentSnapshot.get( "order_time" ).toString() );
+                                    // Not Required! Null pointer handle if you want to use in future...
+//                                    orderListModel.setDeliverySchedule( documentSnapshot.get( "delivery_schedule_time" ).toString() );
+                                    if (documentSnapshot.get( "shipping_geo_point" )!= null){
+                                        orderListModel.setShippingGeoPoint(documentSnapshot.getGeoPoint( "shipping_geo_point" ));
+                                    }
 
-                                    orderListModel.setDeliverySchedule( documentSnapshot.get( "delivery_schedule_time" ).toString() );
+                                    if (documentSnapshot.get( "order_timestamp" ) != null){
+                                        orderListModel.setOrder_timestamp( documentSnapshot.getTimestamp( "order_timestamp" ) );
+                                    }
 
                                     if ( documentSnapshot.get( "delivery_id" ) != null){
                                         orderListModel.setDeliveryID( documentSnapshot.get( "delivery_id" ).toString()  );

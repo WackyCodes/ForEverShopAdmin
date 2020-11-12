@@ -41,6 +41,7 @@ public class SetFragmentActivity extends AppCompatActivity {
     public static AppCompatActivity setFragmentActivity;
 
     private FrameLayout frameLayout;
+    private int fragment_no;
 
     private Toolbar toolbar;
 
@@ -50,7 +51,7 @@ public class SetFragmentActivity extends AppCompatActivity {
         setContentView( R.layout.activity_set_fragment );
         setFragmentActivity = this;
 
-        int fragment_no = getIntent().getIntExtra( "FRAGMENT_ID", -1 );
+        fragment_no = getIntent().getIntExtra( "FRAGMENT_ID", -1 );
 
         toolbar = findViewById( R.id.appToolbar );
         setSupportActionBar( toolbar );
@@ -65,6 +66,18 @@ public class SetFragmentActivity extends AppCompatActivity {
         // Set Fragment...
         setFrameLayout(fragment_no);
 
+    }
+
+    @Override
+    protected void onResume() {
+
+        if (fragment_no == REQUEST_TO_NOTIFY_NEW_ORDER){
+            if (NewOrderFragment.newOrderTabAdaptor!=null){
+                NewOrderFragment.newOrderTabAdaptor.notifyDataSetChanged();
+            }
+        }
+
+        super.onResume();
     }
 
     @Override

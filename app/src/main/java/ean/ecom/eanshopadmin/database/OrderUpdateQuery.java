@@ -35,7 +35,7 @@ public class OrderUpdateQuery {
 
     // Query to Delivery Boy...  ------------------------
     public void setDeliveryDocument(final OrderUpdateListener listener, Map <String, Object> deliveryMap,
-                                    final OrderListModel orderListModel, final int index ){
+                                    final OrderListModel orderListModel ){
 
 //        deliveryMap.put( "shop_geo_point", ADMIN_DATA_MODEL.getShopGeoPoint() );
 //        deliveryMap.put( "shipping_geo_point", orderListModel.getShippingGeoPoint() );
@@ -55,7 +55,7 @@ public class OrderUpdateQuery {
                             updateMap.put( "delivery_id", deliveryID );
                             orderListModel.setDeliveryID( deliveryID );
                             orderListModel.setDeliveryStatus( ORDER_PACKED );
-                            updateOrderStatus( listener, orderListModel ,updateMap, index );
+                            updateOrderStatus( listener, orderListModel ,updateMap );
 
                         }else{
                             listener.onUpdateDeliveryFailed();
@@ -67,7 +67,7 @@ public class OrderUpdateQuery {
 
     //  Update Order Status on the database.. ------------------------
     public void updateOrderStatus(final OrderUpdateListener listener,
-                                  final OrderListModel orderListModel, final Map<String, Object> updateMap, final int index){
+                                  final OrderListModel orderListModel, final Map<String, Object> updateMap ){
         getShopCollectionRef( "ORDERS" )
                 .document( orderListModel.getOrderID() )
                 .update( updateMap )
@@ -76,36 +76,19 @@ public class OrderUpdateQuery {
                     public void onComplete(@NonNull Task <Void> task) {
                         String statusCode = updateMap.get( "delivery_status" ).toString();
                         if (task.isSuccessful()){
-                            // TODO: Update in Local List...
-                            if (statusCode.toUpperCase().equals( ORDER_ACCEPTED )){ // Preparing...
-                                preparingOrderList.add( orderListModel );
-                                NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_PREPARING, View.GONE );
-
+                            String[] updateStr = new String[2];
+                            updateStr[0] = orderListModel.getOrderID();
+                            if (orderListModel.getDeliveryID() != null){
+                                updateStr[1] = orderListModel.getDeliveryID();
                             }
-                            else  if (statusCode.toUpperCase().equals( ORDER_PACKED )){ // Ready to Delivery...
-                                readyToDeliveredList.add( orderListModel );
-                                NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_READY_TO_DELIVER, View.GONE );
-                            }
-                            else  if (statusCode.toUpperCase().equals( ORDER_PICKED )){ // Out For Delivery...
-                                // Update readyToDeliveredList
-                                for ( OrderListModel model : readyToDeliveredList){
-                                    if (model.getOrderID().equals( orderListModel.getOrderID() )){
-                                        readyToDeliveredList.remove( model );
-                                        break;
-                                    }
-                                }
-                                // By Default Done...
-                                if (readyToDeliveredList.size()==0)
-                                    NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_READY_TO_DELIVER, View.VISIBLE );
-                            }
-                            listener.onOrderUpdateSuccess( statusCode, index );
+                            listener.onOrderUpdateSuccess( statusCode, updateStr );
                         }
                         else{
                             // Failed...
                             if (statusCode.toUpperCase().equals( ORDER_PACKED )){
-                                listener.onOrderUpdateFailed( statusCode, orderListModel, updateMap, index );
+                                listener.onOrderUpdateFailed( statusCode, orderListModel, updateMap );
                             }else{
-                                listener.onOrderUpdateFailed( statusCode, null, null, index );
+                                listener.onOrderUpdateFailed( statusCode, null, null);
                             }
 
                         }
@@ -137,7 +120,7 @@ public class OrderUpdateQuery {
                         if (task.isSuccessful()){
                             try{
                                 if (task.getResult().get( "verify_otp" ).toString().equals( verifyOtp )){
-                                    listener.otpVerificationResponse( 1, String.valueOf( index ) ); // Success
+                                    listener.otpVerificationResponse( 1, deliveryId ); // Success
                                 }else{
                                     listener.otpVerificationResponse( 2, "Not Matched!" ); // Not verified...
                                 }
@@ -167,7 +150,7 @@ public class OrderUpdateQuery {
 //                            onUpdateStatusQuery( listener, orderID, updateMap);
                             OrderListModel orderListModel = new OrderListModel();
                             orderListModel.setOrderID( orderID );
-                            updateOrderStatus( listener, orderListModel ,updateMap, -1 );
+                            updateOrderStatus( listener, orderListModel ,updateMap );
                         }else{
                             listener.dismissDialog();
                             listener.showToast( "Failed... Please try again!" );

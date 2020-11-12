@@ -1,5 +1,7 @@
 package ean.ecom.eanshopadmin.notification;
 
+import com.google.firebase.Timestamp;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +25,7 @@ public class UserNotificationModel {
 
     private String notify_date;
     private String notify_time;
+    private Timestamp notify_timestamp;
     private boolean notify_is_read;
 
     public UserNotificationModel() {
@@ -108,6 +111,14 @@ public class UserNotificationModel {
         this.notify_is_read = notify_is_read;
     }
 
+    public Timestamp getNotify_timestamp() {
+        return notify_timestamp;
+    }
+
+    public void setNotify_timestamp(Timestamp notify_timestamp) {
+        this.notify_timestamp = notify_timestamp;
+    }
+
     public Map <String, Object> getMap(){
         Map <String, Object> notifyMap = new HashMap <>();
 
@@ -120,8 +131,9 @@ public class UserNotificationModel {
         notifyMap.put( "notify_title",  getNotify_title() );
         notifyMap.put( "notify_body",  getNotify_body() );
 
-        notifyMap.put( "notify_date", StaticMethods.getCrrDate() );
-        notifyMap.put( "notify_time", StaticMethods.getCrrTime() );
+//        notifyMap.put( "notify_date", StaticMethods.getCrrDate() );
+//        notifyMap.put( "notify_time", StaticMethods.getCrrTime() );
+        notifyMap.put( "notify_timestamp", StaticMethods.getCrrTimeStamp() );
         notifyMap.put( "notify_is_read", false );
 
         return notifyMap;

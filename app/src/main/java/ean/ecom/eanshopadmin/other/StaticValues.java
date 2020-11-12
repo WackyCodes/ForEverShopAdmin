@@ -8,7 +8,8 @@ import ean.ecom.eanshopadmin.admin.ShopDataModelClass;
 public class StaticValues {
 
 
-    public static String APP_VERSION = "a_shop_1_209_01";
+    // current Ver.. 1.20.04
+    public static String APP_VERSION = "a_shop_1_20_04";  // Link : APP_VERSION +  "_link";
     public static final String CHANNEL_ID = "e_an_shop_admin";
 
     public static final String DEFAULT_CITY_NAME = "BHOPAL";
@@ -122,6 +123,9 @@ public class StaticValues {
     public static final int ORDER_LIST_READY_TO_DELIVER = 3;
     public static final int ORDER_LIST_OUT_FOR_DELIVERY = 4;
     public static final int ORDER_LIST_SUCCESS = 5;
+    public static final int ORDER_LIST_CANCELLED = 6;
+    public static final int ORDER_LIST_FAILED = 7;
+    public static final int ORDER_LIST_PENDING = 8;
 
     // Use For Local And Store...
     public static final String ORDER_WAITING = "WAITING"; // ( For Accept )

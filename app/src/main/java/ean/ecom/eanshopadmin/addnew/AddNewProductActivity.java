@@ -194,7 +194,8 @@ public class AddNewProductActivity extends AppCompatActivity {
         layIndex = getIntent().getIntExtra( "LAY_INDEX", -1 );
         isUpdateRequest = getIntent().getBooleanExtra( "UPDATE", false );
 
-        productIndex = getIntent().getIntExtra( "PRO_INDEX", -1 );
+        productIndex = getIntent().getIntExtra( "PRO_INDEX", -1 ); // Product Index denote the Index of the current Product in the Root List...
+        // Get Product Variant....
 
         newProductIDText = findViewById( R.id.new_pro_id_text );
 //            <!--    Section 1: Add Images..-->
@@ -943,16 +944,17 @@ public class AddNewProductActivity extends AppCompatActivity {
 
     //----------
     private String getNewImageName(){
+        int tempVer = ( verCode )- 1;
         String newName = "";
         int sizeofList = uploadImageDataModelList.size();
         for (int i = 0; i < sizeofList; i++ ){
-            newName = productIndex + "" + i;
+            newName = tempVer + "" + i;
             if( ! newName.equals( uploadImageDataModelList.get( i ).getImgName() ) ){
 //                newName = String.valueOf( productIndex ) + String.valueOf( i );
                 uploadImageDataModelList.get( i ).setImgName( newName );
                 break;
             }else if ( i == sizeofList - 1){
-                newName = productIndex + "" + sizeofList; // String.valueOf( sizeofList );
+                newName = tempVer + "" + sizeofList; // String.valueOf( sizeofList );
             }
         }
 

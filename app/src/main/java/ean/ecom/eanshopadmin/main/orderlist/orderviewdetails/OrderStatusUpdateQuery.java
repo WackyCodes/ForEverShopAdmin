@@ -67,9 +67,9 @@ public class OrderStatusUpdateQuery implements OrderViewInteractor.OrderStatusUp
                                 }
 
                                 if (documentSnapshot.get( "delivery_status" ).toString().equals( "SUCCESS" )){
-                                    deliveryBoyInfo.put( "delivery_date",  documentSnapshot.get( "delivery_date" ).toString());
-                                    deliveryBoyInfo.put( "delivery_day",  documentSnapshot.get( "delivery_day" ).toString());
-                                    deliveryBoyInfo.put( "delivery_time",  documentSnapshot.get( "delivery_time" ).toString());
+//                                    deliveryBoyInfo.put( "delivery_date",  documentSnapshot.get( "delivery_date" ).toString());
+//                                    deliveryBoyInfo.put( "delivery_day",  documentSnapshot.get( "delivery_day" ).toString());
+//                                    deliveryBoyInfo.put( "delivery_time",  documentSnapshot.get( "delivery_time" ).toString());
                                 }
 
                                 orderStatusUpdator.onDeliveryBoyFound( deliveryBoyInfo );

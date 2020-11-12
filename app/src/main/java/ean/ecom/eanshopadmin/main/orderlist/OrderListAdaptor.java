@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.firebase.Timestamp;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,8 @@ import ean.ecom.eanshopadmin.main.orderlist.orderviewdetails.OrderViewActivity;
 import ean.ecom.eanshopadmin.notification.UserNotificationModel;
 import ean.ecom.eanshopadmin.other.StaticMethods;
 
+import static ean.ecom.eanshopadmin.database.DBQuery.newOrderList;
+import static ean.ecom.eanshopadmin.database.DBQuery.preparingOrderList;
 import static ean.ecom.eanshopadmin.database.DBQuery.readyToDeliveredList;
 import static ean.ecom.eanshopadmin.other.StaticMethods.showToast;
 import static ean.ecom.eanshopadmin.other.StaticValues.ORDER_CANCELLED;
@@ -100,19 +103,18 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
         String pName = orderProductsModel.getProductName();
         String oItemsAmounts = orderListModel.getProductAmounts();
         String oStatus = orderListModel.getDeliveryStatus();
-        String oDate = orderListModel.getOrderDate();
-        String oTime = orderListModel.getOrderTime();
+        Timestamp oDate = orderListModel.getOrder_timestamp();
         int oTotalItems = orderListModel.getOrderProductItemsList().size();
         String pImage = orderProductsModel.getProductImage();
         switch (listType){
             case ORDER_LIST_CHECK:
                 // TODO : Set Data...
-                ((OrderListViewHolder)holder).setData( orderID, pName, oItemsAmounts, oStatus, oDate, oTime, oTotalItems, pImage );
+                ((OrderListViewHolder)holder).setData( orderID, pName, oItemsAmounts, oStatus, oDate, oTotalItems, pImage );
                 break;
             case ORDER_LIST_NEW_ORDER:
             case ORDER_LIST_PREPARING:
             case ORDER_LIST_READY_TO_DELIVER:
-                ((NewOrderListViewHolder)holder).setData( orderID, pName, oItemsAmounts, oStatus, oDate, oTime, oTotalItems, pImage, position );
+                ((NewOrderListViewHolder)holder).setData( orderID, pName, oItemsAmounts, oStatus, oDate, oTotalItems, pImage, position );
                 break;
             default:
                 break;
@@ -152,7 +154,7 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
 
         }
 
-        private void setData(final String orderID, String pName, String oItemsAmounts, String oStatus, String oDate, String oTime, int oTotalItems, String pImage ){
+        private void setData(final String orderID, String pName, String oItemsAmounts, String oStatus, Timestamp oTime, int oTotalItems, String pImage ){
 
             // set Image Resource from database..
             // Current Date : "yyyy/MM/dd"
@@ -165,7 +167,8 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
             productName.setText( pName );
             orderItemsAmount.setText( "Rs." + oItemsAmounts +"/-" );
             orderStatus.setText( oStatus );
-            orderTime.setText( "Order " + StaticMethods.getTimeFromNow( oDate, oTime +":00" ) );
+            orderTime.setText( "Order " + StaticMethods.getTimeFromNow( oTime  ) );
+
             totalItems.setText( String.valueOf( oTotalItems ) );
 
             itemView.setOnClickListener( new View.OnClickListener() {
@@ -230,7 +233,7 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
         }
 
         private void setData(final String orderID, String pName, String oItemsAmounts, String oStatus
-                , String oDate, String oTime, int oTotalItems, String pImage, final int index ){
+                , Timestamp oTime, int oTotalItems, String pImage, final int index ){
             // setData...
             orderProductsModel.setData( (Map <String, Object>)  orderListModelList.get( index ).getOrderProductItemsList().get( 0 ) );
 
@@ -265,7 +268,7 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
             productName.setText( pName );
             orderItemsAmount.setText( "Rs." + oItemsAmounts +"/-" );
             orderStatus.setText( oStatus );
-            orderTime.setText( "Order " + StaticMethods.getTimeFromNow( oDate, oTime +":00" ) );
+            orderTime.setText( "Order " + StaticMethods.getTimeFromNow( oTime  ) );
             totalItems.setText( String.valueOf( oTotalItems ) );
 
             itemView.setOnClickListener( view -> {
@@ -318,7 +321,7 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
             orderListModelList.get( index ).setDeliveryStatus( ORDER_ACCEPTED );
 //            DBQuery.updateOrderStatus( null, orderListModelList.get( index ) ,updateMap ); // TODO : UPDATE
 
-            orderUpdateQuery.updateOrderStatus( this, orderListModelList.get( index ), updateMap, index );
+            orderUpdateQuery.updateOrderStatus( this, orderListModelList.get( index ), updateMap );
 
             // For Notify User...
             sendNotificationToUser( index, "Your Order preparing to pack" );
@@ -347,6 +350,7 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
             deliveryMap.put( "verify_otp", vOTP );
             deliveryMap.put( "accepted_date", StaticMethods.getCrrDate() );
             deliveryMap.put( "accepted_time", StaticMethods.getCrrTime() );
+            deliveryMap.put( "accepted_timestamp", StaticMethods.getCrrTimeStamp() );
             deliveryMap.put( "shop_id", SHOP_ID );
             deliveryMap.put( "shop_name", SHOP_DATA_MODEL.getShop_name() );
             deliveryMap.put( "shop_logo", SHOP_DATA_MODEL.getShop_logo() );
@@ -361,7 +365,7 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
             // set document in delivery section and then we update in order document...
 //            DBQuery.setDeliveryDocument( null, deliveryMap, orderListModelList.get( index ));
 
-            orderUpdateQuery.setDeliveryDocument( this, deliveryMap, orderListModelList.get( index ), index );
+            orderUpdateQuery.setDeliveryDocument( this, deliveryMap, orderListModelList.get( index ) );
 
         }
 
@@ -387,19 +391,29 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
         }
 
         @Override
-        public void onOrderUpdateSuccess(String updateValue, int index) {
+        public void onOrderUpdateSuccess(String updateValue,  @Nullable String[] updateMsg) {
+
             dismissDialog();
             if (updateValue.toUpperCase().equals( ORDER_ACCEPTED )){ // Preparing...
+                // Add in List if Not exist.
+                addInPreparingOrderList( updateMsg[0] );
+                // Remove...
+                removeFromNewOrderList( updateMsg[0] );
+                // Change List type...
                 // ------------ notify...
-                orderListModelList.remove( index );
+                removeFromThisList( updateMsg[0] );
                 // Show the No Order Text.. If List size = 0;
                 if (orderListModelList.size() == 0){
                     NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_NEW_ORDER, View.VISIBLE );
                 }
 
-            } else  if (updateValue.toUpperCase().equals( ORDER_PACKED )){ // Ready to Delivery...
+            } else  if (updateValue.toUpperCase().equals( ORDER_PACKED )){ // Ready to Delivery...//
+                // Add into Ready to Delivery List...
+                addInReadToDeliveredList( updateMsg[0] );
+                // Remove...
+                removeFromPreparingList( updateMsg[0] );
                 // remove...
-                orderListModelList.remove( index );
+                removeFromThisList( updateMsg[0] );
                 // Show the No Order Text.. If List size = 0;
                 if (orderListModelList.size() == 0){
                     NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_PREPARING, View.VISIBLE );
@@ -415,14 +429,14 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
         }
 
         @Override
-        public void onOrderUpdateFailed(String updateValue,@Nullable OrderListModel orderListModel,@Nullable Map<String, Object> updateMap, int index) {
+        public void onOrderUpdateFailed(String updateValue,@Nullable OrderListModel orderListModel,@Nullable Map<String, Object> updateMap) {
             dismissDialog();
             if (updateValue.toUpperCase().equals( ORDER_ACCEPTED )){ // Preparing...
                 showToast( "Failed to update... Check Your internet connection!" );
             } else  if (updateValue.toUpperCase().equals( ORDER_PACKED )){ // Ready to Delivery...
                 showDialog();
                 showToast( "Please Wait... Check Your internet connection!" );
-                orderUpdateQuery.updateOrderStatus( this, orderListModel, updateMap, index );
+                orderUpdateQuery.updateOrderStatus( this, orderListModel, updateMap );
             } else  if (updateValue.toUpperCase().equals( ORDER_PICKED )){ // Out For Delivery...
                 // By Default Done...
                 showToast( "Failed to update... Check Your internet connection!" );
@@ -488,6 +502,79 @@ public class OrderListAdaptor extends RecyclerView.Adapter {
         public void showToast(String msg) {
             Toast.makeText( itemView.getContext(), msg, Toast.LENGTH_SHORT ).show();
         }
+
+        ////////////////////////////////////
+
+        private void removeFromThisList(String orderID){
+            for ( OrderListModel model : orderListModelList){
+                if (model.getOrderID().equals( orderID )){
+                    orderListModelList.remove( model );
+                    break;
+                }
+            }
+        }
+
+        private void removeFromNewOrderList(String orderID){
+            // TODO : Update Order ID
+            if (newOrderList != null)
+                for ( OrderListModel model : newOrderList){
+                    if (model.getOrderID().equals( orderID )){
+                        newOrderList.remove( model );
+                        // Show the No Order Text.. If List size = 0;
+                        if (newOrderList.size() == 0){
+                            NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_NEW_ORDER, View.VISIBLE );
+                        }
+                        break;
+                    }
+                }
+        }
+        private void addInPreparingOrderList(String orderID){
+            for ( OrderListModel model : preparingOrderList){
+                if (model.getOrderID().equals( orderID )){
+                    return;
+                }
+            }
+            for ( OrderListModel model : newOrderList){
+                if (model.getOrderID().equals( orderID )){
+                    // Adding this Model
+                    preparingOrderList.add( model );
+                    break;
+                }
+            }
+            NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_PREPARING, View.GONE );
+        }
+
+        private void removeFromPreparingList(String orderID){
+            // TODO : Update Order ID
+            if (preparingOrderList != null)
+                for ( OrderListModel model : preparingOrderList){
+                    if (model.getOrderID().equals( orderID )){
+                        preparingOrderList.remove( model );
+                        // Show the No Order Text.. If List size = 0;
+                        if (preparingOrderList.size() == 0){
+                            NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_PREPARING, View.VISIBLE );
+                        }
+                        break;
+                    }
+                }
+        }
+        private void addInReadToDeliveredList(String orderID){
+
+            for ( OrderListModel model : readyToDeliveredList){
+                if (model.getOrderID().equals( orderID )){
+                    return;
+                }
+            }
+            for ( OrderListModel model : preparingOrderList){
+                if (model.getOrderID().equals( orderID )){
+                    // Adding this Model
+                    readyToDeliveredList.add( model );
+                    break;
+                }
+            }
+            NewOrderTabAdaptor.setNoOrderText( ORDER_LIST_READY_TO_DELIVER, View.GONE );
+        }
+
     }
 
     /**  Order Status

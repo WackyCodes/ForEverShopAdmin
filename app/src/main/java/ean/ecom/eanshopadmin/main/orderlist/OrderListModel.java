@@ -6,6 +6,7 @@ package ean.ecom.eanshopadmin.main.orderlist;
  * https://linktr.ee/wackycodes
  */
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class OrderListModel {
     private String orderDate;
     private String orderDay;
     private String orderTime;
+    private Timestamp order_timestamp;
 
     // Billing ...
     private String deliveryCharge;
@@ -119,6 +121,14 @@ public class OrderListModel {
 
     public String getOrderTime() {
         return orderTime;
+    }
+
+    public Timestamp getOrder_timestamp() {
+        return order_timestamp;
+    }
+
+    public void setOrder_timestamp(Timestamp order_timestamp) {
+        this.order_timestamp = order_timestamp;
     }
 
     public void setOrderTime(String orderTime) {

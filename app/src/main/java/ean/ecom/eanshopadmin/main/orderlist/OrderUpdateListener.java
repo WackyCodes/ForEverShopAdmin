@@ -12,8 +12,8 @@ import ean.ecom.eanshopadmin.main.orderlist.orderviewdetails.OrderViewInteractor
  */
 public interface OrderUpdateListener {
 
-    void onOrderUpdateSuccess( String updateValue, int index );
-    void onOrderUpdateFailed(String updateValue, @Nullable OrderListModel orderListModel, @Nullable Map <String, Object> updateMap,  int index );
+    void onOrderUpdateSuccess( String updateValue, @Nullable String[] updateMsg );
+    void onOrderUpdateFailed(String updateValue, @Nullable OrderListModel orderListModel, @Nullable Map <String, Object> updateMap );
 
     void onUpdateDeliveryFailed( );
 

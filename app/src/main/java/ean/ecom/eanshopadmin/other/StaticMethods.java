@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,6 +22,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -47,6 +49,11 @@ public class StaticMethods {
         Uri uri = Uri.parse( urlLink );
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         context.startActivity( intent );
+    }
+
+    public static Timestamp getCrrTimeStamp(){
+        Date date =  Calendar.getInstance().getTime();
+        return new Timestamp( date );
     }
 
     public static String getCrrDate(){
@@ -269,6 +276,7 @@ public class StaticMethods {
     }
 
     public static String getTimeFromNow( String dateData, String timeData ){
+
         String timing =  "on " + dateData;
         try
         {
@@ -317,6 +325,70 @@ public class StaticMethods {
         catch (Exception j){
             j.printStackTrace();
         } finally {
+            return timing;
+        }
+    }
+
+    public static String getTimeFromNow( Timestamp timestamp ){
+        String timing = null;
+        try
+        {   Date date =  Calendar.getInstance().getTime();
+            Timestamp currTimestamp = new Timestamp( date );
+            long diff = currTimestamp.getSeconds() - timestamp.getSeconds();
+            /*
+            1000 milliseconds = 1 second
+            60 seconds = 1 minute
+            60 minutes = 1 hour
+            24 hours = 1 day
+             */
+            long minutes = 0;
+            long hours = 0;
+            long days = 0;
+            long seconds = diff ;
+
+            if (diff > 60){
+                minutes = diff / 60;
+            }
+            if (diff > (60 * 60)){
+                hours = diff / (60 * 60);
+            }
+            if (diff > (24 * 60 * 60)){
+                days = diff / (24 * 60 * 60);
+            }
+            if(seconds<=1)
+            {
+                timing = "Just now";
+            }
+            else if(seconds<60)
+            {
+                timing = seconds + " sec ago";
+            }
+            else if(minutes<60)
+            {
+                timing = minutes + " Min ago";
+            }
+            else if(hours<24)
+            {
+                timing = hours + " hr ago";
+            }
+            else if (days < 8)
+            {
+                timing = days + " days ago";
+            }
+        }
+        catch (Exception j){
+            j.printStackTrace();
+        } finally {
+            if (timing == null && timestamp!= null){
+                Date timingDate = timestamp.toDate();
+                SimpleDateFormat format = new SimpleDateFormat( "dd/MM/yyyy", Locale.getDefault());
+                try {
+                    timingDate = format.parse( format.format( timingDate.getDate() ) );
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                timing = String.valueOf( timingDate.getDate() );
+            }
             return timing;
         }
     }

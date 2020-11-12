@@ -140,9 +140,14 @@ public class UpdateImage_SpFragment extends Fragment implements
         updateTitle = view.findViewById( R.id.update_title );
         proCopyFromSpinner = view.findViewById( R.id.copy_from_spinner );
 
+        if (listVariant == -1){
+            showToast( "Failed, Something went wrong! Try again.!" );
+            onUpdateFinished( false );
+        }
+
         // set Header...
         productIDText.setText( "Product ID : "+ productID );
-        productVerText.setText( "Variant : " + (listVariant + 1) );
+        productVerText.setText( "Variant : " + (1 + listVariant) );
 
         /// Set Layout ...
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager( getContext() );
@@ -389,6 +394,7 @@ public class UpdateImage_SpFragment extends Fragment implements
     @Override
     public void onUpdateFinished(boolean isSuccess) {
         rootListener.onUpdateCompleted( updateCode, isSuccess );
+        listVariant = -1;
         dismissDialog();
     }
     @Override

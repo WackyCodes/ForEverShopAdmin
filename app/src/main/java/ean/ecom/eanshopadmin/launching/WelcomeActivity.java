@@ -6,10 +6,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,6 +23,7 @@ import ean.ecom.eanshopadmin.R;
 import ean.ecom.eanshopadmin.database.DBQuery;
 import ean.ecom.eanshopadmin.other.CheckInternetConnection;
 import ean.ecom.eanshopadmin.other.DialogsClass;
+import ean.ecom.eanshopadmin.other.OnInternetConnectListener;
 import ean.ecom.eanshopadmin.other.StaticMethods;
 import ean.ecom.eanshopadmin.other.StaticValues;
 
@@ -32,38 +35,52 @@ import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_DATA_MODEL;
 import static ean.ecom.eanshopadmin.other.StaticValues.SHOP_ID;
 import static ean.ecom.eanshopadmin.other.StaticValues.STORAGE_PERMISSION;
 
-public class WelcomeActivity extends AppCompatActivity {
+public class WelcomeActivity extends AppCompatActivity implements OnInternetConnectListener {
     public static AppCompatActivity welcomeActivity;
+    private  Dialog NoInternetDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_welcome );
         welcomeActivity = this;
-        if( CheckInternetConnection.isInternetConnected( this ) ){ // CheckInternetConnection.isInternetConnected( this )
-            firebaseFirestore.collection( "PERMISSION" ).document( "APP_USE_PERMISSION" )
-                    .get().addOnCompleteListener( new OnCompleteListener <DocumentSnapshot>() {
+        NoInternetDialog = DialogsClass.NoInternetDialog(this);
+//        showToast( "welcome to 4Ever Mall" );
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        CheckInternetConnection.isInternetConnected( welcomeActivity, (OnInternetConnectListener) welcomeActivity );
+    }
+
+    @Override
+    public void onInternetResponse(boolean isConnected) {
+        if (isConnected){
+            if (NoInternetDialog.isShowing()){
+                NoInternetDialog.dismiss();
+            }
+            checkAppUsePermission();
+        }else{
+            if (!NoInternetDialog.isShowing()){
+                NoInternetDialog.show();
+            }
+            new Thread(){
                 @Override
-                public void onComplete(@NonNull Task <DocumentSnapshot> task) {
-                    if (task.isSuccessful()){
-                        boolean isAllowed = task.getResult().getBoolean( StaticValues.APP_VERSION );
-                        if ( isAllowed ){
-                            askStoragePermission();
-//                            checkCurrentUser();
-                        }else{
-                            DialogsClass.getMessageDialog( WelcomeActivity.this
-                                    , "Sorry, Permission denied..!"
-                                    , "You Don't have permission to use this App. If you have any query, Please contact App founder..!\\n Thank You!" );
-                            finish();
+                public void run() {
+                    Looper.prepare();
+                    try {
+                        synchronized (this){
+                             this.wait(2500);
                         }
-                    }else {
-                        showToast( "Failed..!" );
-                        finish();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }finally {
+                        CheckInternetConnection.isInternetConnected( WelcomeActivity.this, WelcomeActivity.this );
                     }
                 }
-            } );
+            }.start();
         }
-
     }
 
     private void checkCurrentUser(){
@@ -209,6 +226,48 @@ public class WelcomeActivity extends AppCompatActivity {
         }
     }
 
+    private void checkAppUsePermission(){
+        firebaseFirestore.collection( "PERMISSION" ).document( "APP_USE_PERMISSION" )
+                .get().addOnCompleteListener( new OnCompleteListener <DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task <DocumentSnapshot> task) {
+                if (task.isSuccessful()){
+                    boolean isAllowed = task.getResult().getBoolean( StaticValues.APP_VERSION );
+                    if ( isAllowed ){
+                        askStoragePermission();
+//                        checkCurrentUser();
+                    }else{
+                        String verCode = StaticValues.APP_VERSION + "_link";
+                        String updateLink;
+                        if (task.getResult().get( verCode )!= null)
+                        {
+                            updateLink= task.getResult().get( verCode ).toString();
+                        } else{
+                            updateLink = "www.4evermall.in";
+                        }
+                        appUpdateDialog( updateLink );
+                    }
+                }else {
+                    showToast( "Failed..!" );
+                    finish();
+                }
+            }
+        } );
+    }
+    private void appUpdateDialog(final String updateLink){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Update for New version!");
+        builder.setCancelable( false );
+        builder.setMessage("Sorry to interrupt you! Please Update this app to use continue. ");
+        builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                StaticMethods.gotoURL( WelcomeActivity.this, updateLink );
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
 
 
 }

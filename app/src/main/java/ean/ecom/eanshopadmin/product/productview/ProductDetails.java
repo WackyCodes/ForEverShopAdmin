@@ -326,6 +326,7 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
             addProduct.putExtra( "LAY_INDEX", layoutIndex );
             addProduct.putExtra( "UPDATE", true );
             addProduct.putExtra( "PRO_INDEX", productIndex );
+
 //            homeCatListModelList.get( crrShopCatIndex ).getHomeListModelList().get( layoutIndex ).getProductModelList().get( productIndex );
             startActivity( addProduct );
             return true;
@@ -539,7 +540,7 @@ public class ProductDetails extends AppCompatActivity implements ProductViewInte
         productImagesViewPager.setAdapter( productDetailsImagesAdapter );
         productDetailsImagesAdapter.notifyDataSetChanged();
         // Set Details | Descriptions | Specifications //
-        if (productFeaturesModelList.size() > 0){
+        if (productFeaturesModelList.size() > variantIndex){
             setFeaturesLayout(variantIndex);
         }
 
